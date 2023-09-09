@@ -18,7 +18,7 @@ from transformers import AutoTokenizer
 import transformers
 import torch
 
-model = "meta-llama/Llama-2-7b-chat-hf"
+model = "meta-llama/Llama-2-7b-hf"
 
 tokenizer = AutoTokenizer.from_pretrained(model, use_auth_token=True)
 pipeline = transformers.pipeline(
@@ -26,6 +26,7 @@ pipeline = transformers.pipeline(
     model=model,
     torch_dtype=torch.float16,
     device_map="auto",
+    device=0
 )
 
 sequences = pipeline(
