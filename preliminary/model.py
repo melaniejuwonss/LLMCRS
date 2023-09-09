@@ -1,25 +1,14 @@
-from transformers import AutoTokenizer
-import transformers
+from transformers import AutoTokenizer, AutoModelForCausalLM, TextGenerationPipeline
 import torch
 
-HUGGINGFACE_AUTH_TOKEN = "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"
+MODEL_NAME = "meta-llama/Llama-2-7b-chat-hf"
 
-tokenizer = AutoTokenizer.from_pretrained("codellama/CodeLlama-7b-hf")
-pipeline = transformers.pipeline(
-    "text-generation",
-    model="codellama/CodeLlama-7b-hf",
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_auth_token=True)
+language_model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+
+text_generation_pipeline = TextGenerationPipeline(
+    model=language_model,
+    tokenizer=tokenizer,
     torch_dtype=torch.float16,
-    device_map="auto", use_auth_token=HUGGINGFACE_AUTH_TOKEN
+    device=0,
 )
-
-sequences = pipeline(
-    'def fibonacci(',
-    do_sample=True,
-    temperature=0.2,
-    top_p=0.9,
-    num_return_sequences=1,
-    eos_token_id=tokenizer.eos_token_id,
-    max_length=100,
-)
-for seq in sequences:
-    print(f"Result: {seq['generated_text']}")
