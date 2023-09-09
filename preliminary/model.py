@@ -18,7 +18,7 @@ from transformers import AutoTokenizer
 import transformers
 import torch
 
-model = "meta-llama/Llama-2-7b-hf"
+model = "meta-llama/Llama-2-13b-hf"
 
 tokenizer = AutoTokenizer.from_pretrained(model, use_auth_token=True)
 pipeline = transformers.pipeline(
