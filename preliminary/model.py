@@ -1,9 +1,10 @@
 from transformers import AutoTokenizer
 import transformers
 import torch
+HUGGINGFACE_AUTH_TOKEN = "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"
 
 model = "meta-llama/Llama-2-7b-hf"
-# model = eval('transformers.AutoModelForCausalLM').from_pretrained(model_name)
+load_model = eval('transformers.AutoModelForCausalLM').from_pretrained(model, use_auth_token=HUGGINGFACE_AUTH_TOKEN)
 tokenizer = AutoTokenizer.from_pretrained(model)
 
 input = "I like 'Breaking Bad' and 'Band of Brothers'. Do you have any recommendations of other shows I might like?\n"
