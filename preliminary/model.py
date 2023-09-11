@@ -33,7 +33,7 @@ class RQ(Dataset):
         self.read_data()
 
     def read_data(self):
-        RQ_data = json.load((open('data/RQ' + str(self.args.rq_num) + '.json', 'r', encoding='utf-8')))
+        RQ_data = json.load((open('data/rq' + str(self.args.rq_num) + '.json', 'r', encoding='utf-8')))
         question, answer = [], []
         for data in RQ_data:
             question.append(data['Question'])
