@@ -33,7 +33,7 @@ class RQ(Dataset):
         self.read_data()
 
     def read_data(self):
-        RQ_data = json.load((open('../data/RQ' + str(self.args.rq_num) + '.json', 'r', encoding='utf-8')))
+        RQ_data = json.load((open('data/RQ' + str(self.args.rq_num) + '.json', 'r', encoding='utf-8')))
         question, answer = [], []
         for data in RQ_data:
             question.append(data['Question'])
@@ -86,7 +86,7 @@ def evaluate(gen_seq, answer, input_len, tokenizer, rq_num):
     decoded_output = tokenizer.batch_decode(gen_output, skip_special_tokens=True)
     for output, label in zip(decoded_output, answer):
         result_f.append({'GEN': output, 'ANSWER': label})
-    with open('../result/llama/' + str(rq_num) + '_result.json', 'w', encoding='utf-8') as f_write:
+    with open('result/llama/' + str(rq_num) + '_result.json', 'w', encoding='utf-8') as f_write:
         f_write.write(json.dumps(result_f, indent=4))
 
 
