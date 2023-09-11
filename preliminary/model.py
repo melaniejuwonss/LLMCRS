@@ -1,70 +1,112 @@
+from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import transformers
 import torch
 import json
+import argparse
+import logging
+from torch.utils.data import Dataset, DataLoader
 
-# model = "meta-llama/Llama-2-7b-hf"
-CUDA_LAUNCH_BLOCKING = 1
-# tokenizer = AutoTokenizer.from_pretrained(model, use_auth_token=True)
-# tokenizer.add_special_tokens({'pad_token': '<pad>'})
-# tokenizer.padding_side = "left"
-# pipeline = transformers.pipeline(
-#     "text-generation",
-#     model=model,
-#     torch_dtype=torch.float16,
-#     # device_map="auto",
-#     device=0
-# )
-# pipeline.tokenizer.add_special_tokens({'pad_token': '<pad>'})
-# pipeline.tokenizer.padding_side = "left"
-# pipeline.model.resize_token_embeddings(len(tokenizer))
-#
-# RQ_data = json.load((open('../data/RQ1.json', 'r', encoding='utf-8')))
-# question, answer = [], []
-# for data in RQ_data[:12]:
-#     question.append(data['Question'])
-#     answer.append(data['Answer'])
-#
-# sequences = pipeline(
-#     question, # 'I liked "Breaking Bad" and "Band of Brothers". Do you have any recommendations of other shows I might like?\n',
-#     do_sample=True,
-#     top_k=10, # The number of answers to return (will be chosen by order of likelihood)
-#     num_return_sequences=1,
-#     eos_token_id=tokenizer.eos_token_id,
-#     max_length=500,
-#     batch_size=4
-#     # device=0
-# )
-# for seq in sequences:
-#     print(f"Result: {seq['generated_text']}")
 
-##############################################
-model_name = "meta-llama/Llama-2-13b-hf"
-tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side="left")
-model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16).to("cuda")
-if tokenizer.pad_token is None:
-    tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-    model.resize_token_embeddings(len(tokenizer))
-    tokenizer.padding_side = "left"
-    # tokenizer.pad_token_id = (
-    #     0  # unk. we want this to be different from the eos token
-    # )
-    # tokenizer.padding_side = "left"  # Allow batched inference
-# use different length sentences to test batching
-sentences = [
-    "Hello, my dog is a little",
-    "Today, I",
-    "I love",
-    "Repeat after me: I love you.",
-    "Girafatron is obsessed with giraffes, the most glorious animal on the face of this Earth. Giraftron believes all other animals are irrelevant when compared to the glorious majesty of the giraffe.\nDaniel: Hello, Girafatron!\nGirafatron:",
-    "You are a human that uses a lot of expletives. For each one of your responses to the user you use expletives liberally. If you find yourself questioning whether it's appropriate or not you're to say fuck that noise and keep using your expletives regardless. Human: Tell me a story. You:"
-]
+def parse_args():
+    parser = argparse.ArgumentParser()
+    # common
+    parser.add_argument('--batch_size', type=int, default=32)
+    parser.add_argument('--input_max_size', type=int, default=256)
+    parser.add_argument('--device_id', type=int, default=0)
+    parser.add_argument('--rq_num', type=int, default=1)
 
-# sentence = "Hello, my dog is a little"
+    args = parser.parse_args()
 
-inputs = tokenizer(sentences, return_tensors="pt", padding=True, return_token_type_ids=False).to(model.device)
-print(inputs['input_ids'].shape)
+    logging.info(args)
+    return args
 
-output_sequences = model.generate(**inputs, max_new_tokens=20, do_sample=True, top_p=0.9)
 
-print(tokenizer.batch_decode(output_sequences, skip_special_tokens=True))
+class RQ(Dataset):
+    def __init__(self, tokenizer, args):
+        super(Dataset, self).__init__()
+        self.data_samples = []
+        self.tokenizer = tokenizer
+        self.args = args
+        self.read_data()
+
+    def read_data(self):
+        RQ_data = json.load((open('../data/RQ' + str(self.args.rq_num) + '.json', 'r', encoding='utf-8')))
+        question, answer = [], []
+        for data in RQ_data:
+            question.append(data['Question'])
+            answer.append(data['Answer'])
+
+        # tokenized_input = self.tokenizer(question, return_tensors="pt", padding=True, return_token_type_ids=False).to(
+        #     self.args.device_id)
+        # tokenized_output = self.tokenizer(answer, return_tensors="pt", padding=True, return_token_type_ids=False).to(
+        #     self.args.device_id)
+        for t_input, t_output in zip(question, answer):
+            self.data_samples.append((t_input, t_output))
+
+    def __getitem__(self, idx):
+        input = self.data_samples[idx][0]
+        output = self.data_samples[idx][1]
+
+        return input, output
+
+    def __len__(self):
+        return len(self.data_samples)
+
+
+class RQCollator:
+    def __init__(self, tokenizer, args):
+        self.tokenizer = tokenizer
+        self.args = args
+
+    def __call__(self, data_batch):
+        question_batch, resp_batch, input_len_batch = [], [], []
+        for data_input, data_output in data_batch:
+            question_batch.append(data_input)
+            input_len_batch.append(len(data_input))
+            resp_batch.append(data_output)
+
+        input_batch = {}
+        tokenized_input = self.tokenizer(question_batch, return_tensors="pt", padding=True,
+                                         return_token_type_ids=False).to(
+            self.args.device_id)
+        input_batch['answer'] = resp_batch
+        input_batch['question_len'] = torch.sum(tokenized_input.attention_mask, dim=1)
+        input_batch['question'] = tokenized_input
+
+        return input_batch
+
+
+def evaluate(gen_seq, answer, input_len, tokenizer, rq_num):
+    gen_output, result_f = [], []
+    for seq, input_len in zip(gen_seq, input_len):
+        gen_output.append(seq[input_len:])
+    decoded_output = tokenizer.batch_decode(gen_output, skip_special_tokens=True)
+    for output, label in zip(decoded_output, answer):
+        result_f.append({'GEN': output, 'ANSWER': label})
+    with open('../result/llama/' + str(rq_num) + '_result.json', 'w', encoding='utf-8') as f_write:
+        f_write.write(json.dumps(result_f, indent=4))
+
+
+if __name__ == '__main__':
+    args = parse_args()
+    model_name = "meta-llama/Llama-2-7b-hf"
+    tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side="left")
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token_id = (
+            0  # unk. we want this to be different from the eos token
+        )
+        tokenizer.padding_side = "left"  # Allow batched inference
+    rqDataset = RQ(tokenizer, args)
+    rqCollator = RQCollator(tokenizer, args)
+    dataloader = DataLoader(rqDataset, batch_size=args.batch_size, shuffle=False, collate_fn=rqCollator)
+    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16).to("cuda")
+    # CUDA_LAUNCH_BLOCKING = 1
+
+    # inputs = tokenizer(question, return_tensors="pt", padding=True, return_token_type_ids=False).to(model.device)
+    # print(inputs['input_ids'].shape)
+    for batches in tqdm(dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
+        with torch.no_grad():
+            output_sequences = model.generate(**batches['question'], max_new_tokens=20, do_sample=True, top_p=0.9)
+
+            evaluate(output_sequences, batches['answer'], batches['question_len'], tokenizer, args.rq_num)
