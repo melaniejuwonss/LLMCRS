@@ -40,7 +40,7 @@ CUDA_LAUNCH_BLOCKING = 1
 #     print(f"Result: {seq['generated_text']}")
 
 ##############################################
-model_name = "meta-llama/Llama-2-7b-hf"
+model_name = "meta-llama/Llama-2-13b-hf"
 tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side="left")
 model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16).to("cuda")
 if tokenizer.pad_token is None:
