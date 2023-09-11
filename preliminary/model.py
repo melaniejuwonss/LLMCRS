@@ -94,7 +94,7 @@ def evaluate(gen_seq, answer, input_len, tokenizer, rq_num, log_file):
 if __name__ == '__main__':
     args = parse_args()
     log_file = open(f'result/llama/rq{args.rq_num}.json', 'a', buffering=1, encoding='UTF-8')
-    model_name = "meta-llama/Llama-2-7b-hf"
+    model_name = args.model_name
     tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side="left")
     if tokenizer.pad_token is None:
         tokenizer.pad_token_id = (
