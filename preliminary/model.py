@@ -79,19 +79,21 @@ class RQCollator:
         return input_batch
 
 
-def evaluate(gen_seq, answer, input_len, tokenizer, rq_num):
+def evaluate(gen_seq, answer, input_len, tokenizer, rq_num, log_file):
     gen_output, result_f = [], []
     for seq, input_len in zip(gen_seq, input_len):
         gen_output.append(seq[input_len:])
     decoded_output = tokenizer.batch_decode(gen_output, skip_special_tokens=True)
     for output, label in zip(decoded_output, answer):
-        result_f.append({'GEN': output, 'ANSWER': label})
-    with open('result/llama/' + str(rq_num) + '_result.json', 'w', encoding='utf-8') as f_write:
-        f_write.write(json.dumps(result_f, indent=4))
+        log_file.write(json.dumps({'GEN': output, 'ANSWER': label}, ensure_ascii=False) + '\n')
+    #     result_f.append({'GEN': output, 'ANSWER': label})
+    # with open('result/llama/' + str(rq_num) + '_result.json', 'w', encoding='utf-8') as f_write:
+    #     f_write.write(json.dumps(result_f, indent=4))
 
 
 if __name__ == '__main__':
     args = parse_args()
+    log_file = open(f'result/llama/rq{args.rq_num}.json', 'a', buffering=1, encoding='UTF-8')
     model_name = "meta-llama/Llama-2-7b-hf"
     tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side="left")
     if tokenizer.pad_token is None:
@@ -111,4 +113,4 @@ if __name__ == '__main__':
         with torch.no_grad():
             output_sequences = model.generate(**batches['question'], max_new_tokens=20, do_sample=True, top_p=0.9)
 
-            evaluate(output_sequences, batches['answer'], batches['question_len'], tokenizer, args.rq_num)
+            evaluate(output_sequences, batches['answer'], batches['question_len'], tokenizer, args.rq_num, log_file)
