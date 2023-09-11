@@ -111,6 +111,6 @@ if __name__ == '__main__':
     # print(inputs['input_ids'].shape)
     for batches in tqdm(dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
         with torch.no_grad():
-            output_sequences = model.generate(**batches['question'], max_new_tokens=20, do_sample=True, top_p=0.75, top_k=40, num_beams=4, repetition_penaly=4.8)
+            output_sequences = model.generate(**batches['question'], max_new_tokens=20, do_sample=True, top_p=0.75, top_k=40, num_beams=4)
 
             evaluate(output_sequences, batches['answer'], batches['question_len'], tokenizer, args.rq_num, log_file)
