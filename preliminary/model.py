@@ -43,13 +43,13 @@ model_name = "meta-llama/Llama-2-13b-hf"
 tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side="left")
 model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16).to("cuda")
 if tokenizer.pad_token is None:
-    # tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-    # model.resize_token_embeddings(len(tokenizer))
-    # tokenizer.padding_side = "left"
-    tokenizer.pad_token_id = (
-        0  # unk. we want this to be different from the eos token
-    )
-    tokenizer.padding_side = "left"  # Allow batched inference
+    tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+    model.resize_token_embeddings(len(tokenizer))
+    tokenizer.padding_side = "left"
+    # tokenizer.pad_token_id = (
+    #     0  # unk. we want this to be different from the eos token
+    # )
+    # tokenizer.padding_side = "left"  # Allow batched inference
 # use different length sentences to test batching
 sentences = [
     "Hello, my dog is a little",
