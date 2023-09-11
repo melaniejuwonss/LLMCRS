@@ -3,7 +3,6 @@ import transformers
 import torch
 import json
 
-
 # model = "meta-llama/Llama-2-7b-hf"
 CUDA_LAUNCH_BLOCKING = 1
 # tokenizer = AutoTokenizer.from_pretrained(model, use_auth_token=True)
@@ -63,7 +62,7 @@ sentences = [
 
 # sentence = "Hello, my dog is a little"
 
-inputs = tokenizer(sentences, return_tensors="pt", padding=True).to(model.device)
+inputs = tokenizer(sentences, return_tensors="pt", padding=True, return_token_type_ids=False).to(model.device)
 print(inputs['input_ids'].shape)
 
 output_sequences = model.generate(**inputs, max_new_tokens=20, do_sample=True, top_p=0.9)
