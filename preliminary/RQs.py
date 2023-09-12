@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 content_data = json.load((open('../data/content_data.json', 'r', encoding='utf-8')))[0]
 
-prefix_template = "The following multiple-choice quiz has 4 choices (a,b,c,d). Select the best answer from the given choices. \n Question: "
+prefix_template = "The following multiple-choice quiz has 4 choices (a,b,c,d). Select the best answer from the given choices."
 obj_templates = [
     ["Which is %s movie?", "Which movie belongs to the %s genre?", "Which movie is classified as %s genre?",
      "Which movie falls under the %s genre category?", "Which movie is a part of the %s genre category?"],
@@ -38,7 +38,7 @@ item_template = [
      "Can you name another movie that the %s writer worked on?", "What other film features work from the writer of %s?",
      "Do you know of another movie scripted by the writer who also wrote %s?"]
 ]
-postfix_template = "\n Choices: a) %s b) %s c) %s d) %s \n Answer:"
+postfix_template = "\n Choices: a) %s b) %s c) %s d) %s"
 choice_alphabet = {0: 'a', 1: 'b', 2: 'c', 3: 'd'}
 
 
@@ -284,6 +284,6 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
 
 if __name__ == "__main__":
     all_titles, itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature = createSources()
-    # create_rq1(item2feature, itemFeatures)
+    create_rq1(item2feature, itemFeatures)
     create_rq2(item2feature, itemFeatures)
-    # create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature)
+    create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature)

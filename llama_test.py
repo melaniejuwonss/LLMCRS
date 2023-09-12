@@ -64,7 +64,7 @@ def evaluate(
     return prompter.get_response(output)
 
 
-def test(
+def llama_test(
         instructions: list = None,
         load_8bit: bool = False,
         base_model: str = "",
@@ -117,26 +117,21 @@ def test(
 
     # testing code for readme
     if instructions is None:
-        for instruction in [
-            # "Tell me about alpacas.",
-            # "Tell me about the president of Mexico in 2019.",
-            # "Tell me about the king of France in 2019.",
-            # "List all Canadian provinces in alphabetical order.",
-            # "Write a Python program that prints the first 10 Fibonacci numbers.",
-            # "Write a program that prints the numbers from 1 to 100. But for multiples of three print 'Fizz' instead of the number and for the multiples of five print 'Buzz'. For numbers which are multiples of both three and five print 'FizzBuzz'.",  # noqa: E501
-            # "Tell me five words that rhyme with 'shock'.",
-            # "Translate the sentence 'I have no mouth but I must scream' into Spanish.",
-            # "Count up from 1 to 500.",
-            "The following multiple-choice quiz has 4 choices (a,b,c,d). Select the best answer from the given choices. Which film was scripted by Chris Buck? a) monty python and the holy grail (1975) b) winter soldier (1972) c) the net (1995) d) frozen (2013)\n Answer:"
-        ]:
-            print("Instruction:", instruction)
-            print("Response:", evaluate(instruction, tokenizer, prompter, model))
-            print("#################################################")
-    else:
-        return evaluate(instruction, tokenizer, prompter, model)
+        instructions = [
+            "The following multiple-choice quiz has 4 choices (a,b,c,d). Select the best answer from the given choices. Which film was scripted by Chris Buck? a) monty python and the holy grail (1975) b) winter soldier (1972) c) the net (1995) d) frozen (2013)\n"
+        ]
+
+    generated_results = []
+    for instruction in instructions:
+        print("Instruction:", instruction)
+        print("Response:", evaluate(instruction, tokenizer, prompter, model))
+        print("#################################################")
+        generated_results.append(evaluate(instructions, tokenizer, prompter, model))
+
+    return generated_results
 
 
 if __name__ == "__main__":
     # fire.Fire(main)
     args = parse_args()
-    test()
+    llama_test()
