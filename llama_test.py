@@ -103,8 +103,8 @@ def llama_test(
             base_model,
             load_in_8bit=load_8bit,
             torch_dtype=torch.float16,
-            device_map='auto'
-        ) #.to(args.device_id)
+            # device_map='auto'
+        ).to(args.device_id)
         # model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16).to("cuda")
 
         # model = PeftModel.from_pretrained(
@@ -149,7 +149,7 @@ def llama_test(
     generated_results = []
     for batch in tqdm(dataloader):
         input_ids = tokenizer(batch, padding=True, return_tensors="pt")
-        input_ids = input_ids["input_ids"].to(device)
+        input_ids = input_ids["input_ids"].to(args.device_id)
         responses = evaluate(input_ids, tokenizer, prompter, model)
         # print("Instruction:", instruction)
         # print("Response:", response)
