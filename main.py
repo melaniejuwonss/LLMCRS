@@ -100,7 +100,7 @@ class Textdataset(Dataset):
 if __name__ == '__main__':
     args = parse_args()
     mdhm = str(datetime.now(timezone('Asia/Seoul')).strftime('%m%d%H%M%S'))
-    result_path = os.path.join(args.output_dir, args.base_model)
+    result_path = os.path.join(args.output_dir, args.base_model.replace('/', '-'))
     if not os.path.exists(result_path): os.mkdir(result_path)
 
     log_file = open(os.path.join(result_path, f'rq{args.rq_num}_{mdhm}.json'), 'a', buffering=1, encoding='UTF-8')
