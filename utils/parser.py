@@ -16,6 +16,6 @@ def parse_args():
                         choices=['meta-llama/Llama-2-7b-hf', 'meta-llama/Llama-2-13b-hf'])
 
     args = parser.parse_args()
-
-    logging.info(args)
+    print(args)
+    # logging.info(args)
     return args
