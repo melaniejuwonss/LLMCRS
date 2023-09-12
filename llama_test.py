@@ -147,6 +147,7 @@ def llama_test(
     dataloader = DataLoader(instruction_dataset, batch_size=args.batch_size, shuffle=False)
 
     generated_results = []
+    hit, cnt = 0.0, 0.0
     for batch in tqdm(dataloader):
         input_ids = tokenizer(batch, padding=True, return_tensors="pt")
         input_ids = input_ids["input_ids"].to(args.device_id)
@@ -156,7 +157,12 @@ def llama_test(
         # print("#################################################")
         generated_results.extend(responses)
         for output, label in zip(responses, labels):
-            args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label}, ensure_ascii=False) + '\n')
+            movie_name = labels[0].replace('(', ')').split(')')[1].strip().lower()
+            if movie_name in output:
+                hit += 1.0
+            cnt += 1.0
+            hit_ratio = hit / cnt
+            args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio}, ensure_ascii=False) + '\n')
 
     return generated_results
 
