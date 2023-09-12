@@ -60,7 +60,7 @@ def evaluate(
         )
     s = generation_output.sequences[0]
     output = tokenizer.decode(s)
-    yield prompter.get_response(output)
+    return prompter.get_response(output)
 
 
 def main(
