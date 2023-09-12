@@ -16,6 +16,8 @@ def parse_args():
                         choices=['meta-llama/Llama-2-7b-hf', 'meta-llama/Llama-2-13b-hf'])
 
     args = parser.parse_args()
+    args.device_id = f'cuda:{args.device}' if args.device else "cpu"
+
     print(args)
     # logging.info(args)
     return args
