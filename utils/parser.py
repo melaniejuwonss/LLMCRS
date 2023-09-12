@@ -10,7 +10,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     # common
     parser.add_argument('--batch_size', type=int, default=32)
-    parser.add_argument('--input_max_size', type=int, default=256)
+    parser.add_argument('--max_input_length', type=int, default=200)
     parser.add_argument('--device_id', type=str, default='0')
     parser.add_argument('--rq_num', type=int, default=1)
     parser.add_argument('--base_model', type=str, default='meta-llama/Llama-2-7b-hf',

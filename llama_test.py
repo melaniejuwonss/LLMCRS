@@ -16,10 +16,15 @@ else:
 
 
 class Textdataset(Dataset):
-    def __init__(self, data_samples):
+    def __init__(self, args, data_samples, tokenizer):
+        self.args = args
         self.data_samples = data_samples
+        self.tokenizer = tokenizer
 
     def __getitem__(self, idx):
+        # tokenizer.padding_side = 'left'
+        # inputs = self.tokenizer(self.data_samples[idx], padding=True, return_tensors="pt", max_length=args.max_input_length, truncation=True)
+        # input_ids = inputs["input_ids"].to(self.args.device_id)
         return self.data_samples[idx]
 
     def __len__(self):
@@ -27,7 +32,7 @@ class Textdataset(Dataset):
 
 
 def evaluate(
-        instructions,
+        input_ids,
         tokenizer,
         prompter,
         model,
@@ -39,9 +44,7 @@ def evaluate(
         max_new_tokens=20,
         **kwargs):
     # prompt = prompter.generate_prompt(instruction, input)
-    tokenizer.padding_side = 'left'
-    inputs = tokenizer(instructions, padding=True, return_tensors="pt")
-    input_ids = inputs["input_ids"].to(args.device_id)
+
     generation_config = GenerationConfig(
         temperature=temperature,
         top_p=top_p,
@@ -50,13 +53,13 @@ def evaluate(
         **kwargs,
     )
 
-    generate_params = {
-        "input_ids": input_ids,
-        "generation_config": generation_config,
-        "return_dict_in_generate": True,
-        "output_scores": True,
-        "max_new_tokens": max_new_tokens,
-    }
+    # generate_params = {
+    #     "input_ids": input_ids,
+    #     "generation_config": generation_config,
+    #     "return_dict_in_generate": True,
+    #     "output_scores": True,
+    #     "max_new_tokens": max_new_tokens,
+    # }
 
     # Without streaming
     with torch.no_grad():
@@ -100,7 +103,8 @@ def llama_test(
             base_model,
             load_in_8bit=load_8bit,
             torch_dtype=torch.float16,
-        ).to(args.device_id)
+            device_map='auto'
+        ) #.to(args.device_id)
         # model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16).to("cuda")
 
         # model = PeftModel.from_pretrained(
@@ -130,6 +134,7 @@ def llama_test(
     model.eval()
     if torch.__version__ >= "2" and sys.platform != "win32":
         model = torch.compile(model)
+    tokenizer.padding_side = 'left'
 
     # testing code for readme
     if instructions is None:
@@ -138,12 +143,14 @@ def llama_test(
         ]
 
     instructions = [prompter.generate_prompt(i) for i in instructions]
-    instruction_dataset = Textdataset(instructions)
+    instruction_dataset = Textdataset(args, instructions, tokenizer)
     dataloader = DataLoader(instruction_dataset, batch_size=args.batch_size, shuffle=False)
 
     generated_results = []
     for batch in tqdm(dataloader):
-        responses = evaluate(batch, tokenizer, prompter, model)
+        input_ids = tokenizer(batch, padding=True, return_tensors="pt")
+        input_ids = input_ids["input_ids"].to(device)
+        responses = evaluate(input_ids, tokenizer, prompter, model)
         # print("Instruction:", instruction)
         # print("Response:", response)
         # print("#################################################")

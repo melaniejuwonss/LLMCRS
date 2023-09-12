@@ -112,7 +112,7 @@ if __name__ == '__main__':
     # inputs = tokenizer(question, return_tensors="pt", padding=True, return_token_type_ids=False).to(model.device)
     # print(inputs['input_ids'].shape)
 
-    llama_test(args=args, instructions=instructions, labels = labels)
+    llama_test(args=args, instructions=instructions, labels=labels)
     # for batches in tqdm(dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
     #     with torch.no_grad():
     #         output_sequences = llama_test(args=args, instructions=batches[0])
