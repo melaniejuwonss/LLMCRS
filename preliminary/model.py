@@ -9,6 +9,7 @@ from torch.utils.data import Dataset, DataLoader
 from datetime import datetime
 from pytz import timezone
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     # common
@@ -17,7 +18,8 @@ def parse_args():
     parser.add_argument('--device_id', type=int, default=0)
     parser.add_argument('--rq_num', type=int, default=1)
     parser.add_argument('--model_name', type=str, default='meta-llama/Llama-2-7b-hf',
-                        choices=['meta-llama/Llama-2-7b-hf', 'meta-llama/Llama-2-13b-hf'])
+                        choices=['meta-llama/Llama-2-7b-hf', 'meta-llama/Llama-2-13b-hf',
+                                 'meta-llama/Llama-2-7b-chat-hf'])
 
     args = parser.parse_args()
 
@@ -82,8 +84,8 @@ class RQCollator:
 
 def evaluate(gen_seq, answer, input_len, tokenizer, rq_num, log_file):
     gen_output, result_f = [], []
-    for seq, input_len in zip(gen_seq, input_len):
-        gen_output.append(seq[input_len:])
+    for seq, len in zip(gen_seq, input_len):
+        gen_output.append(seq[len:])
     decoded_output = tokenizer.batch_decode(gen_output, skip_special_tokens=True)
     for output, label in zip(decoded_output, answer):
         log_file.write(json.dumps({'GEN': output, 'ANSWER': label}, ensure_ascii=False) + '\n')
@@ -113,6 +115,7 @@ if __name__ == '__main__':
     # print(inputs['input_ids'].shape)
     for batches in tqdm(dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
         with torch.no_grad():
-            output_sequences = model.generate(**batches['question'], max_new_tokens=20, do_sample=True, top_p=0.75, top_k=40, num_beams=4, repetition_penalty=4.8)
+            output_sequences = model.generate(**batches['question'], max_new_tokens=20, do_sample=True, top_p=0.75,
+                                              top_k=40, num_beams=4, repetition_penalty=4.8)
 
             evaluate(output_sequences, batches['answer'], batches['question_len'], tokenizer, args.rq_num, log_file)
