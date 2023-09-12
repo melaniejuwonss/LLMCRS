@@ -127,7 +127,7 @@ def test(
             # "Tell me five words that rhyme with 'shock'.",
             # "Translate the sentence 'I have no mouth but I must scream' into Spanish.",
             # "Count up from 1 to 500.",
-            "The following multiple-choice quiz has 4 choices (a,b,c,d). Select the best answer from the given choices. Which film was scripted by Chris Buck? a) monty python and the holy grail (1975) b) winter soldier (1972) c) the net (1995) d) frozen (2013)"
+            "The following multiple-choice quiz has 4 choices (a,b,c,d). Select the best answer from the given choices. Question: Which film was scripted by Chris Buck? a) monty python and the holy grail (1975) b) winter soldier (1972) c) the net (1995) d) frozen (2013)"
         ]:
             print("Instruction:", instruction)
             print("Response:", evaluate(instruction, tokenizer, prompter, model))
