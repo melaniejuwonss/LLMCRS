@@ -41,7 +41,7 @@ def evaluate(
     # prompt = prompter.generate_prompt(instruction, input)
     tokenizer.padding_side = 'left'
     inputs = tokenizer(instructions, padding=True, return_tensors="pt")
-    input_ids = inputs["input_ids"].to(device)
+    input_ids = inputs["input_ids"].to(args.device_id)
     generation_config = GenerationConfig(
         temperature=temperature,
         top_p=top_p,
