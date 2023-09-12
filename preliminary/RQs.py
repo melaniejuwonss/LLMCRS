@@ -117,19 +117,23 @@ def createSources():
 
 def sample_choices(candidates, choice_num, itemFeatures, target_features=None):
     cnt = 0
-    while True:
-        cnt = 0
+    if target_features is None:
         choices = random.sample(candidates, choice_num)
-        for choice in choices:
-            feature_cnt = 0
-            for target_feature in target_features:
-                if target_feature not in itemFeatures[choice]:
-                    feature_cnt += 1
-            if feature_cnt == len(target_features):
-                cnt += 1
-        if cnt == choice_num:
-            break
-    return choices
+        return choices
+    else:
+        while True:
+            cnt = 0
+            choices = random.sample(candidates, choice_num)
+            for choice in choices:
+                feature_cnt = 0
+                for target_feature in target_features:
+                    if target_feature not in itemFeatures[choice]:
+                        feature_cnt += 1
+                if feature_cnt == len(target_features):
+                    cnt += 1
+            if cnt == choice_num:
+                break
+        return choices
 
 
 def create_rq1(item2feature, itemFeatures):
@@ -173,9 +177,10 @@ def create_rq2(item2feature, itemFeatures):
     for title in tqdm(item2feature.keys(), bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
         all_items = deepcopy(list(itemFeatures.keys()))
         all_items.remove(title)
-
+        onlyMovieName = title[:title.find('(')-1]
         reviews = item2feature[title][4][:5]
         for review in reviews:
+            review = str.lower(review).replace(onlyMovieName, "[MASK]")
             review500 = " ".join(review.split(' ')[:500])  # first 500 words
             for template in subj_template:
                 choices = sample_choices(all_items, 3, itemFeatures, None)
@@ -279,6 +284,6 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
 
 if __name__ == "__main__":
     all_titles, itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature = createSources()
-    create_rq1(item2feature, itemFeatures)
+    # create_rq1(item2feature, itemFeatures)
     create_rq2(item2feature, itemFeatures)
-    create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature)
+    # create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature)
