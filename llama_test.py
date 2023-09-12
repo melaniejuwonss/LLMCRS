@@ -83,8 +83,7 @@ def main(
             base_model,
             load_in_8bit=load_8bit,
             torch_dtype=torch.float16,
-            device=args.device_id,
-        )
+        ).to(args.device_id)
         # model = PeftModel.from_pretrained(
         #     model,
         #     lora_weights,
