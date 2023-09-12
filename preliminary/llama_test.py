@@ -1,11 +1,10 @@
-import os
 import sys
 import torch
-import transformers
 from transformers import GenerationConfig, LlamaForCausalLM, LlamaTokenizer
 from peft import PeftModel
 
-from utils import Prompter, parse_args
+from utils.prompter import Prompter
+from utils.parser import parse_args
 
 if torch.cuda.is_available():
     device = "cuda"
