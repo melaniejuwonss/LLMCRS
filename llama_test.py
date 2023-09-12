@@ -65,6 +65,7 @@ def evaluate(
 
 
 def llama_test(
+        args,
         instructions: list = None,
         load_8bit: bool = False,
         base_model: str = "",
@@ -73,7 +74,6 @@ def llama_test(
         server_name: str = "0.0.0.0",  # Allows to listen on all interfaces by providing '0.
         share_gradio: bool = False,
 ):
-    # base_model = base_model or os.environ.get("BASE_MODEL", "")
     base_model = args.base_model
     assert (
         base_model
@@ -134,4 +134,4 @@ def llama_test(
 if __name__ == "__main__":
     # fire.Fire(main)
     args = parse_args()
-    llama_test()
+    llama_test(args)

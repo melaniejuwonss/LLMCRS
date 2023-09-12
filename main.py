@@ -124,5 +124,5 @@ if __name__ == '__main__':
     # print(inputs['input_ids'].shape)
     for batches in tqdm(dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
         with torch.no_grad():
-            output_sequences = llama_test(batches[0])
+            output_sequences = llama_test(args=args, instructions=batches[0])
             evaluate(output_sequences, batches['answer'], log_file)
