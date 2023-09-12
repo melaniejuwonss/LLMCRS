@@ -83,20 +83,6 @@ def evaluate(gen_seq, answer, log_file):
     #     f_write.write(json.dumps(result_f, indent=4))
 
 
-class Textdataset(Dataset):
-    def __init__(self, data_samples):
-        self.data_samples = data_samples
-
-    def __getitem__(self, idx):
-        input = self.data_samples[idx][0]
-        output = self.data_samples[idx][1]
-
-        return input, output
-
-    def __len__(self):
-        return len(self.data_samples)
-
-
 if __name__ == '__main__':
     args = parse_args()
     mdhm = str(datetime.now(timezone('Asia/Seoul')).strftime('%m%d%H%M%S'))
@@ -104,9 +90,10 @@ if __name__ == '__main__':
     if not os.path.exists(result_path): os.mkdir(result_path)
 
     log_file = open(os.path.join(result_path, f'rq{args.rq_num}_{mdhm}.json'), 'a', buffering=1, encoding='UTF-8')
+    args.log_file = log_file
     question_data = read_data(args)
     instructions = [i[0] for i in question_data]
-
+    labels = [i[1] for i in question_data]
     # question_dataset = Textdataset(question_data)
     # dataloader = DataLoader(question_dataset, batch_size=args.batch_size, shuffle=False)
 
@@ -125,7 +112,7 @@ if __name__ == '__main__':
     # inputs = tokenizer(question, return_tensors="pt", padding=True, return_token_type_ids=False).to(model.device)
     # print(inputs['input_ids'].shape)
 
-    llama_test(args=args, instructions=instructions)
+    llama_test(args=args, instructions=instructions, labels = labels)
     # for batches in tqdm(dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
     #     with torch.no_grad():
     #         output_sequences = llama_test(args=args, instructions=batches[0])

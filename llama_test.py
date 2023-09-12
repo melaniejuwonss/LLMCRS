@@ -1,5 +1,7 @@
+import json
 import sys
 import torch
+from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
 from transformers import GenerationConfig, LlamaForCausalLM, LlamaTokenizer
 from peft import PeftModel
@@ -13,8 +15,19 @@ else:
     device = "cpu"
 
 
+class Textdataset(Dataset):
+    def __init__(self, data_samples):
+        self.data_samples = data_samples
+
+    def __getitem__(self, idx):
+        return self.data_samples[idx]
+
+    def __len__(self):
+        return len(self.data_samples)
+
+
 def evaluate(
-        instruction,
+        instructions,
         tokenizer,
         prompter,
         model,
@@ -25,9 +38,9 @@ def evaluate(
         num_beams=4,
         max_new_tokens=128,
         **kwargs):
-    prompt = prompter.generate_prompt(instruction, input)
-
-    inputs = tokenizer(prompt, return_tensors="pt")
+    # prompt = prompter.generate_prompt(instruction, input)
+    tokenizer.padding_side = 'left'
+    inputs = tokenizer(instructions, padding=True, return_tensors="pt")
     input_ids = inputs["input_ids"].to(device)
     generation_config = GenerationConfig(
         temperature=temperature,
@@ -50,7 +63,7 @@ def evaluate(
         # generation_output = model.generate(
         #     return_dict_in_generate=True,
         #     input_ids=input_ids,
-        #     max_new_tokens=100,
+        #     max_new_tokens=5,
         #
         # )
         generation_output = model.generate(
@@ -60,14 +73,15 @@ def evaluate(
             output_scores=True,
             max_new_tokens=max_new_tokens,
         )
-    s = generation_output.sequences[0]
-    output = tokenizer.decode(s)
-    return prompter.get_response(output)
+    s = generation_output.sequences
+    output = tokenizer.batch_decode(s, skip_special_tokens=True)
+    return [prompter.get_response(i) for i in output]
 
 
 def llama_test(
         args,
         instructions: list = None,
+        labels: list = None,
         load_8bit: bool = False,
         base_model: str = "",
         lora_weights: str = "tloen/alpaca-lora-7b",
@@ -122,13 +136,19 @@ def llama_test(
             "The following multiple-choice quiz has 4 choices (a,b,c,d). Select the best answer from the given choices. Which film was scripted by Chris Buck? a) monty python and the holy grail (1975) b) winter soldier (1972) c) the net (1995) d) frozen (2013)\n"
         ]
 
+    instructions = [prompter.generate_prompt(i) for i in instructions]
+    instruction_dataset = Textdataset(instructions)
+    dataloader = DataLoader(instruction_dataset, batch_size=2, shuffle=False)
+
     generated_results = []
-    for instruction in tqdm(instructions):
-        response = evaluate(instruction, tokenizer, prompter, model)
-        print("Instruction:", instruction)
-        print("Response:", response)
-        print("#################################################")
-        generated_results.append(response)
+    for batch in tqdm(dataloader):
+        responses = evaluate(batch, tokenizer, prompter, model)
+        # print("Instruction:", instruction)
+        # print("Response:", response)
+        # print("#################################################")
+        generated_results.extend(responses)
+        for output, label in zip(responses, labels):
+            args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label}, ensure_ascii=False) + '\n')
 
     return generated_results
 
