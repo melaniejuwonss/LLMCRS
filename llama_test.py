@@ -123,10 +123,11 @@ def llama_test(
 
     generated_results = []
     for instruction in instructions:
+        response = evaluate(instruction, tokenizer, prompter, model)
         print("Instruction:", instruction)
-        print("Response:", evaluate(instruction, tokenizer, prompter, model))
+        print("Response:", response)
         print("#################################################")
-        generated_results.append(evaluate(instructions, tokenizer, prompter, model))
+        generated_results.append(response)
 
     return generated_results
 
