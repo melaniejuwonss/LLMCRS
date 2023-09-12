@@ -17,7 +17,7 @@ def parse_args():
 
     args = parser.parse_args()
     args.device_id = f'cuda:{args.device_id}' if args.device_id else "cpu"
-
+    args.output_dir = 'result/llama'
     print(args)
     # logging.info(args)
     return args
