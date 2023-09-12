@@ -95,7 +95,7 @@ def evaluate(gen_seq, answer, input_len, tokenizer, rq_num, log_file):
 if __name__ == '__main__':
     args = parse_args()
     mdhm = str(datetime.now(timezone('Asia/Seoul')).strftime('%m%d%H%M%S'))
-    log_file = open(f'result/llama/rq{args.rq_num}_{args.model_name}_{mdhm}.json', 'a', buffering=1, encoding='UTF-8')
+    log_file = open(f'result/llama/rq{args.rq_num}_{mdhm}.json', 'a', buffering=1, encoding='UTF-8')
     model_name = args.model_name
     tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side="left")
     if tokenizer.pad_token is None:
