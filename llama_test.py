@@ -24,7 +24,8 @@ def evaluate(
         num_beams=4,
         max_new_tokens=128,
         **kwargs):
-    prompt = prompter.generate_prompt(instruction[0], instruction[1])
+    prompt = prompter.generate_prompt(instruction, input)
+
     inputs = tokenizer(prompt, return_tensors="pt")
     input_ids = inputs["input_ids"].to(device)
     generation_config = GenerationConfig(
@@ -63,7 +64,8 @@ def evaluate(
     return prompter.get_response(output)
 
 
-def main(
+def test(
+        instructions: list = None,
         load_8bit: bool = False,
         base_model: str = "",
         lora_weights: str = "tloen/alpaca-lora-7b",
@@ -114,24 +116,27 @@ def main(
         model = torch.compile(model)
 
     # testing code for readme
-    for instruction in [
-        # "Tell me about alpacas.",
-        # "Tell me about the president of Mexico in 2019.",
-        # "Tell me about the king of France in 2019.",
-        # "List all Canadian provinces in alphabetical order.",
-        # "Write a Python program that prints the first 10 Fibonacci numbers.",
-        # "Write a program that prints the numbers from 1 to 100. But for multiples of three print 'Fizz' instead of the number and for the multiples of five print 'Buzz'. For numbers which are multiples of both three and five print 'FizzBuzz'.",  # noqa: E501
-        # "Tell me five words that rhyme with 'shock'.",
-        # "Translate the sentence 'I have no mouth but I must scream' into Spanish.",
-        # "Count up from 1 to 500.",
-        ("The following multiple-choice quiz has 4 choices (a,b,c,d). Select the best answer from the given choices.", "Which film was scripted by Chris Buck? a) monty python and the holy grail (1975) b) winter soldier (1972) c) the net (1995) d) frozen (2013)")
-    ]:
-        print("Instruction:", instruction)
-        print("Response:", evaluate(instruction, tokenizer, prompter, model))
-        print("#################################################")
+    if instructions is None:
+        for instruction in [
+            # "Tell me about alpacas.",
+            # "Tell me about the president of Mexico in 2019.",
+            # "Tell me about the king of France in 2019.",
+            # "List all Canadian provinces in alphabetical order.",
+            # "Write a Python program that prints the first 10 Fibonacci numbers.",
+            # "Write a program that prints the numbers from 1 to 100. But for multiples of three print 'Fizz' instead of the number and for the multiples of five print 'Buzz'. For numbers which are multiples of both three and five print 'FizzBuzz'.",  # noqa: E501
+            # "Tell me five words that rhyme with 'shock'.",
+            # "Translate the sentence 'I have no mouth but I must scream' into Spanish.",
+            # "Count up from 1 to 500.",
+            "The following multiple-choice quiz has 4 choices (a,b,c,d). Select the best answer from the given choices. Which film was scripted by Chris Buck? a) monty python and the holy grail (1975) b) winter soldier (1972) c) the net (1995) d) frozen (2013)"
+        ]:
+            print("Instruction:", instruction)
+            print("Response:", evaluate(instruction, tokenizer, prompter, model))
+            print("#################################################")
+    else:
+        return evaluate(instruction, tokenizer, prompter, model)
 
 
 if __name__ == "__main__":
     # fire.Fire(main)
     args = parse_args()
-    main()
+    test()
