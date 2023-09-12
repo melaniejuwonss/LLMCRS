@@ -138,7 +138,7 @@ def llama_test(
 
     instructions = [prompter.generate_prompt(i) for i in instructions]
     instruction_dataset = Textdataset(instructions)
-    dataloader = DataLoader(instruction_dataset, batch_size=2, shuffle=False)
+    dataloader = DataLoader(instruction_dataset, batch_size=args.batch_size, shuffle=False)
 
     generated_results = []
     for batch in tqdm(dataloader):
