@@ -83,7 +83,7 @@ def main(
             base_model,
             load_in_8bit=load_8bit,
             torch_dtype=torch.float16,
-            device_map=args.device_id,
+            device=args.device_id,
         )
         # model = PeftModel.from_pretrained(
         #     model,
