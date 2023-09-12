@@ -1,5 +1,6 @@
 import sys
 import torch
+from tqdm import tqdm
 from transformers import GenerationConfig, LlamaForCausalLM, LlamaTokenizer
 from peft import PeftModel
 
@@ -122,7 +123,7 @@ def llama_test(
         ]
 
     generated_results = []
-    for instruction in instructions:
+    for instruction in tqdm(instructions):
         response = evaluate(instruction, tokenizer, prompter, model)
         print("Instruction:", instruction)
         print("Response:", response)

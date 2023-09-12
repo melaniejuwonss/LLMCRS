@@ -105,8 +105,10 @@ if __name__ == '__main__':
 
     log_file = open(os.path.join(result_path, f'rq{args.rq_num}_{mdhm}.json'), 'a', buffering=1, encoding='UTF-8')
     question_data = read_data(args)
-    question_dataset = Textdataset(question_data)
-    dataloader = DataLoader(question_dataset, batch_size=args.batch_size, shuffle=False)
+    instructions = [i[0] for i in question_data]
+
+    # question_dataset = Textdataset(question_data)
+    # dataloader = DataLoader(question_dataset, batch_size=args.batch_size, shuffle=False)
 
     # model_name = args.model_name
     # tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side="left")
@@ -122,7 +124,9 @@ if __name__ == '__main__':
 
     # inputs = tokenizer(question, return_tensors="pt", padding=True, return_token_type_ids=False).to(model.device)
     # print(inputs['input_ids'].shape)
-    for batches in tqdm(dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
-        with torch.no_grad():
-            output_sequences = llama_test(args=args, instructions=batches[0])
-            evaluate(output_sequences, batches['answer'], log_file)
+
+    llama_test(args=args, instructions=instructions)
+    # for batches in tqdm(dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
+    #     with torch.no_grad():
+    #         output_sequences = llama_test(args=args, instructions=batches[0])
+    #         evaluate(output_sequences, batches['answer'], log_file)
