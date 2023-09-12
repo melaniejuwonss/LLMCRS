@@ -100,8 +100,10 @@ class Textdataset(Dataset):
 if __name__ == '__main__':
     args = parse_args()
     mdhm = str(datetime.now(timezone('Asia/Seoul')).strftime('%m%d%H%M%S'))
-    if not os.path.exists(args.output_dir): os.mkdir(args.output_dir)
-    log_file = open(os.path.join(args.output_dir, f'rq{args.rq_num}_{mdhm}.json'), 'a', buffering=1, encoding='UTF-8')
+    result_path = os.path.join(args.output_dir, args.base_model)
+    if not os.path.exists(result_path): os.mkdir(result_path)
+
+    log_file = open(os.path.join(result_path, f'rq{args.rq_num}_{mdhm}.json'), 'a', buffering=1, encoding='UTF-8')
     question_data = read_data(args)
     question_dataset = Textdataset(question_data)
     dataloader = DataLoader(question_dataset, batch_size=args.batch_size, shuffle=False)

@@ -5,6 +5,7 @@ import os.path as osp
 from typing import Union
 import os
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     # common
@@ -17,7 +18,10 @@ def parse_args():
 
     args = parser.parse_args()
     args.device_id = f'cuda:{args.device_id}' if args.device_id else "cpu"
-    args.output_dir = 'result/llama'
+
+    args.output_dir = 'result'
+    if not os.path.exists(args.output_dir): os.mkdir(args.output_dir)
+
     print(args)
     # logging.info(args)
     return args
