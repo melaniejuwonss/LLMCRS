@@ -127,7 +127,7 @@ def main(
     ]:
         print("Instruction:", instruction)
         print("Response:", evaluate(instruction, tokenizer, prompter, model))
-        print()
+        print("#################################################")
 
 
 if __name__ == "__main__":
