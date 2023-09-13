@@ -172,7 +172,7 @@ def llama_test(
         for i in generated_results:
             args.log_file.write(json.dumps(i, ensure_ascii=False) + '\n')
         if cnt % 100 == 0 and cnt != 0:
-            print("%.2f" % (hit / cnt))
+            print("%.4f" % (hit / cnt))
 
     # return generated_results
 
