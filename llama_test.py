@@ -16,16 +16,16 @@ else:
 
 
 class Textdataset(Dataset):
-    def __init__(self, args, data_samples, tokenizer):
+    def __init__(self, args, instructions, labels, tokenizer):
         self.args = args
-        self.data_samples = data_samples
+        self.instructions = instructions
         self.tokenizer = tokenizer
 
     def __getitem__(self, idx):
         # tokenizer.padding_side = 'left'
         # inputs = self.tokenizer(self.data_samples[idx], padding=True, return_tensors="pt", max_length=args.max_input_length, truncation=True)
         # input_ids = inputs["input_ids"].to(self.args.device_id)
-        return self.data_samples[idx]
+        return self.instructions[idx], self.labels[idx]
 
     def __len__(self):
         return len(self.data_samples)
@@ -143,7 +143,7 @@ def llama_test(
         ]
 
     instructions = [prompter.generate_prompt(i) for i in instructions]
-    instruction_dataset = Textdataset(args, instructions, tokenizer)
+    instruction_dataset = Textdataset(args, instructions, labels, tokenizer)
     dataloader = DataLoader(instruction_dataset, batch_size=args.batch_size, shuffle=False)
 
 
@@ -151,9 +151,10 @@ def llama_test(
 
     for batch in tqdm(dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
         generated_results = []
-        input_ids = tokenizer(batch, padding=True, return_tensors="pt")
+        input_ids = tokenizer(batch[0], padding=True, return_tensors="pt")
         input_ids = input_ids["input_ids"].to(args.device_id)
         responses = evaluate(input_ids, tokenizer, prompter, model)
+        labels = batch[1]
         # print("Instruction:", instruction)
         # print("Response:", response)
         # print("#################################################")
