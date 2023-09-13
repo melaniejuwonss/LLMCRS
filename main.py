@@ -92,8 +92,10 @@ if __name__ == '__main__':
 
     if args.log_file == '':
         log_file = open(os.path.join(result_path, f'rq{args.rq_num}_{mdhm}.json'), 'a', buffering=1, encoding='UTF-8')
-        args.log_file = log_file
+    else:
+        log_file = open(os.path.join(result_path, f'{args.log_file}.json'), 'a', buffering=1, encoding='UTF-8')
 
+    args.log_file = log_file
     question_data = read_data(args)
     instructions = [i[0] for i in question_data]
     labels = [i[1] for i in question_data]
