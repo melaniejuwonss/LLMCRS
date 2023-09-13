@@ -46,7 +46,8 @@ def chatgpt_test(args,
         except:
             print("ERROR hit: %d, cnt: %d" % (hit, cnt))
             print(args.log_file)
-            break
+            os.system(f"python main.py --chatgpt_hit={hit} --chatgpt_cnt={cnt} --log_file={args.log_file}")
+            # break
 
 
 if __name__ == "__main__":

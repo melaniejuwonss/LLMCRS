@@ -4,9 +4,9 @@ import random
 from copy import deepcopy
 from tqdm import tqdm
 
-content_data = json.load((open('../data/content_data.json', 'r', encoding='utf-8')))[0]
+content_data = json.load((open('data/content_data.json', 'r', encoding='utf-8')))[0]
 
-prefix_template = "The following multiple-choice quiz has 4 choices (a,b,c,d). Select the best answer from the given choices."
+prefix_template = "The following multiple-choice quiz has 3 choices (a,b,c). Select the best answer from the given choices."
 obj_templates = [
     ["Which is %s movie?", "Which movie belongs to the %s genre?", "Which movie is classified as %s genre?",
      "Which movie falls under the %s genre category?", "Which movie is a part of the %s genre category?"],
@@ -38,7 +38,7 @@ item_template = [
      "Can you name another movie that the %s writer worked on?", "What other film features work from the writer of %s?",
      "Do you know of another movie scripted by the writer who also wrote %s?"]
 ]
-postfix_template = "\n Choices: a) %s b) %s c) %s d) %s"
+postfix_template = "\n Choices: a) %s b) %s c) %s"
 choice_alphabet = {0: 'a', 1: 'b', 2: 'c', 3: 'd'}
 
 
@@ -148,8 +148,9 @@ def create_rq1(item2feature, itemFeatures):
             features = all_features[i]
             for feature in features:
                 target_feature = feature
-                for template in obj_templates[i]:  # 각 feature type 의 template 마다 생성
-                    choices = sample_choices(all_items, 3, itemFeatures, [target_feature])
+                templates = random.sample(obj_templates[i], 1)
+                for template in templates:  # 각 feature type 의 template 마다 생성
+                    choices = sample_choices(all_items, 2, itemFeatures, [target_feature])
                     choices.append(title)
                     random.shuffle(choices)
                     feature_template = template % (target_feature)
@@ -164,9 +165,9 @@ def create_rq1(item2feature, itemFeatures):
                         title_quiz_num[title] += 1
                     result_list.append({'Question': whole_template, 'Answer': answer})
     print("RQ1 AVG: " + str(cnt / len(title_quiz_num)))  # 41.2, #TOTAL: 278,665
-    with open('../data/rq1_num.json', 'w', encoding='utf-8') as result_f:
+    with open('data/rq1_num.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(title_quiz_num, indent=4))
-    with open('../data/rq1.json', 'w', encoding='utf-8') as result_f:
+    with open('data/rq1.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(result_list, indent=4))
 
 
@@ -177,13 +178,14 @@ def create_rq2(item2feature, itemFeatures):
     for title in tqdm(item2feature.keys(), bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
         all_items = deepcopy(list(itemFeatures.keys()))
         all_items.remove(title)
-        onlyMovieName = title[:title.find('(')-1]
+        onlyMovieName = title[:title.find('(') - 1]
         reviews = item2feature[title][4][:5]
         for review in reviews:
-            review = str.lower(review).replace(onlyMovieName, "[MASK]")
-            review500 = " ".join(review.split(' ')[:500])  # first 500 words
-            for template in subj_template:
-                choices = sample_choices(all_items, 3, itemFeatures, None)
+            review = str.lower(review).replace(onlyMovieName, "<movie>")
+            review500 = " ".join(review.split(' ')[:128])  # first 500 words
+            templates = random.sample(subj_template, 1)
+            for template in templates:
+                choices = sample_choices(all_items, 2, itemFeatures, None)
                 choices.append(title)
                 random.shuffle(choices)
                 feature_template = template % (review500)
@@ -199,9 +201,9 @@ def create_rq2(item2feature, itemFeatures):
                 result_list.append({'Question': whole_template, 'Answer': answer})
 
     print("RQ2 AVG: " + str(cnt / len(title_quiz_num)))  # 24.2, #TOTAL: 150,360
-    with open('../data/rq2_num.json', 'w', encoding='utf-8') as result_f:
+    with open('data/rq2_num.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(title_quiz_num, indent=4))
-    with open('../data/rq2.json', 'w', encoding='utf-8') as result_f:
+    with open('data/rq2.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(result_list, indent=4))
 
 
@@ -216,7 +218,8 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
 
         for idx in range(4):  # genre, director, actor, writer
             target_features = all_features[idx]
-            for template in item_template[idx]:
+            templates = random.sample(item_template[idx], 1)
+            for template in templates:
                 if idx == 0:
                     if len(target_features) == 0:
                         continue
@@ -261,7 +264,7 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
                         answer_title = "None"
                     else:
                         answer_title = random.sample(genre_items, 1)[0]
-                choices = sample_choices(all_items, 3, itemFeatures, target_features)
+                choices = sample_choices(all_items, 2, itemFeatures, target_features)
                 choices.append(answer_title)
                 random.shuffle(choices)
                 feature_template = template % (title)
@@ -276,14 +279,14 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
                     title_quiz_num[title] += 1
                 result_list.append({'Question': whole_template, 'Answer': answer})
     print("RQ3 AVG: " + str(cnt / len(title_quiz_num)))  # 19.2, TOTAL: 129,690
-    with open('../data/rq3_num.json', 'w', encoding='utf-8') as result_f:
+    with open('data/rq3_num.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(title_quiz_num, indent=4))
-    with open('../data/rq3.json', 'w', encoding='utf-8') as result_f:
+    with open('data/rq3.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(result_list, indent=4))
 
 
 if __name__ == "__main__":
     all_titles, itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature = createSources()
-    create_rq1(item2feature, itemFeatures)
+    # create_rq1(item2feature, itemFeatures)
     create_rq2(item2feature, itemFeatures)
-    create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature)
+    # create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature)
