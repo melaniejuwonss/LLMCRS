@@ -19,6 +19,7 @@ class Textdataset(Dataset):
     def __init__(self, args, instructions, labels, tokenizer):
         self.args = args
         self.instructions = instructions
+        self.labels = labels
         self.tokenizer = tokenizer
 
     def __getitem__(self, idx):
