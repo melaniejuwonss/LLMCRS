@@ -148,6 +148,7 @@ def llama_test(
 
     generated_results = []
     hit, cnt = 0.0, 0.0
+
     for batch in tqdm(dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
         input_ids = tokenizer(batch, padding=True, return_tensors="pt")
         input_ids = input_ids["input_ids"].to(args.device_id)
@@ -163,6 +164,9 @@ def llama_test(
             cnt += 1.0
             hit_ratio = hit / cnt
             args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio}, ensure_ascii=False) + '\n')
+
+        if cnt % 100 == 0 and cnt != 0:
+            print("%.2f" % (hit / cnt))
 
     return generated_results
 
