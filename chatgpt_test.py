@@ -6,7 +6,7 @@ import openai
 import pickle
 import time
 
-openai.api_key = "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"
+openai.api_key = "---"
 
 MODEL = "gpt-3.5-turbo"
 
