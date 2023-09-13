@@ -6,9 +6,11 @@ import openai
 import pickle
 import time
 
+from tqdm import tqdm
+
 from utils.parser import parse_args
 
-openai.api_key = ""
+openai.api_key = "---"
 
 MODEL = "gpt-3.5-turbo"
 
@@ -47,7 +49,7 @@ def chatgpt_test(args,
                  ):
     hit = 0.0
     cnt = args.chatgpt_cnt
-    for instruction, label in zip(instructions[cnt:], labels[cnt:]):
+    for instruction, label in tqdm(zip(instructions[cnt:], labels[cnt:])):
         try:
             response = openai.ChatCompletion.create(
                 model=MODEL,
@@ -60,7 +62,7 @@ def chatgpt_test(args,
 
             response = response['choices'][0]['message']['content']
 
-            movie_name = labels[0].replace('(', ')').split(')')[1].strip().lower()
+            movie_name = label.replace('(', ')').split(')')[1].strip().lower()
             if movie_name in response.lower():
                 hit += 1.0
             cnt += 1.0
