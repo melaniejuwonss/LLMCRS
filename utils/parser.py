@@ -18,6 +18,7 @@ def parse_args():
     parser.add_argument('--model_name', type=str, default='llama')
     parser.add_argument('--log_file', type=str, default='')
     parser.add_argument('--chatgpt_cnt', type=int, default=0)
+    parser.add_argument('--chatgpt_hit', type=int, default=0)
 
     args = parser.parse_args()
     args.device_id = f'cuda:{args.device_id}' if args.device_id else "cpu"
