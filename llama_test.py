@@ -29,7 +29,7 @@ class Textdataset(Dataset):
         return self.instructions[idx], self.labels[idx]
 
     def __len__(self):
-        return len(self.data_samples)
+        return len(self.instructions)
 
 
 def evaluate(
