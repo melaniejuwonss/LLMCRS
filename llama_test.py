@@ -159,7 +159,7 @@ def llama_test(
         generated_results.extend(responses)
         for output, label in zip(responses, labels):
             movie_name = labels[0].replace('(', ')').split(')')[1].strip().lower()
-            if movie_name in output:
+            if movie_name in output.lower():
                 hit += 1.0
             cnt += 1.0
             hit_ratio = hit / cnt
