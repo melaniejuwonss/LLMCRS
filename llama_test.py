@@ -166,7 +166,9 @@ def llama_test(
             hit_ratio = hit / cnt
             # args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio}, ensure_ascii=False) + '\n')
             generated_results.append({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio})
-        args.log_file.write(json.dumps(generated_results, ensure_ascii=False) + '\n')
+
+        for i in generated_results:
+            args.log_file.write(json.dumps(i, ensure_ascii=False) + '\n')
         if cnt % 100 == 0 and cnt != 0:
             print("%.2f" % (hit / cnt))
 
