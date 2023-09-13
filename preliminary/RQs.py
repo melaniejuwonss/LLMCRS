@@ -165,9 +165,9 @@ def create_rq1(item2feature, itemFeatures):
                         title_quiz_num[title] += 1
                     result_list.append({'Question': whole_template, 'Answer': answer})
     print("RQ1 AVG: " + str(cnt / len(title_quiz_num)))  # 41.2, #TOTAL: 278,665
-    with open('data/rq1_num.json', 'w', encoding='utf-8') as result_f:
+    with open('../../data/rq1_num.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(title_quiz_num, indent=4))
-    with open('data/rq1.json', 'w', encoding='utf-8') as result_f:
+    with open('../../data/rq1.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(result_list, indent=4))
 
 
@@ -201,9 +201,9 @@ def create_rq2(item2feature, itemFeatures):
                 result_list.append({'Question': whole_template, 'Answer': answer})
 
     print("RQ2 AVG: " + str(cnt / len(title_quiz_num)))  # 24.2, #TOTAL: 150,360
-    with open('data/rq2_num.json', 'w', encoding='utf-8') as result_f:
+    with open('../../data/rq2_num.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(title_quiz_num, indent=4))
-    with open('data/rq2.json', 'w', encoding='utf-8') as result_f:
+    with open('../../data/rq2.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(result_list, indent=4))
 
 
@@ -279,14 +279,14 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
                     title_quiz_num[title] += 1
                 result_list.append({'Question': whole_template, 'Answer': answer})
     print("RQ3 AVG: " + str(cnt / len(title_quiz_num)))  # 19.2, TOTAL: 129,690
-    with open('data/rq3_num.json', 'w', encoding='utf-8') as result_f:
+    with open('../../data/rq3_num.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(title_quiz_num, indent=4))
-    with open('data/rq3.json', 'w', encoding='utf-8') as result_f:
+    with open('../../data/rq3.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(result_list, indent=4))
 
 
 if __name__ == "__main__":
     all_titles, itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature = createSources()
     # create_rq1(item2feature, itemFeatures)
-    create_rq2(item2feature, itemFeatures)
-    # create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature)
+    # create_rq2(item2feature, itemFeatures)
+    create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature)

@@ -46,8 +46,15 @@ def chatgpt_test(args,
         except:
             print("ERROR hit: %d, cnt: %d" % (hit, cnt))
             print(args.log_file)
-            os.system(f"python main.py --chatgpt_hit={hit} --chatgpt_cnt={cnt} --log_file={args.log_file}")
+            args.chatgpt_hit = hit
+            args.chatgpt_cnt = int(cnt)
+            time.sleep(5)
+            break
+            # os.system(f"python main.py --chatgpt_hit={hit} --chatgpt_cnt={cnt} --log_file={args.log_file}")
             # break
+        openai.api_requestor._thread_context.session.close()
+        if int(cnt) == len(instructions):
+            return False
 
 
 if __name__ == "__main__":
