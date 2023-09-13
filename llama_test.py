@@ -146,25 +146,27 @@ def llama_test(
     instruction_dataset = Textdataset(args, instructions, tokenizer)
     dataloader = DataLoader(instruction_dataset, batch_size=args.batch_size, shuffle=False)
 
-    generated_results = []
+
     hit, cnt = 0.0, 0.0
 
     for batch in tqdm(dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
+        generated_results = []
         input_ids = tokenizer(batch, padding=True, return_tensors="pt")
         input_ids = input_ids["input_ids"].to(args.device_id)
         responses = evaluate(input_ids, tokenizer, prompter, model)
         # print("Instruction:", instruction)
         # print("Response:", response)
         # print("#################################################")
-        generated_results.extend(responses)
+        # generated_results.extend(responses)
         for output, label in zip(responses, labels):
             movie_name = label.replace('(', ')').split(')')[1].strip().lower()
             if movie_name in output.lower():
                 hit += 1.0
             cnt += 1.0
             hit_ratio = hit / cnt
-            args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio}, ensure_ascii=False) + '\n')
-
+            # args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio}, ensure_ascii=False) + '\n')
+            generated_results.append({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio})
+        args.log_file.write(json.dumps(generated_results, ensure_ascii=False) + '\n')
         if cnt % 100 == 0 and cnt != 0:
             print("%.2f" % (hit / cnt))
 
