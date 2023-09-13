@@ -11,6 +11,7 @@ from torch.utils.data import Dataset, DataLoader
 from datetime import datetime
 from pytz import timezone
 
+from chatgpt_test import chatgpt_test
 from llama_test import llama_test
 from utils.data import read_data
 from utils.parser import parse_args
@@ -89,31 +90,15 @@ if __name__ == '__main__':
     result_path = os.path.join(args.output_dir, args.base_model.replace('/', '-'))
     if not os.path.exists(result_path): os.mkdir(result_path)
 
-    log_file = open(os.path.join(result_path, f'rq{args.rq_num}_{mdhm}.json'), 'a', buffering=1, encoding='UTF-8')
-    args.log_file = log_file
+    if args.log_file == '':
+        log_file = open(os.path.join(result_path, f'rq{args.rq_num}_{mdhm}.json'), 'a', buffering=1, encoding='UTF-8')
+        args.log_file = log_file
+
     question_data = read_data(args)
     instructions = [i[0] for i in question_data]
     labels = [i[1] for i in question_data]
-    # question_dataset = Textdataset(question_data)
-    # dataloader = DataLoader(question_dataset, batch_size=args.batch_size, shuffle=False)
 
-    # model_name = args.model_name
-    # tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side="left")
-    # if tokenizer.pad_token is None:
-    #     tokenizer.pad_token_id = (
-    #         0  # unk. we want this to be different from the eos token
-    #     )
-    #     tokenizer.padding_side = "left"  # Allow batched inference
-    # rqDataset = RQ(tokenizer, args)
-    # rqCollator = RQCollator(tokenizer, args)
-    # dataloader = DataLoader(rqDataset, batch_size=args.batch_size, shuffle=False, collate_fn=rqCollator)
-    # # CUDA_LAUNCH_BLOCKING = 1
-
-    # inputs = tokenizer(question, return_tensors="pt", padding=True, return_token_type_ids=False).to(model.device)
-    # print(inputs['input_ids'].shape)
-
-    llama_test(args=args, instructions=instructions, labels=labels)
-    # for batches in tqdm(dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
-    #     with torch.no_grad():
-    #         output_sequences = llama_test(args=args, instructions=batches[0])
-    #         evaluate(output_sequences, batches['answer'], log_file)
+    if 'gpt' in args.base_model.lower():
+        chatgpt_test(args=args, instructions=instructions, labels=labels)
+    if 'llama' in args.base_model.lower():
+        llama_test(args=args, instructions=instructions, labels=labels)

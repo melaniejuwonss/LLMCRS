@@ -168,7 +168,7 @@ def llama_test(
         if cnt % 100 == 0 and cnt != 0:
             print("%.2f" % (hit / cnt))
 
-    return generated_results
+    # return generated_results
 
 
 if __name__ == "__main__":
