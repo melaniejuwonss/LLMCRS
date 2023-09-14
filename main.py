@@ -101,8 +101,7 @@ if __name__ == '__main__':
     labels = [i[1] for i in question_data]
 
     if 'gpt' in args.base_model.lower():
-        while True:
-            if chatgpt_test(args=args, instructions=instructions, labels=labels) == False:
-                break
+        chatgpt_test(args=args, instructions=instructions, labels=labels)
+
     if 'llama' in args.base_model.lower():
         llama_test(args=args, instructions=instructions, labels=labels)

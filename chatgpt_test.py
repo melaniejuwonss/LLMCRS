@@ -15,10 +15,9 @@ openai.api_key = ""
 MODEL = "gpt-3.5-turbo"
 
 
-def chatgpt_test(args,
-                 instructions: list = None,
-                 labels: list = None
-                 ):
+def execute(args,
+            instructions: list = None,
+            labels: list = None):
     hit = args.chatgpt_hit
     cnt = args.chatgpt_cnt
     for instruction, label in tqdm(zip(instructions[cnt:], labels[cnt:]), bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
@@ -55,6 +54,16 @@ def chatgpt_test(args,
         openai.api_requestor._thread_context.session.close()
         if int(cnt) == len(instructions):
             return False
+
+
+def chatgpt_test(args,
+                 instructions: list = None,
+                 labels: list = None
+                 ):
+    print('CHATGPT_TEST_START')
+    while True:
+        if execute(args=args, instructions=instructions, labels=labels) == False:
+            break
 
 
 if __name__ == "__main__":
