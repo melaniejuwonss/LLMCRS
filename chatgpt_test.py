@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 from utils.parser import parse_args
 
-openai.api_key = ""
+
 
 MODEL = "gpt-3.5-turbo"
 
@@ -18,6 +18,7 @@ MODEL = "gpt-3.5-turbo"
 def execute(args,
             instructions: list = None,
             labels: list = None):
+    openai.api_key = args.chatgpt_key
     hit = args.chatgpt_hit
     cnt = args.chatgpt_cnt
     for instruction, label in tqdm(zip(instructions[cnt:], labels[cnt:]), bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
@@ -51,7 +52,7 @@ def execute(args,
             break
             # os.system(f"python main.py --chatgpt_hit={hit} --chatgpt_cnt={cnt} --log_file={args.log_file}")
             # break
-        openai.api_requestor._thread_context.session.close()
+        # openai.api_requestor._thread_context.session.close()
         if int(cnt) == len(instructions):
             return False
 
