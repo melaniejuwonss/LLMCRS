@@ -95,6 +95,7 @@ def llama_finetune(
     ), "Please specify a --base_model, e.g. --base_model='huggyllama/llama-7b'"
     # gradient_accumulation_steps = batch_size // micro_batch_size
     gradient_accumulation_steps = args.num_device
+    micro_batch_size = batch_size // micro_batch_size
 
     prompter = Prompter(prompt_template_name)
 
