@@ -98,13 +98,13 @@ def llama_finetune(
     prompter = Prompter(prompt_template_name)
 
     device_map = "auto"
-    device_map = {
-        "transformer.word_embeddings": 0,
-        "transformer.word_embeddings_layernorm": 0,
-        "lm_head": "cpu",
-        "transformer.h": 0,
-        "transformer.ln_f": 0,
-    }
+    # device_map = {
+    #     "transformer.word_embeddings": 0,
+    #     "transformer.word_embeddings_layernorm": 0,
+    #     "lm_head": "cpu",
+    #     "transformer.h": 0,
+    #     "transformer.ln_f": 0,
+    # }
 
     world_size = int(os.environ.get("WORLD_SIZE", 1))
     ddp = world_size != 1
@@ -210,6 +210,7 @@ def llama_finetune(
         base_model,
         load_in_8bit=True,
         # load_in_8bit_fp32_cpu_offload=True,
+        # llm_int8_enable_fp32_cpu_offload=True,
         torch_dtype=torch.float16,
         device_map=device_map,
         # quantization_config=quantization_config,
