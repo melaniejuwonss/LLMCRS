@@ -212,7 +212,7 @@ def llama_finetune(
         # load_in_8bit_fp32_cpu_offload=True,
         # llm_int8_enable_fp32_cpu_offload=True,
         torch_dtype=torch.float16,
-        device_map=args.device_id,
+        device_map=device_map,
         # quantization_config=quantization_config,
     )  # .to(args.device_id)
 
@@ -255,10 +255,10 @@ def llama_finetune(
 
     model.print_trainable_parameters()  # Be more transparent about the % of trainable params.
 
-    if not ddp and torch.cuda.device_count() > 1:
-        # keeps Trainer from trying its own DataParallelism when more than 1 gpu is available
-        model.is_parallelizable = True
-        model.model_parallel = True
+    # if not ddp and torch.cuda.device_count() > 1:
+    #     # keeps Trainer from trying its own DataParallelism when more than 1 gpu is available
+    #     model.is_parallelizable = True
+    #     model.model_parallel = True
 
     trainer = transformers.Trainer(
         model=model,
