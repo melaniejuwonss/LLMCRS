@@ -97,14 +97,14 @@ def llama_finetune(
 
     prompter = Prompter(prompt_template_name)
 
-    device_map = "auto"
-    # device_map = {
-    #     "transformer.word_embeddings": 0,
-    #     "transformer.word_embeddings_layernorm": 0,
-    #     "lm_head": "cpu",
-    #     "transformer.h": 0,
-    #     "transformer.ln_f": 0,
-    # }
+    # device_map = "auto"
+    device_map = {
+        "transformer.word_embeddings": args.device_id,
+        "transformer.word_embeddings_layernorm": args.device_id,
+        "lm_head": "cpu",
+        "transformer.h": args.device_id,
+        "transformer.ln_f": args.device_id,
+    }
 
     world_size = int(os.environ.get("WORLD_SIZE", 1))
     ddp = world_size != 1
@@ -255,10 +255,10 @@ def llama_finetune(
 
     model.print_trainable_parameters()  # Be more transparent about the % of trainable params.
 
-    # if not ddp and torch.cuda.device_count() > 1:
-    #     # keeps Trainer from trying its own DataParallelism when more than 1 gpu is available
-    #     model.is_parallelizable = True
-    #     model.model_parallel = True
+    if not ddp and torch.cuda.device_count() > 1:
+        # keeps Trainer from trying its own DataParallelism when more than 1 gpu is available
+        model.is_parallelizable = True
+        model.model_parallel = True
 
     trainer = transformers.Trainer(
         model=model,
