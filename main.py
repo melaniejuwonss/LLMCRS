@@ -12,6 +12,7 @@ from datetime import datetime
 from pytz import timezone
 
 from chatgpt_test import chatgpt_test
+from llama_finetune import llama_finetune
 from llama_test import llama_test
 from utils.data import read_data
 from utils.parser import parse_args
@@ -104,4 +105,7 @@ if __name__ == '__main__':
         chatgpt_test(args=args, instructions=instructions, labels=labels)
 
     if 'llama' in args.base_model.lower():
+        if 'train' in args.mode:
+            llama_finetune(args=args, instructions=instructions, labels=labels)
         llama_test(args=args, instructions=instructions, labels=labels)
+
