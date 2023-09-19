@@ -104,7 +104,8 @@ def llama_finetune(
         "lm_head": "cpu",
         "transformer.h": args.device_id,
         "transformer.ln_f": args.device_id,
-        "model.embed_tokens": args.device_id,
+        # "model.embed_tokens": args.device_id,
+        "model": args.device_id
     }
 
     world_size = int(os.environ.get("WORLD_SIZE", 1))
