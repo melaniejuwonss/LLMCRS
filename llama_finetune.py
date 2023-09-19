@@ -212,9 +212,9 @@ def llama_finetune(
         # load_in_8bit_fp32_cpu_offload=True,
         # llm_int8_enable_fp32_cpu_offload=True,
         torch_dtype=torch.float16,
-        # device_map=device_map,
+        device_map=device_map,
         # quantization_config=quantization_config,
-    ).to(args.device_id)
+    )  # .to(args.device_id)
 
     tokenizer.pad_token_id = (
         0  # unk. we want this to be different from the eos token
@@ -313,4 +313,5 @@ def llama_finetune(
 if __name__ == "__main__":
     # fire.Fire(llama_finetune)
     args = parse_args()
+    os.environ['CUDA_VISIBLE_DEVICES'] = args.device_id
     llama_finetune(args)
