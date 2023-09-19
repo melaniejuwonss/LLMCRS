@@ -24,8 +24,8 @@ def parse_args():
     parser.add_argument('--mode', type=str, default='test', choices=['train', 'test'])
 
     args = parser.parse_args()
-    args.device_id = f'cuda:{args.device_id}' if args.device_id else "cpu"
-    # os.environ['CUDA_VISIBLE_DEVICES'] = args.device_id
+    # args.device_id = f'cuda:{args.device_id}' if args.device_id else "cpu"
+    os.environ['CUDA_VISIBLE_DEVICES'] = args.device_id
 
     args.output_dir = 'result'
     if not os.path.exists(args.output_dir): os.mkdir(args.output_dir)

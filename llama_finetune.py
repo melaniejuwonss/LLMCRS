@@ -97,16 +97,16 @@ def llama_finetune(
 
     prompter = Prompter(prompt_template_name)
 
-    # device_map = "auto"
-    device_map = {
-        "transformer.word_embeddings": args.device_id,
-        "transformer.word_embeddings_layernorm": args.device_id,
-        "lm_head": "cpu",
-        "transformer.h": args.device_id,
-        "transformer.ln_f": args.device_id,
-        # "model.embed_tokens": args.device_id,
-        "model": args.device_id
-    }
+    device_map = "auto"
+    # device_map = {
+    #     "transformer.word_embeddings": args.device_id,
+    #     "transformer.word_embeddings_layernorm": args.device_id,
+    #     "lm_head": "cpu",
+    #     "transformer.h": args.device_id,
+    #     "transformer.ln_f": args.device_id,
+    #     # "model.embed_tokens": args.device_id,
+    #     "model": args.device_id
+    # }
 
     world_size = int(os.environ.get("WORLD_SIZE", 1))
     ddp = world_size != 1
