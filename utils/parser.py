@@ -29,6 +29,8 @@ def parse_args():
     args.output_dir = 'result'
     if not os.path.exists(args.output_dir): os.mkdir(args.output_dir)
 
+    os.environ['CUDA_VISIBLE_DEVICES'] = args.device_id
+
     print(args)
     # logging.info(args)
     return args
