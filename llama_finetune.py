@@ -2,7 +2,6 @@ import os
 import sys
 from typing import List
 import pandas as pd
-import fire
 import torch
 import transformers
 from datasets import load_dataset, Dataset
