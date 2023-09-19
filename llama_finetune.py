@@ -216,7 +216,7 @@ def llama_finetune(
         torch_dtype=torch.float16,
         device_map=device_map,
         # quantization_config=quantization_config,
-    )  # .to(args.device_id)
+    ).to(args.device_id)
 
     tokenizer.pad_token_id = (
         0  # unk. we want this to be different from the eos token
