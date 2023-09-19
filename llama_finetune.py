@@ -36,7 +36,6 @@ def llama_finetune(
         output_dir: str = "./lora-alpaca",
         # training hyperparams
         batch_size: int = 128,
-        micro_batch_size: int = 4,
         num_epochs: int = 3,
         learning_rate: float = 3e-4,
         cutoff_len: int = 256,
@@ -63,6 +62,8 @@ def llama_finetune(
 ):
     base_model = args.base_model
     batch_size = args.batch_size
+    gradient_accumulation_steps = args.num_device  # update the model's weights once every gradient_accumulation_steps batches instead of updating the weights after every batch.
+    per_device_train_batch_size = batch_size // args.num_device
 
     if int(os.environ.get("LOCAL_RANK", 0)) == 0:
         print(
@@ -71,7 +72,7 @@ def llama_finetune(
             f"data_path: {data_path}\n"
             f"output_dir: {output_dir}\n"
             f"batch_size: {batch_size}\n"
-            f"micro_batch_size: {micro_batch_size}\n"
+            f"per_device_train_batch_size: {per_device_train_batch_size}\n"
             f"num_epochs: {num_epochs}\n"
             f"learning_rate: {learning_rate}\n"
             f"cutoff_len: {cutoff_len}\n"
@@ -94,8 +95,6 @@ def llama_finetune(
         base_model
     ), "Please specify a --base_model, e.g. --base_model='huggyllama/llama-7b'"
     # gradient_accumulation_steps = batch_size // micro_batch_size
-    gradient_accumulation_steps = args.num_device
-    micro_batch_size = batch_size // micro_batch_size
 
     prompter = Prompter(prompt_template_name)
 
@@ -269,7 +268,7 @@ def llama_finetune(
         train_dataset=train_data,
         eval_dataset=val_data,
         args=transformers.TrainingArguments(
-            per_device_train_batch_size=micro_batch_size,
+            per_device_train_batch_size=per_device_train_batch_size,
             gradient_accumulation_steps=gradient_accumulation_steps,
             warmup_steps=100,
             num_train_epochs=num_epochs,
