@@ -97,7 +97,7 @@ def llama_finetune(
 
     prompter = Prompter(prompt_template_name)
 
-    device_map = "auto"
+    device_map = "sequential"
     # device_map = {
     #     "transformer.word_embeddings": args.device_id,
     #     "transformer.word_embeddings_layernorm": args.device_id,
