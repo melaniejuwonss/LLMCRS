@@ -40,11 +40,11 @@ from utils.prompter import Prompter
 class QueryEvalCallback(TrainerCallback):
 
     def on_evaluate(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
-        trainer = kwargs['trainer']
+        # trainer = kwargs['trainer']
         logs = kwargs['logs']
         print("==============================Evaluate step==============================")
-        predictions, labels = trainer.predict(trainer.eval_dataset)
-        print(predictions.size())
+        # predictions, labels = trainer.predict(trainer.eval_dataset)
+        # print(predictions.size())
         print(logs)
         print("==============================End of evaluate step==============================")
 
