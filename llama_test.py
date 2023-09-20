@@ -41,11 +41,9 @@ def evaluate(
         temperature=0.1,
         top_p=0.75,
         top_k=40,
-        num_beams=4,
+        num_beams=4, # todo: beam 1개로 바꿔보기
         max_new_tokens=50,
         **kwargs):
-    # prompt = prompter.generate_prompt(instruction, input)
-
     generation_config = GenerationConfig(
         temperature=temperature,
         top_p=top_p,
@@ -53,14 +51,6 @@ def evaluate(
         num_beams=num_beams,
         **kwargs,
     )
-
-    # generate_params = {
-    #     "input_ids": input_ids,
-    #     "generation_config": generation_config,
-    #     "return_dict_in_generate": True,
-    #     "output_scores": True,
-    #     "max_new_tokens": max_new_tokens,
-    # }
 
     # Without streaming
     with torch.no_grad():
@@ -146,7 +136,6 @@ def llama_test(
     instructions = [prompter.generate_prompt(i) for i in instructions]
     instruction_dataset = Textdataset(args, instructions, labels, tokenizer)
     dataloader = DataLoader(instruction_dataset, batch_size=args.batch_size, shuffle=False)
-
 
     hit, cnt = 0.0, 0.0
 

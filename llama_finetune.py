@@ -5,6 +5,7 @@ import pandas as pd
 import torch
 import transformers
 from datasets import load_dataset, Dataset
+from transformers import Trainer, TrainingArguments
 
 from utils.parser import parse_args
 
@@ -21,9 +22,20 @@ from peft import (
     prepare_model_for_int8_training,
     set_peft_model_state_dict,
 )
-from transformers import LlamaForCausalLM, LlamaTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+from transformers import LlamaForCausalLM, LlamaTokenizer, AutoModelForCausalLM, BitsAndBytesConfig, TrainerCallback
 
 from utils.prompter import Prompter
+
+
+class CustomTrainer(Trainer):
+    def compute_metrics(self, eval_pred):
+        print(eval_pred)
+        # predictions, labels = eval_pred
+        # predictions = np.argmax(predictions, axis=-1)  # 클래스 ID로 변환
+        #
+        # # 디코딩 및 사용자 정의 평가 메트릭 계산 코드 작성
+        # # 여기에서는 예시로 정확도만 계산했지만, 여러분이 원하는 어떤 평가 메트릭도 추가할 수 있습니다.
+        # return {'accuracy': accuracy_score(labels, predictions)}
 
 
 def llama_finetune(
@@ -263,10 +275,10 @@ def llama_finetune(
         model.is_parallelizable = True
         model.model_parallel = True
 
-    trainer = transformers.Trainer(
+    trainer = CustomTrainer(
         model=model,
         train_dataset=train_data,
-        eval_dataset=val_data,
+        # eval_dataset=val_data,
         args=transformers.TrainingArguments(
             per_device_train_batch_size=per_device_train_batch_size,
             gradient_accumulation_steps=gradient_accumulation_steps,
