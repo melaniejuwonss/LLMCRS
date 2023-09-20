@@ -41,7 +41,7 @@ class QueryEvalCallback(TrainerCallback):
     def __init__(self, evaluator):
         self.evaluator = evaluator
 
-    def on_evaluate(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
+    def on_epoch_end(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
         # trainer = kwargs['trainer']
         # logs = kwargs['logs']
         model = kwargs['model']
@@ -295,7 +295,7 @@ def llama_finetune(
     trainer = Trainer(
         model=model,
         train_dataset=train_data,
-        # eval_dataset=val_data,
+        eval_dataset=val_data,
         args=transformers.TrainingArguments(
             per_device_train_batch_size=per_device_train_batch_size,
             gradient_accumulation_steps=gradient_accumulation_steps,

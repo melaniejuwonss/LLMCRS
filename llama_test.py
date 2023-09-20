@@ -97,7 +97,7 @@ class LLaMaEvaluator:
 
         instructions = [self.prompter.generate_prompt(i) for i in self.instructions]
         instruction_dataset = Textdataset(self.args, instructions, self.labels, self.tokenizer)
-        dataloader = DataLoader(instruction_dataset, batch_size=self.args.batch_size, shuffle=False)
+        dataloader = DataLoader(instruction_dataset, batch_size=self.args.eval_batch_size, shuffle=False)
 
         return dataloader
 
