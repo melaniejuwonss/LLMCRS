@@ -55,6 +55,7 @@ class QueryEvalCallback(TrainerCallback):
 
 def llama_finetune(
         args,
+        tokenizer,
         instructions: list = None,
         labels: list = None,
         # model/data params
@@ -160,7 +161,7 @@ def llama_finetune(
     #     torch_dtype=torch.float16,
     #     # device_map='auto'
     # ).to(args.device_id)
-    tokenizer = LlamaTokenizer.from_pretrained(base_model)
+    # tokenizer = LlamaTokenizer.from_pretrained(base_model)
 
     def tokenize(prompt, add_eos_token=True):
         # there's probably a way to do this with the tokenizer settings
