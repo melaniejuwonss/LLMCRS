@@ -5,6 +5,8 @@ import os.path as osp
 from typing import Union
 import os
 
+import torch
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -30,6 +32,7 @@ def parse_args():
     args = parser.parse_args()
     args.device_id = f'cuda:{args.device_id}' if args.device_id else "cpu"
     # os.environ['CUDA_VISIBLE_DEVICES'] = args.device_id
+    args.num_device = torch.cuda.device_count()
 
     args.output_dir = 'result'
     if not os.path.exists(args.output_dir): os.mkdir(args.output_dir)
