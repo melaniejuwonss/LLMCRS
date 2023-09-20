@@ -51,7 +51,7 @@ def llama_finetune(
         num_epochs: int = 3,
         learning_rate: float = 3e-4,
         cutoff_len: int = 256,
-        val_set_size: int = 2000,
+        val_set_size: int = 200,
         # lora hyperparams
         lora_r: int = 8,
         lora_alpha: int = 16,
@@ -277,8 +277,8 @@ def llama_finetune(
 
     trainer = CustomTrainer(
         model=model,
-        train_dataset=data,
-        eval_dataset=data,
+        train_dataset=train_data,
+        eval_dataset=val_data,
         args=transformers.TrainingArguments(
             per_device_train_batch_size=per_device_train_batch_size,
             gradient_accumulation_steps=gradient_accumulation_steps,
