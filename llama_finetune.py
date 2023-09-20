@@ -5,7 +5,7 @@ import pandas as pd
 import torch
 import transformers
 from datasets import load_dataset, Dataset
-from transformers import Trainer, TrainingArguments
+from transformers import Trainer, TrainingArguments, TrainerState, TrainerControl
 
 from utils.parser import parse_args
 
@@ -39,7 +39,7 @@ from utils.prompter import Prompter
 
 class QueryEvalCallback(TrainerCallback):
 
-    def on_epoch_end(self, args, state, control, **kwargs):
+    def on_evaluate(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
         trainer = kwargs['trainer']
         logs = kwargs['logs']
         print("==============================Evaluate step==============================")
