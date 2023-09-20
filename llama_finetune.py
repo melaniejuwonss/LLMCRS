@@ -39,9 +39,9 @@ from utils.prompter import Prompter
 
 class QueryEvalCallback(TrainerCallback):
     def __init__(self, evaluator):
-        self.evaluator = evaluator
+        self.evaluator = evaluator(self.v)
 
-    def on_epoch_end(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
+    def on_evaluate(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
         # trainer = kwargs['trainer']
         # logs = kwargs['logs']
         model = kwargs['model']

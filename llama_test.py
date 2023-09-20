@@ -43,12 +43,16 @@ class LLaMaEvaluator:
         self.dataloader = self.prepare_dataloader()
         # self.model = self.prepare_model()
 
+    def set_dataloader(self, dataloader):
+        self.dataloader = dataloader
+
     def prepare_model(self,
                       load_8bit: bool = False,
                       base_model: str = "",
                       lora_weights: str = "tloen/alpaca-lora-7b",
                       server_name: str = "0.0.0.0",  # Allows to listen on all interfaces by providing '0.
                       share_gradio: bool = False, ):
+        print('prepare new model for evaluating')
         base_model = self.args.base_model
         assert (
             base_model
