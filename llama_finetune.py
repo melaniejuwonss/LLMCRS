@@ -39,7 +39,7 @@ from utils.prompter import Prompter
 
 class QueryEvalCallback(TrainerCallback):
     def __init__(self, evaluator):
-        self.evaluator = evaluator(self.v)
+        self.evaluator = evaluator
 
     def on_evaluate(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
         # trainer = kwargs['trainer']
