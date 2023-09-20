@@ -27,15 +27,26 @@ from transformers import LlamaForCausalLM, LlamaTokenizer, AutoModelForCausalLM,
 from utils.prompter import Prompter
 
 
-class CustomTrainer(Trainer):
-    def compute_metrics(self, eval_pred):
-        print(eval_pred)
-        # predictions, labels = eval_pred
-        # predictions = np.argmax(predictions, axis=-1)  # 클래스 ID로 변환
-        #
-        # # 디코딩 및 사용자 정의 평가 메트릭 계산 코드 작성
-        # # 여기에서는 예시로 정확도만 계산했지만, 여러분이 원하는 어떤 평가 메트릭도 추가할 수 있습니다.
-        # return {'accuracy': accuracy_score(labels, predictions)}
+# class CustomTrainer(Trainer):
+#     def compute_metrics(self, eval_pred):
+#         print(eval_pred)
+#         # predictions, labels = eval_pred
+#         # predictions = np.argmax(predictions, axis=-1)  # 클래스 ID로 변환
+#         #
+#         # # 디코딩 및 사용자 정의 평가 메트릭 계산 코드 작성
+#         # # 여기에서는 예시로 정확도만 계산했지만, 여러분이 원하는 어떤 평가 메트릭도 추가할 수 있습니다.
+#         # return {'accuracy': accuracy_score(labels, predictions)}
+
+class QueryEvalCallback(TrainerCallback):
+
+    def on_epoch_end(self, args, state, control, **kwargs):
+        trainer = kwargs['trainer']
+        logs = kwargs['logs']
+        print("==============================Evaluate step==============================")
+        predictions, labels = trainer.predict(trainer.eval_dataset)
+        print(predictions.size())
+        print(logs)
+        print("==============================End of evaluate step==============================")
 
 
 def llama_finetune(
@@ -275,7 +286,7 @@ def llama_finetune(
         model.is_parallelizable = True
         model.model_parallel = True
 
-    trainer = CustomTrainer(
+    trainer = Trainer(
         model=model,
         train_dataset=train_data,
         eval_dataset=val_data,
