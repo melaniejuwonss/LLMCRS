@@ -38,14 +38,18 @@ from utils.prompter import Prompter
 #         # return {'accuracy': accuracy_score(labels, predictions)}
 
 class QueryEvalCallback(TrainerCallback):
+    def __init__(self, evaluator):
+        self.evaluator = evaluator
 
     def on_evaluate(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
         # trainer = kwargs['trainer']
         # logs = kwargs['logs']
+        model = kwargs['model']
         print("==============================Evaluate step==============================")
         # predictions, labels = trainer.predict(trainer.eval_dataset)
         # print(predictions.size())
-        print(kwargs)
+        self.evaluator.test(model)
+        # print(kwargs)
         print("==============================End of evaluate step==============================")
 
 
@@ -62,7 +66,7 @@ def llama_finetune(
         num_epochs: int = 3,
         learning_rate: float = 3e-4,
         cutoff_len: int = 256,
-        val_set_size: int = 200,
+        val_set_size: int = 0,
         # lora hyperparams
         lora_r: int = 8,
         lora_alpha: int = 16,
@@ -289,7 +293,7 @@ def llama_finetune(
     trainer = Trainer(
         model=model,
         train_dataset=train_data,
-        eval_dataset=val_data,
+        # eval_dataset=val_data,
         args=transformers.TrainingArguments(
             per_device_train_batch_size=per_device_train_batch_size,
             gradient_accumulation_steps=gradient_accumulation_steps,
@@ -299,13 +303,13 @@ def llama_finetune(
             fp16=True,
             logging_steps=10,
             optim="adamw_torch",
-            evaluation_strategy="steps" if val_set_size > 0 else "no",
+            evaluation_strategy="steps", #if val_set_size > 0 else "no",
             save_strategy="steps",
-            eval_steps=5 if val_set_size > 0 else None,
+            eval_steps=5, #if val_set_size > 0 else None,
             save_steps=200,
             output_dir=output_dir,
             save_total_limit=3,
-            load_best_model_at_end=True if val_set_size > 0 else False,
+            # load_best_model_at_end=True if val_set_size > 0 else False,
             ddp_find_unused_parameters=False if ddp else None,
             group_by_length=group_by_length,
             report_to="wandb" if use_wandb else None,

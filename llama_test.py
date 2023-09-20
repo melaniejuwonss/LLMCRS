@@ -32,136 +32,138 @@ class Textdataset(Dataset):
         return len(self.instructions)
 
 
-def evaluate(
-        input_ids,
-        tokenizer,
-        prompter,
-        model,
-        input=None,
-        temperature=0.1,
-        top_p=0.75,
-        top_k=40,
-        num_beams=4, # todo: beam 1개로 바꿔보기
-        max_new_tokens=50,
-        **kwargs):
-    generation_config = GenerationConfig(
-        temperature=temperature,
-        top_p=top_p,
-        top_k=top_k,
-        num_beams=num_beams,
-        **kwargs,
-    )
+class LLaMaEvaluator:
+    def __init__(self, args, tokenizer, instructions: list = None, labels: list = None, prompt_template: str = ""):
+        self.args = args
+        self.instructions = instructions
+        self.labels = labels
+        self.tokenizer = tokenizer  # , LlamaTokenizer.from_pretrained(self.args.base_model)
+        self.prompter = Prompter(args, prompt_template)
 
-    # Without streaming
-    with torch.no_grad():
-        # generation_output = model.generate(
-        #     return_dict_in_generate=True,
-        #     input_ids=input_ids,
-        #     max_new_tokens=5,
-        #
-        # )
-        generation_output = model.generate(
-            input_ids=input_ids,
-            generation_config=generation_config,
-            return_dict_in_generate=True,
-            output_scores=True,
-            max_new_tokens=max_new_tokens,
+        self.dataloader = self.prepare_dataloader()
+        # self.model = self.prepare_model()
+
+    def prepare_model(self,
+                      load_8bit: bool = False,
+                      base_model: str = "",
+                      lora_weights: str = "tloen/alpaca-lora-7b",
+                      server_name: str = "0.0.0.0",  # Allows to listen on all interfaces by providing '0.
+                      share_gradio: bool = False, ):
+        base_model = self.args.base_model
+        assert (
+            base_model
+        ), "Please specify a --base_model, e.g. --base_model='huggyllama/llama-7b'"
+
+        if device == "cuda":
+            model = LlamaForCausalLM.from_pretrained(
+                base_model,
+                load_in_8bit=load_8bit,
+                torch_dtype=torch.float16,
+                device_map='auto'
+            )  # .to(self.args.device_id)
+
+            # todo: For evaluating the PEFT model
+            # model = PeftModel.from_pretrained(
+            #     model,
+            #     lora_weights,
+            #     torch_dtype=torch.float16,
+            # )
+        else:
+            model = LlamaForCausalLM.from_pretrained(
+                base_model, device_map={"": device}, low_cpu_mem_usage=True
+            )
+            model = PeftModel.from_pretrained(
+                model,
+                lora_weights,
+                device_map={"": device},
+            )
+
+        # unwind broken decapoda-research config
+        model.config.pad_token_id = self.tokenizer.pad_token_id = 0  # unk
+        model.config.bos_token_id = 1
+        model.config.eos_token_id = 2
+
+        if not load_8bit:
+            model.half()  # seems to fix bugs for some users.
+
+        return model
+
+    def prepare_dataloader(self):
+        self.tokenizer.padding_side = 'left'
+
+        instructions = [self.prompter.generate_prompt(i) for i in self.instructions]
+        instruction_dataset = Textdataset(self.args, instructions, self.labels, self.tokenizer)
+        dataloader = DataLoader(instruction_dataset, batch_size=self.args.batch_size, shuffle=False)
+
+        return dataloader
+
+    def evaluate(self,
+                 input_ids,
+                 attention_mask,
+                 model,
+                 input=None,
+                 temperature=0.1,
+                 top_p=0.75,
+                 top_k=40,
+                 num_beams=4,  # todo: beam 1개로 바꿔보기
+                 max_new_tokens=50,
+                 **kwargs):
+        generation_config = GenerationConfig(
+            temperature=temperature,
+            top_p=top_p,
+            top_k=top_k,
+            num_beams=num_beams,
+            **kwargs,
         )
-    s = generation_output.sequences
-    output = tokenizer.batch_decode(s, skip_special_tokens=True)
-    return [prompter.get_response(i) for i in output]
 
+        with torch.no_grad():
+            generation_output = model.generate(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+                generation_config=generation_config,
+                return_dict_in_generate=True,
+                output_scores=True,
+                max_new_tokens=max_new_tokens,
+            )
+        s = generation_output.sequences
+        output = self.tokenizer.batch_decode(s, skip_special_tokens=True)
+        return [self.prompter.get_response(i) for i in output]
 
-def llama_test(
-        args,
-        instructions: list = None,
-        labels: list = None,
-        load_8bit: bool = False,
-        base_model: str = "",
-        lora_weights: str = "tloen/alpaca-lora-7b",
-        prompt_template: str = "",  # The prompt template to use, will default to alpaca.
-        server_name: str = "0.0.0.0",  # Allows to listen on all interfaces by providing '0.
-        share_gradio: bool = False,
-):
-    base_model = args.base_model
-    assert (
-        base_model
-    ), "Please specify a --base_model, e.g. --base_model='huggyllama/llama-7b'"
+    def test(self, model=None):
+        if model is None:
+            model = self.prepare_model()
 
-    prompter = Prompter(args, prompt_template)
-    if device == "cuda":
-        model = LlamaForCausalLM.from_pretrained(
-            base_model,
-            load_in_8bit=load_8bit,
-            torch_dtype=torch.float16,
-            # device_map='auto'
-        ).to(args.device_id)
-        # model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16).to("cuda")
+        model.eval()
+        if torch.__version__ >= "2" and sys.platform != "win32":
+            model = torch.compile(model)
 
-        # model = PeftModel.from_pretrained(
-        #     model,
-        #     lora_weights,
-        #     torch_dtype=torch.float16,
-        # )
-    else:
-        model = LlamaForCausalLM.from_pretrained(
-            base_model, device_map={"": device}, low_cpu_mem_usage=True
-        )
-        model = PeftModel.from_pretrained(
-            model,
-            lora_weights,
-            device_map={"": device},
-        )
-    tokenizer = LlamaTokenizer.from_pretrained(base_model)
+        hit, cnt = 0.0, 0.0
 
-    # unwind broken decapoda-research config
-    model.config.pad_token_id = tokenizer.pad_token_id = 0  # unk
-    model.config.bos_token_id = 1
-    model.config.eos_token_id = 2
+        for batch in tqdm(self.dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
+            generated_results = []
+            batched_inputs = self.tokenizer(batch[0], padding=True, return_tensors="pt")
+            input_ids = batched_inputs["input_ids"].to(self.args.device_id)
+            attention_mask = batched_inputs["attention_mask"].to(self.args.device_id)
 
-    if not load_8bit:
-        model.half()  # seems to fix bugs for some users.
+            responses = self.evaluate(input_ids, attention_mask, model)
+            labels = batch[1]
+            # print("Instruction:", instruction)
+            # print("Response:", response)
+            # print("#################################################")
+            # generated_results.extend(responses)
+            for output, label in zip(responses, labels):
+                movie_name = label.replace('(', ')').split(')')[1].strip().lower()
+                if movie_name in output.lower():
+                    hit += 1.0
+                cnt += 1.0
+                hit_ratio = hit / cnt
+                # args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio}, ensure_ascii=False) + '\n')
+                generated_results.append({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio})
 
-    model.eval()
-    if torch.__version__ >= "2" and sys.platform != "win32":
-        model = torch.compile(model)
-    tokenizer.padding_side = 'left'
-
-    # testing code for readme
-    if instructions is None:
-        instructions = [
-            "The following multiple-choice quiz has 4 choices (a,b,c,d). Select the best answer from the given choices. Which film was scripted by Chris Buck? a) monty python and the holy grail (1975) b) winter soldier (1972) c) the net (1995) d) frozen (2013)\n"
-        ]
-
-    instructions = [prompter.generate_prompt(i) for i in instructions]
-    instruction_dataset = Textdataset(args, instructions, labels, tokenizer)
-    dataloader = DataLoader(instruction_dataset, batch_size=args.batch_size, shuffle=False)
-
-    hit, cnt = 0.0, 0.0
-
-    for batch in tqdm(dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
-        generated_results = []
-        input_ids = tokenizer(batch[0], padding=True, return_tensors="pt")
-        input_ids = input_ids["input_ids"].to(args.device_id)
-        responses = evaluate(input_ids, tokenizer, prompter, model)
-        labels = batch[1]
-        # print("Instruction:", instruction)
-        # print("Response:", response)
-        # print("#################################################")
-        # generated_results.extend(responses)
-        for output, label in zip(responses, labels):
-            movie_name = label.replace('(', ')').split(')')[1].strip().lower()
-            if movie_name in output.lower():
-                hit += 1.0
-            cnt += 1.0
-            hit_ratio = hit / cnt
-            # args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio}, ensure_ascii=False) + '\n')
-            generated_results.append({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio})
-
-        for i in generated_results:
-            args.log_file.write(json.dumps(i, ensure_ascii=False) + '\n')
-        if cnt % 100 == 0 and cnt != 0:
-            print("%.4f" % (hit / cnt))
+            for i in generated_results:
+                args.log_file.write(json.dumps(i, ensure_ascii=False) + '\n')
+            if cnt % 100 == 0 and cnt != 0:
+                print("%.4f" % (hit / cnt))
 
     # return generated_results
 

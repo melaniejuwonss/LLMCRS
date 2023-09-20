@@ -1,7 +1,7 @@
 import os
 
 from tqdm import tqdm
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaTokenizer
 import transformers
 import torch
 import json
@@ -13,7 +13,7 @@ from pytz import timezone
 
 from chatgpt_test import chatgpt_test
 from llama_finetune import llama_finetune
-from llama_test import llama_test
+from llama_test import LLaMaEvaluator
 from utils.data import read_data
 from utils.parser import parse_args
 
@@ -105,7 +105,10 @@ if __name__ == '__main__':
         chatgpt_test(args=args, instructions=instructions, labels=labels)
 
     if 'llama' in args.base_model.lower():
-        if 'train' in args.mode:
-            llama_finetune(args=args, instructions=instructions[:2500], labels=labels[:2500])
-        llama_test(args=args, instructions=instructions, labels=labels)
+        tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
 
+        evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions[:100], labels=labels[:100])
+        if 'train' in args.mode:
+            llama_finetune(args=args, tokenizer=tokenizer, instructions=instructions[:2500], labels=labels[:2500])
+        if 'test' == args.mode:
+            evaluator.test()
