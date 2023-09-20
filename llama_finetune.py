@@ -41,7 +41,7 @@ class QueryEvalCallback(TrainerCallback):
     def __init__(self, evaluator):
         self.evaluator = evaluator
 
-    def on_evaluate(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
+    def on_epoch_end(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
         # trainer = kwargs['trainer']
         # logs = kwargs['logs']
         model = kwargs['model']
@@ -305,13 +305,13 @@ def llama_finetune(
             fp16=True,
             logging_steps=10,
             optim="adamw_torch",
-            evaluation_strategy="steps", #if val_set_size > 0 else "no",
+            evaluation_strategy="steps" if val_set_size > 0 else "no",
             save_strategy="steps",
-            eval_steps=5, #if val_set_size > 0 else None,
+            eval_steps=5 if val_set_size > 0 else None,
             save_steps=200,
             output_dir=output_dir,
             save_total_limit=3,
-            # load_best_model_at_end=True if val_set_size > 0 else False,
+            load_best_model_at_end=True if val_set_size > 0 else False,
             ddp_find_unused_parameters=False if ddp else None,
             group_by_length=group_by_length,
             report_to="wandb" if use_wandb else None,
