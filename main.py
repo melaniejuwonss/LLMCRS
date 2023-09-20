@@ -106,6 +106,6 @@ if __name__ == '__main__':
 
     if 'llama' in args.base_model.lower():
         if 'train' in args.mode:
-            llama_finetune(args=args, instructions=instructions[:100], labels=labels[:100])
+            llama_finetune(args=args, instructions=instructions[:2000], labels=labels[:2000])
         llama_test(args=args, instructions=instructions, labels=labels)
 
