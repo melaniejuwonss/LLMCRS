@@ -41,11 +41,11 @@ class QueryEvalCallback(TrainerCallback):
 
     def on_evaluate(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
         # trainer = kwargs['trainer']
-        logs = kwargs['logs']
+        # logs = kwargs['logs']
         print("==============================Evaluate step==============================")
         # predictions, labels = trainer.predict(trainer.eval_dataset)
         # print(predictions.size())
-        print(logs)
+        print(kwargs)
         print("==============================End of evaluate step==============================")
 
 
@@ -301,7 +301,7 @@ def llama_finetune(
             optim="adamw_torch",
             evaluation_strategy="steps" if val_set_size > 0 else "no",
             save_strategy="steps",
-            eval_steps=20 if val_set_size > 0 else None,
+            eval_steps=5 if val_set_size > 0 else None,
             save_steps=200,
             output_dir=output_dir,
             save_total_limit=3,
