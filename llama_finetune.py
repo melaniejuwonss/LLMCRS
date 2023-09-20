@@ -56,6 +56,7 @@ class QueryEvalCallback(TrainerCallback):
 def llama_finetune(
         args,
         tokenizer,
+        evaluator,
         instructions: list = None,
         labels: list = None,
         # model/data params
@@ -319,7 +320,7 @@ def llama_finetune(
         data_collator=transformers.DataCollatorForSeq2Seq(
             tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
         ),
-        callbacks=[QueryEvalCallback()]
+        callbacks=[QueryEvalCallback(evaluator)]
     )
     model.config.use_cache = False
 
