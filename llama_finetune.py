@@ -314,6 +314,7 @@ def llama_finetune(
         data_collator=transformers.DataCollatorForSeq2Seq(
             tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
         ),
+        callbacks=[QueryEvalCallback()]
     )
     model.config.use_cache = False
 
