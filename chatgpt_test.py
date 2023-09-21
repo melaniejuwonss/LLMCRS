@@ -35,7 +35,11 @@ def execute(args,
             response = response['choices'][0]['message']['content']
 
             movie_name = label.replace('(', ')').split(')')[1].strip().lower()
-            if movie_name in response.lower():
+            if 'example' in args.rq_num:
+                check_response = response[response.lower().find("answer:"):].lower()
+            else:
+                check_response = response
+            if movie_name in check_response.lower():
                 hit += 1.0
             cnt += 1.0
             hit_ratio = hit / cnt
@@ -50,9 +54,8 @@ def execute(args,
             args.chatgpt_cnt = int(cnt)
             time.sleep(5)
             break
-            # os.system(f"python main.py --chatgpt_hit={hit} --chatgpt_cnt={cnt} --log_file={args.log_file}")
-            # break
-        # openai.api_requestor._thread_context.session.close()
+
+        openai.api_requestor._thread_context.session.close()
         if int(cnt) == len(instructions):
             return False
 

@@ -7,42 +7,46 @@ from tqdm import tqdm
 content_data = json.load((open('../data/content_data.json', 'r', encoding='utf-8')))[0]
 
 genre_example_question = " Example: Which movie shares genre with Soul (2020)? \n Choices: a) Inside Out (2015) b) The Pianist (2002)  c) Kiss the Girls (1997) \n"
-genre_example_interpret = " The genres of Soul (2020) are animation, adventure, and comedy." \
+genre_example_interpret = " Answer form: \n" \
+                          " 1.Explanation: The genres of Soul (2020) are animation, adventure, and comedy." \
                           " The genres of Inside Out (2015) are animation, adventure, and comedy." \
                           " The genres of The Pianist (200) are biography, drama, and music." \
                           " The genres of Kiss the Girls (1997) are crime, drama, and mystery." \
-                          " Therefore, the best answer is a) Inside Out (2015). \n"
+                          " 2.Answer: The best answer is a) Inside Out (2015). \n"
+
 # " The genres of Harry Brown (2009) are action, crime, and drama." \
 # " The genres of Meet Joe Black (1998) are drama, fantasy, and romance." \
 
 director_example_question = " Example: Which movie was directed by the same person who directed Superintelligence (2020)? \n Choices: a) Pretty when you cry (2001) b) The Boss (2016) c) Ghosts of Mars (2001) \n"
-director_example_interpret = " Superintelligence (2020) was directed by Ben Falcone." \
+director_example_interpret = " Answer form: \n" \
+                             " 1.Explanation: Superintelligence (2020) was directed by Ben Falcone." \
                              " Pretty when you cry (2001) was directed by Jack N. Green." \
                              " The Boss (2016) was directed by Ben Falcone." \
                              " Ghosts of Mars (2001) was directed by John Carpenter." \
-                             " Therefore, the best answer is b) The Boss (2016). \n"
+                             " 2.Answer: The best answer is b) The Boss (2016). \n"
 # " Ace Ventura: when nature calls (1995) was directed by Steve Oedekerk." \
-#                              " Brick (2005) was directed by Rian Johnson." \
-
+# " Brick (2005) was directed by Rian Johnson." \
 writer_example_question = " Example: Which movie was also written by Tenet (2020) writer? \n Choices: a) Strange Days (1995) b) A Nightmare on Elm Street (2010)  c) Inception (2010) \n"
-writer_example_interpret = " The writer of Tenet (2020) is Christopher Nolan." \
+writer_example_interpret = " Answer form: \n " \
+                           " 1.Explanation: The writer of Tenet (2020) is Christopher Nolan." \
                            " Strange Days (1995) is written by James Cameron." \
                            " A Nightmare on Elm Street (2010) is written by Wesley Strick." \
                            " Inception (2010) is written by Christopher Nolan." \
-                           " Therefore, the best answer is c) Inception (2010). \n"
+                           " 2.Answer: The best answer is c) Inception (2010). \n"
 # " Dance with Me (1997) is written by Daryl Matthews." \
-#                            " Frankenstein (1931) is written by John L. Balderston." \
+# " Frankenstein (1931) is written by John L. Balderston." \
 
 actor_example_question = " Example: In which another movie did an actor from Pixie (2020) act? \n Choices: a) The wolf of wall street (2013) b) Chicago (1927) c) Ouija (2014) \n"
-actor_example_interpret = " Olivia Cooke appeared in Pixie (2020)." \
+actor_example_interpret = " Answer form: \n " \
+                          " 1.Explanation: Olivia Cooke appeared in Pixie (2020)." \
                           " Leonardo DiCaprio acted in The wolf of wall street (1929)." \
                           " Phyllis Haver acted in Chicago (1927)." \
                           " Olivia Cooke acted in Ouija (2014)." \
-                          " Therefore, the best answer is c) Ouija (2014). \n"
+                          " 2.Answer: The best answer is c) Ouija (2014). \n"
 # " Jeremy Sisto acted in This Space between Us (1999)." \
-#                           " Lindsay Lohan acted in Mean Girls (2004)." \
+# " Lindsay Lohan acted in Mean Girls (2004)." \
 
-prefix_template = "The following multiple-choice quiz has 3 choices (a,b,c). Select the best answer from the given choices. "
+prefix_template = "The following multiple-choice quiz has 3 choices (a,b,c). Select the best answer from the given choices. \n First, I will show you an example."
 obj_templates = [
     ["Which is %s movie?", "Which movie belongs to the %s genre?", "Which movie is classified as %s genre?",
      "Which movie falls under the %s genre category?", "Which movie is a part of the %s genre category?"],
@@ -74,7 +78,7 @@ item_template = [
      "Can you name another movie that the %s writer worked on?", "What other film features work from the writer of %s?",
      "Do you know of another movie scripted by the writer who also wrote %s?"]
 ]
-postfix_template = "\n Choices: a) %s b) %s c) %s"
+postfix_template = "\n Choices: a) %s b) %s c) %s \n Please start answering by referring to the guided answer format from the above example."
 choice_alphabet = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e'}
 
 
@@ -266,7 +270,8 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
                     if len(genre_items) == 0:
                         answer_title = "None"
                     else:
-                        answer_title = random.sample(genre_items, 1)[0] # target item 과 genre 가 겹치는 다른 영화들 중에서 정답 하나 sample
+                        answer_title = random.sample(genre_items, 1)[
+                            0]  # target item 과 genre 가 겹치는 다른 영화들 중에서 정답 하나 sample
                 elif idx == 1:
                     if len(target_features) == 0:
                         continue
@@ -300,7 +305,7 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
                         answer_title = "None"
                     else:
                         answer_title = random.sample(genre_items, 1)[0]
-                choices = sample_choices(all_items, 2, itemFeatures, target_features) ################# choices
+                choices = sample_choices(all_items, 2, itemFeatures, target_features)  ################# choices
                 choices.append(answer_title)
                 random.shuffle(choices)
 
@@ -327,7 +332,7 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
     print("RQ3 AVG: " + str(cnt / len(title_quiz_num)))  # 19.2, TOTAL: 129,690
     # with open('../data/rq3_random3choice_num.json', 'w', encoding='utf-8') as result_f:
     #     result_f.write(json.dumps(title_quiz_num, indent=4))
-    with open('../data/rq3_3choice_example.json', 'w', encoding='utf-8') as result_f:
+    with open('../data/rq3_3choice_example_fullexplain.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(result_list, indent=4))
 
 
