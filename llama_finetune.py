@@ -39,8 +39,7 @@ from utils.prompter import Prompter
 #         # return {'accuracy': accuracy_score(labels, predictions)}
 
 class QueryEvalCallback(TrainerCallback):
-    def __init__(self, logger, evaluator):
-        self.logger = logger
+    def __init__(self, evaluator):
         self.evaluator = evaluator
 
     def on_epoch_end(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
