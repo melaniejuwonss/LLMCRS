@@ -47,8 +47,8 @@ class LLaMaEvaluator:
         self.dataloader = dataloader
 
     def prepare_model(self,
-                      load_8bit: bool = False,
                       base_model: str = "",
+                      load_8bit: bool = False,
                       lora_weights: str = "tloen/alpaca-lora-7b",
                       server_name: str = "0.0.0.0",  # Allows to listen on all interfaces by providing '0.
                       share_gradio: bool = False, ):
@@ -81,11 +81,10 @@ class LLaMaEvaluator:
                 lora_weights,
                 device_map={"": device},
             )
-
         # unwind broken decapoda-research config
-        model.config.pad_token_id = self.tokenizer.pad_token_id = 0  # unk
-        model.config.bos_token_id = 1
-        model.config.eos_token_id = 2
+        # model.config.pad_token_id = self.tokenizer.pad_token_id = 0  # unk
+        # model.config.bos_token_id = 1
+        # model.config.eos_token_id = 2
 
         if not load_8bit:
             model.half()  # seems to fix bugs for some users.
@@ -171,8 +170,7 @@ class LLaMaEvaluator:
 
     # return generated_results
 
-
-if __name__ == "__main__":
-    # fire.Fire(main)
-    args = parse_args()
-    llama_test(args)
+# if __name__ == "__main__":
+#     # fire.Fire(main)
+#     args = parse_args()
+#     llama_test(args)
