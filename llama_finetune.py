@@ -94,8 +94,6 @@ def llama_finetune(
     batch_size = args.batch_size
     gradient_accumulation_steps = args.num_device  # update the model's weights once every gradient_accumulation_steps batches instead of updating the weights after every batch.
     per_device_train_batch_size = batch_size // args.num_device
-    wandb_project = "LLMCRS"
-    wandb_run_name = args.base_model
 
     if int(os.environ.get("LOCAL_RANK", 0)) == 0:
         print(
@@ -149,8 +147,6 @@ def llama_finetune(
         gradient_accumulation_steps = gradient_accumulation_steps // world_size
 
     # Check if parameter passed or if set within environ
-    # wandb.init(wandb_project)
-
     use_wandb = len(wandb_project) > 0 or (
             "WANDB_PROJECT" in os.environ and len(os.environ["WANDB_PROJECT"]) > 0
     )
@@ -321,7 +317,7 @@ def llama_finetune(
             ddp_find_unused_parameters=False if ddp else None,
             group_by_length=group_by_length,
             report_to="wandb" if use_wandb else None,
-            run_name=wandb_run_name if use_wandb else None,
+            # run_name=args.wandb_run_name if use_wandb else None,
         ),
         data_collator=transformers.DataCollatorForSeq2Seq(
             tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True

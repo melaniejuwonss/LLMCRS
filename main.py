@@ -1,5 +1,6 @@
 import os
 
+import wandb
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaTokenizer
 import transformers
@@ -100,6 +101,8 @@ if __name__ == '__main__':
     question_data = read_data(args)
     instructions = [i[0] for i in question_data]
     labels = [i[1] for i in question_data]
+
+    wandb.init(project=args.wandb_project, name=args.wandb_run_name)
 
     if 'gpt' in args.base_model.lower():
         chatgpt_test(args=args, instructions=instructions, labels=labels)
