@@ -16,7 +16,7 @@ def parse_args():
 
     parser.add_argument('--max_input_length', type=int, default=200)
     parser.add_argument('--device_id', type=str, default='0')
-    parser.add_argument('--rq_num', type=str, default=1)
+    parser.add_argument('--rq_num', type=str, default='1')
     parser.add_argument('--base_model', type=str, default='gpt-3.5-turbo',
                         choices=['meta-llama/Llama-2-7b-hf', 'meta-llama/Llama-2-13b-hf', 'meta-llama/Llama-2-7b-chat-hf', 'gpt-3.5-turbo'])
     parser.add_argument('--model_name', type=str, default='llama')
