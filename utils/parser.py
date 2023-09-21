@@ -16,7 +16,7 @@ def parse_args():
     parser.add_argument('--max_new_tokens', type=int, default=100)
     parser.add_argument('--max_input_length', type=int, default=200)
     parser.add_argument('--device_id', type=str, default='0')
-    parser.add_argument('--rq_num', type=str, default=1)
+    parser.add_argument('--rq_num', type=str, default='1')
     parser.add_argument('--base_model', type=str, default='gpt-3.5-turbo',
                         choices=['meta-llama/Llama-2-7b-hf', 'meta-llama/Llama-2-13b-hf', 'meta-llama/Llama-2-7b-chat-hf', 'gpt-3.5-turbo'])
     parser.add_argument('--model_name', type=str, default='llama')
@@ -25,7 +25,7 @@ def parse_args():
     parser.add_argument('--chatgpt_hit', type=int, default=0)
     parser.add_argument('--chatgpt_key', type=str, default="")
     parser.add_argument('--num_device', type=int, default=1)
-
+    parser.add_argument('--log_name', type=str, default='MYTEST')
 
     parser.add_argument('--mode', type=str, default='test', choices=['train', 'test'])
 
@@ -35,11 +35,10 @@ def parse_args():
     args.num_device = torch.cuda.device_count()
 
     args.wandb_project = "LLMCRS"
-    args.wandb_run_name = args.base_model
+    args.wandb_run_name = args.log_name
 
     args.output_dir = 'result'
     if not os.path.exists(args.output_dir): os.mkdir(args.output_dir)
-
 
     print(args)
     # logging.info(args)
