@@ -168,8 +168,9 @@ class LLaMaEvaluator:
                 # args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio}, ensure_ascii=False) + '\n')
                 generated_results.append({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio})
 
-            for i in generated_results:
-                self.args.log_file.write(json.dumps(i, ensure_ascii=False) + '\n')
+            if self.args.write:
+                for i in generated_results:
+                    self.args.log_file.write(json.dumps(i, ensure_ascii=False) + '\n')
             if cnt % 100 == 0 and cnt != 0:
                 wandb.log({"hit_ratio": (hit / cnt)})
                 print("%.4f" % (hit / cnt))
