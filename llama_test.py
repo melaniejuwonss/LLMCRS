@@ -83,9 +83,9 @@ class LLaMaEvaluator:
                 device_map={"": device},
             )
         # unwind broken decapoda-research config
-        # model.config.pad_token_id = self.tokenizer.pad_token_id = 0  # unk
-        # model.config.bos_token_id = 1
-        # model.config.eos_token_id = 2
+        model.config.pad_token_id = self.tokenizer.pad_token_id = 0  # unk
+        model.config.bos_token_id = 1
+        model.config.eos_token_id = 2
 
         if not load_8bit:
             model.half()  # seems to fix bugs for some users.
