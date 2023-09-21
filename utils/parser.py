@@ -32,9 +32,9 @@ def parse_args():
 
     args = parser.parse_args()
     args.device_id = f'cuda:{args.device_id}' if args.device_id else "cpu"
-    # os.environ['CUDA_VISIBLE_DEVICES'] = args.device_id
+    os.environ['CUDA_VISIBLE_DEVICES'] = "0"
     args.num_device = torch.cuda.device_count()
-
+    print(f"NUM_DEVICE{args.num_device}")
     args.wandb_project = "LLMCRS"
     args.wandb_run_name = args.log_name
 
