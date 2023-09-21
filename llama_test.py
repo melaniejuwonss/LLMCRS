@@ -149,7 +149,7 @@ class LLaMaEvaluator:
             input_ids = batched_inputs["input_ids"].to(self.args.device_id)
             attention_mask = batched_inputs["attention_mask"].to(self.args.device_id)
 
-            responses = self.evaluate(input_ids, attention_mask, model)
+            responses = self.evaluate(input_ids, attention_mask, model, max_new_tokens=self.args.max_new_tokens)
             labels = batch[1]
             # print("Instruction:", instruction)
             # print("Response:", response)
