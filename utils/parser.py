@@ -35,7 +35,7 @@ def parse_args():
     args.num_device = torch.cuda.device_count()
 
     args.wandb_project = "LLMCRS"
-    args.wandb_run_name = args.base_model
+    args.wandb_run_name = args.log_name
 
     args.output_dir = 'result'
     if not os.path.exists(args.output_dir): os.mkdir(args.output_dir)
