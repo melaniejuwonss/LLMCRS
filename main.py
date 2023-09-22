@@ -91,7 +91,7 @@ if __name__ == '__main__':
     mdhm = str(datetime.now(timezone('Asia/Seoul')).strftime('%m%d%H%M%S'))
     result_path = os.path.join(args.output_dir, args.base_model.replace('/', '-'))
     if not os.path.exists(result_path): os.mkdir(result_path)
-
+    args.log_name = mdhm + '_' + args.base_model.replace('/', '-') + '_' + f'rq{args.rq_num}' + '_' + args.log_name
     if args.log_file == '':
         log_file = open(os.path.join(result_path, f'rq{args.rq_num}_{mdhm}.json'), 'a', buffering=1, encoding='UTF-8')
     else:
@@ -101,6 +101,9 @@ if __name__ == '__main__':
     question_data = read_data(args)
     instructions = [i[0] for i in question_data]
     labels = [i[1] for i in question_data]
+
+    args.wandb_project = "LLMCRS"
+    args.wandb_run_name = args.log_name
 
     wandb.init(project=args.wandb_project, name=args.wandb_run_name)
 
@@ -112,6 +115,7 @@ if __name__ == '__main__':
 
         evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels)
         if 'train' in args.mode:
-            llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=instructions, labels=labels)
+            llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=instructions[:1000],
+                           labels=labels[:1000])
         if 'test' == args.mode:
             evaluator.test()

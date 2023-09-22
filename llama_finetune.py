@@ -39,19 +39,24 @@ from utils.prompter import Prompter
 #         # return {'accuracy': accuracy_score(labels, predictions)}
 
 class QueryEvalCallback(TrainerCallback):
-    def __init__(self, evaluator):
-        self.evaluator = evaluator
+    def __init__(self, log_name):
+        self.log_name = log_name
 
     def on_epoch_end(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
+        model = kwargs['model']
+        epoch = state.epoch
+        path = os.path.join(args.output_dir, self.log_name + '_' + str(epoch))
+        os.makedirs(path)
+        model.save_pretrained(path)
         # trainer = kwargs['trainer']
         # logs = kwargs['logs']
-        model = kwargs['model']
-        print("==============================Evaluate step==============================")
-        # predictions, labels = trainer.predict(trainer.eval_dataset)
-        # print(predictions.size())
-        self.evaluator.test(model)
-        # print(kwargs)
-        print("==============================End of evaluate step==============================")
+        # model = kwargs['model']
+        # print("==============================Evaluate step==============================")
+        # # predictions, labels = trainer.predict(trainer.eval_dataset)
+        # # print(predictions.size())
+        # self.evaluator.test(model)
+        # # print(kwargs)
+        # print("==============================End of evaluate step==============================")
 
 
 def llama_finetune(
@@ -321,8 +326,8 @@ def llama_finetune(
         ),
         data_collator=transformers.DataCollatorForSeq2Seq(
             tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
-        )
-        # callbacks=[QueryEvalCallback(evaluator)]
+        ),
+        callbacks=[QueryEvalCallback(args.log_name)]
     )
     model.config.use_cache = False
 
