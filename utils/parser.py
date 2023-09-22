@@ -27,7 +27,7 @@ def parse_args():
     parser.add_argument('--num_device', type=int, default=1)
     parser.add_argument('--log_name', type=str, default='MYTEST')
     parser.add_argument("--write", action='store_true', help="Whether to write of results.")
-
+    parser.add_argument("--lora_weights", type='str', default='/lora-alpaca/checkpoint-1600')
     parser.add_argument('--mode', type=str, default='test', choices=['train', 'test'])
 
     args = parser.parse_args()

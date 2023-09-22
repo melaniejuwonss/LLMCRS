@@ -50,10 +50,13 @@ class LLaMaEvaluator:
     def prepare_model(self,
                       base_model: str = "",
                       load_8bit: bool = False,
-                      lora_weights: str = "tloen/alpaca-lora-7b",
+                      lora_weights: str = "",
                       server_name: str = "0.0.0.0",  # Allows to listen on all interfaces by providing '0.
                       share_gradio: bool = False, ):
         print('prepare new model for evaluating')
+        if self.args.lora_weights != "":
+            lora_weights = self.args.lora_weights
+
         base_model = self.args.base_model
         assert (
             base_model
@@ -68,11 +71,11 @@ class LLaMaEvaluator:
             ).to(self.args.device_id)
 
             # todo: For evaluating the PEFT model
-            # model = PeftModel.from_pretrained(
-            #     model,
-            #     lora_weights,
-            #     torch_dtype=torch.float16,
-            # )
+            model = PeftModel.from_pretrained(
+                model,
+                lora_weights,
+                torch_dtype=torch.float16,
+            )
         else:
             model = LlamaForCausalLM.from_pretrained(
                 base_model, device_map={"": device}, low_cpu_mem_usage=True
