@@ -93,7 +93,7 @@ def llama_finetune(
         wandb_watch: str = "",  # options: false | gradients | all
         wandb_log_model: str = "",  # options: false | true
         resume_from_checkpoint: str = None,  # either training checkpoint or final adapter
-        prompt_template_name: str = "alpaca-legacy",  # The prompt template to use, will default to alpaca.
+        prompt_template_name: str = "alpaca_legacy",  # The prompt template to use, will default to alpaca.
 ):
     base_model = args.base_model
     batch_size = args.batch_size
