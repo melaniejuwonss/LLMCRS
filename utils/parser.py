@@ -13,6 +13,7 @@ def parse_args():
     # common
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--eval_batch_size', type=int, default=8)
+    parser.add_argument('--epoch', type=int, default=5)
     parser.add_argument('--max_new_tokens', type=int, default=100)
     parser.add_argument('--max_input_length', type=int, default=200)
     parser.add_argument('--device_id', type=str, default='0')

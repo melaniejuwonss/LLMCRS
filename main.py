@@ -116,6 +116,6 @@ if __name__ == '__main__':
         evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels)
         if 'train' in args.mode:
             llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=instructions,
-                           labels=labels)
+                           labels=labels, num_epochs=args.epoch)
         if 'test' == args.mode:
             evaluator.test()

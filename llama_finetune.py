@@ -353,4 +353,4 @@ def llama_finetune(
 if __name__ == "__main__":
     # fire.Fire(llama_finetune)
     args = parse_args()
-    llama_finetune(args)
+    llama_finetune(args, num_epochs=args.epoch)
