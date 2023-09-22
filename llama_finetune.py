@@ -45,7 +45,7 @@ class QueryEvalCallback(TrainerCallback):
     def on_epoch_end(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
         model = kwargs['model']
         epoch = state.epoch
-        path = os.path.join(args.output_dir, self.log_name + '_' + str(epoch))
+        path = os.path.join(args.output_dir, self.log_name + '_E' + str(int(epoch)))
         os.makedirs(path)
         model.save_pretrained(path)
         # trainer = kwargs['trainer']
