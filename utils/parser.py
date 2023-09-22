@@ -56,7 +56,7 @@ def dir_init(default_args):
     args = deepcopy(default_args)
     from platform import system as sysChecker
     if sysChecker() == 'Linux':
-        args.home = os.path.dirname(__file__)
+        args.home = os.path.dirname(os.path.dirname(__file__))
     elif sysChecker() == "Windows":
         args.home = ''
         # args.batch_size, args.num_epochs = 4, 2

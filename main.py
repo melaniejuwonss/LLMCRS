@@ -90,7 +90,7 @@ if __name__ == '__main__':
     args = parse_args()
     args = dir_init(args)
     mdhm = str(datetime.now(timezone('Asia/Seoul')).strftime('%m%d%H%M%S'))
-    result_path = os.path.join(args.output_dir, args.base_model.replace('/', '-'))
+    result_path = os.path.join(args.home, args.output_dir, args.base_model.replace('/', '-'))
     if not os.path.exists(result_path): os.mkdir(result_path)
     args.log_name = mdhm + '_' + args.base_model.replace('/', '-') + '_' + f'rq{args.rq_num}' + '_' + args.log_name
     if args.log_file == '':
