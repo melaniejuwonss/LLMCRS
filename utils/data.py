@@ -1,8 +1,10 @@
 import json
+import os
 
 
 def read_data(args):
-    RQ_data = json.load((open('data/rq' + str(args.rq_num) + '.json', 'r', encoding='utf-8')))
+    data_path = os.path.join(args.home, 'data')
+    RQ_data = json.load((open(data_path + '/rq' + str(args.rq_num) + '.json', 'r', encoding='utf-8')))
     question, answer = [], []
     data_samples = []
     for data in RQ_data:
