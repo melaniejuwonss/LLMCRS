@@ -321,8 +321,8 @@ def llama_finetune(
         ),
         data_collator=transformers.DataCollatorForSeq2Seq(
             tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
-        ),
-        callbacks=[QueryEvalCallback(evaluator)]
+        )
+        # callbacks=[QueryEvalCallback(evaluator)]
     )
     model.config.use_cache = False
 
@@ -338,7 +338,7 @@ def llama_finetune(
 
     trainer.train(resume_from_checkpoint=resume_from_checkpoint)
 
-    model.save_pretrained(output_dir)
+    # model.save_pretrained(output_dir)
 
     print(
         "\n If there's a warning about missing keys above, please disregard :)"
