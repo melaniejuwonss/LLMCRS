@@ -34,8 +34,6 @@ def parse_args():
     parser.add_argument('--chatgpt_hit', type=int, default=0)
     parser.add_argument('--chatgpt_key', type=str, default="")
 
-
-
     args = parser.parse_args()
     args.device_id = f'cuda:{args.device_id}' if args.device_id else "cpu"
     # os.environ['CUDA_VISIBLE_DEVICES'] = "0"
@@ -49,4 +47,22 @@ def parse_args():
 
     print(args)
     # logging.info(args)
+    return args
+
+
+def dir_init(default_args):
+    from copy import deepcopy
+    """ args 받은다음, device, Home directory, data_dir, log_dir, output_dir, 들 지정하고, Path들 체크해서  """
+    args = deepcopy(default_args)
+    from platform import system as sysChecker
+    if sysChecker() == 'Linux':
+        args.home = os.path.dirname(__file__)
+    elif sysChecker() == "Windows":
+        args.home = ''
+        # args.batch_size, args.num_epochs = 4, 2
+        # args.debug = True
+        pass  # HJ local
+    else:
+        raise Exception("Check Your Platform Setting (Linux-Server or Windows)")
+
     return args

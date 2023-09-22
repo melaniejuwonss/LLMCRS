@@ -16,7 +16,7 @@ from chatgpt_test import chatgpt_test
 from llama_finetune import llama_finetune
 from llama_test import LLaMaEvaluator
 from utils.data import read_data
-from utils.parser import parse_args
+from utils.parser import parse_args, dir_init
 
 
 class RQ(Dataset):
@@ -88,14 +88,15 @@ def evaluate(gen_seq, answer, log_file):
 
 if __name__ == '__main__':
     args = parse_args()
+    args = dir_init(args)
     mdhm = str(datetime.now(timezone('Asia/Seoul')).strftime('%m%d%H%M%S'))
     result_path = os.path.join(args.output_dir, args.base_model.replace('/', '-'))
     if not os.path.exists(result_path): os.mkdir(result_path)
     args.log_name = mdhm + '_' + args.base_model.replace('/', '-') + '_' + f'rq{args.rq_num}' + '_' + args.log_name
     if args.log_file == '':
-        log_file = open(os.path.join(result_path, f'rq{args.rq_num}_{mdhm}.json'), 'a', buffering=1, encoding='UTF-8')
+        log_file = open(os.path.join(args.home, result_path, f'rq{args.rq_num}_{mdhm}.json'), 'a', buffering=1, encoding='UTF-8')
     else:
-        log_file = open(os.path.join(result_path, f'{args.log_file}.json'), 'a', buffering=1, encoding='UTF-8')
+        log_file = open(os.path.join(args.home, result_path, f'{args.log_file}.json'), 'a', buffering=1, encoding='UTF-8')
 
     args.log_file = log_file
     question_data = read_data(args)
@@ -112,6 +113,8 @@ if __name__ == '__main__':
 
     if 'llama' in args.base_model.lower():
         tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
+
+
 
         evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels)
         if 'train' in args.mode:
