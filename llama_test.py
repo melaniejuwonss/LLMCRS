@@ -71,11 +71,11 @@ class LLaMaEvaluator:
             ) #.to(self.args.device_id)
 
             # todo: For evaluating the PEFT model
-            model = PeftModel.from_pretrained(
-                model,
-                lora_weights,
-                torch_dtype=torch.float16,
-            )
+            # model = PeftModel.from_pretrained(
+            #     model,
+            #     lora_weights,
+            #     torch_dtype=torch.float16,
+            # )
         else:
             model = LlamaForCausalLM.from_pretrained(
                 base_model, device_map={"": device}, low_cpu_mem_usage=True
