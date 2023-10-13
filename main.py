@@ -100,6 +100,7 @@ if __name__ == '__main__':
     else:
         log_file = open(os.path.join(args.home, result_path, f'{args.log_file}.json'), 'a', buffering=1, encoding='UTF-8')
 
+    args.lora_weights = os.path.join(args.home, args.lora_weights)
     args.log_file = log_file
     question_data = read_data(args)
     instructions = [i[0] for i in question_data]
