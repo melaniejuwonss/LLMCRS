@@ -16,6 +16,7 @@ from chatgpt_test import chatgpt_test
 from llama_finetune import llama_finetune
 from llama_test import LLaMaEvaluator
 from t5_finetune import t5_finetune
+from t5_test import T5Evaluator
 from utils.data import read_data
 from utils.parser import parse_args, dir_init
 
@@ -125,7 +126,10 @@ if __name__ == '__main__':
     if 't5' in args.base_model.lower():
         tokenizer = T5Tokenizer.from_pretrained(args.base_model)
 
-        evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels)
+        evaluator = T5Evaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels)
         if 'train' in args.mode:
             t5_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=instructions,
                         labels=labels, num_epochs=args.epoch)
+        if 'test' == args.mode:
+            evaluator.test()
+
