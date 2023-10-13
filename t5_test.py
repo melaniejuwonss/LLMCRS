@@ -74,9 +74,9 @@ class T5Evaluator:
             )
 
         # unwind broken decapoda-research config
-        model.config.pad_token_id = self.tokenizer.pad_token_id = 0  # unk
-        model.config.bos_token_id = 1
-        model.config.eos_token_id = 2
+        # model.config.pad_token_id = self.tokenizer.pad_token_id = 0  # unk
+        # model.config.bos_token_id = 1
+        # model.config.eos_token_id = 2
 
         return model
 
