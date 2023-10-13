@@ -2,7 +2,7 @@ import os
 
 import wandb
 from tqdm import tqdm
-from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaTokenizer
+from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaTokenizer, T5Tokenizer
 import transformers
 import torch
 import json
@@ -15,6 +15,7 @@ from pytz import timezone
 from chatgpt_test import chatgpt_test
 from llama_finetune import llama_finetune
 from llama_test import LLaMaEvaluator
+from t5_finetune import t5_finetune
 from utils.data import read_data
 from utils.parser import parse_args, dir_init
 
@@ -114,11 +115,17 @@ if __name__ == '__main__':
     if 'llama' in args.base_model.lower():
         tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
 
-
-
         evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels)
         if 'train' in args.mode:
             llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=instructions,
                            labels=labels, num_epochs=args.epoch)
         if 'test' == args.mode:
             evaluator.test()
+
+    if 't5' in args.base_model.lower():
+        tokenizer = T5Tokenizer.from_pretrained(args.base_model)
+
+        evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels)
+        if 'train' in args.mode:
+            t5_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=instructions,
+                        labels=labels, num_epochs=args.epoch)
