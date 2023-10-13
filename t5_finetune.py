@@ -84,7 +84,7 @@ def t5_finetune(
             "v_proj",
         ],
         # llm hyperparams
-        train_on_inputs: bool = True,  # if False, masks out inputs in loss
+        train_on_inputs: bool = False,  # if False, masks out inputs in loss
         add_eos_token: bool = False,
         group_by_length: bool = False,  # faster, but produces an odd training loss curve
         # wandb params
@@ -245,7 +245,7 @@ def t5_finetune(
             warmup_steps=100,
             num_train_epochs=num_epochs,
             learning_rate=learning_rate,
-            # fp16=True,
+            fp16=True,
             logging_steps=10,
             optim="adamw_torch",
             evaluation_strategy="steps" if val_set_size > 0 else "no",
