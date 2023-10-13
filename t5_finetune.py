@@ -195,9 +195,9 @@ def t5_finetune(
             if add_eos_token:
                 user_prompt_len -= 1
 
-            tokenized_full_prompt["labels"] = tokenized_full_prompt["labels"][
-                                              user_prompt_len:
-                                              ] + [-100] * user_prompt_len  # could be sped up, probably
+            tokenized_full_prompt["labels"] = [-100] * user_prompt_len + tokenized_full_prompt["labels"][
+                                                                         user_prompt_len:
+                                                                         ]  # could be sped up, probably
         return tokenized_full_prompt
 
     data = []
@@ -245,7 +245,7 @@ def t5_finetune(
             warmup_steps=100,
             num_train_epochs=num_epochs,
             learning_rate=learning_rate,
-            fp16=True,
+            # fp16=True,
             logging_steps=10,
             optim="adamw_torch",
             evaluation_strategy="steps" if val_set_size > 0 else "no",
