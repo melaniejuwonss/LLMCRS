@@ -20,7 +20,7 @@ def parse_args():
     parser.add_argument('--rq_num', type=str, default='1')
     parser.add_argument('--base_model', type=str, default='gpt-3.5-turbo',
                         choices=['meta-llama/Llama-2-7b-hf', 'meta-llama/Llama-2-13b-hf',
-                                 'meta-llama/Llama-2-7b-chat-hf', 'gpt-3.5-turbo', 'google/flan-t5-large'])
+                                 'meta-llama/Llama-2-7b-chat-hf', 'gpt-3.5-turbo', 'google/flan-t5-large', 't5-large'])
     parser.add_argument('--model_name', type=str, default='llama')
     parser.add_argument('--num_device', type=int, default=1)
     parser.add_argument("--write", action='store_true', help="Whether to write of results.")
