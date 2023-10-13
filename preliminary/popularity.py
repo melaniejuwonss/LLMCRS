@@ -48,14 +48,15 @@ def popularity_crs():
 
 
 def popularity_model_rq12(model_name):
-    files = ['rq1', 'rq2']
+    files = ['rq2_firstreview']
     for file in files:
         correctFreq = dict()
         hitratio = dict()
         datas = json.load(
             (open('../data/modelResults/' + model_name + '/' + file + '.json', 'r', encoding='utf-8')))
-        num_datas = json.load(
-            (open('../data/' + file + '_num.json', 'r', encoding='utf-8')))
+        if 'rq2' not in file:
+            num_datas = json.load(
+                (open('../data/' + file + '_num.json', 'r', encoding='utf-8')))
         for data in datas:
             answer = data['ANSWER']
             label = deepcopy(answer)
@@ -66,22 +67,31 @@ def popularity_model_rq12(model_name):
                     correctFreq[label[3:].lower()] = 1
                 else:
                     correctFreq[label[3:].lower()] += 1
-
-        for key, value in num_datas.items():
-            total_cnt = value
-            if key not in correctFreq.keys():
-                hitratio[key] = 0
             else:
-                hitratio[key] = correctFreq[key] / total_cnt
-        with open('../data/modelResults/' + model_name + '/' + file + 'hitratio.json', 'w', encoding='utf-8') as f:
-            f.write(json.dumps(hitratio, indent=4))
+                if label[3:].lower() not in correctFreq.keys():
+                    correctFreq[label[3:].lower()] = 0
+                else:
+                    correctFreq[label[3:].lower()] =0
+
+        if 'rq2' not in file:
+            for key, value in num_datas.items():
+                total_cnt = value
+                if key not in correctFreq.keys():
+                    hitratio[key] = 0
+                else:
+                    hitratio[key] = correctFreq[key] / total_cnt
+            with open('../data/modelResults/' + model_name + '/' + file + 'hitratio.json', 'w', encoding='utf-8') as f:
+                f.write(json.dumps(hitratio, indent=4))
+        else:
+            with open('../data/modelResults/' + model_name + '/' + file + 'hitratio.json', 'w', encoding='utf-8') as f:
+                f.write(json.dumps(correctFreq, indent=4))
 
 
 def popularity_model_rq3(model_name):
     correctFreq = dict()
     hitratio = dict()
     quizdatas = json.load(
-        (open('../data/rq3.json', 'r', encoding='utf-8')))
+        (open('../data/rq3_3choice.json', 'r', encoding='utf-8')))
     datas = json.load(
         (open('../data/modelResults/' + model_name + '/rq3.json', 'r', encoding='utf-8')))
     num_datas = json.load(
@@ -126,7 +136,7 @@ def popularity_avg_hitratio(model_name):
             bin += 1
     bin2hitratio = dict()
     bincnt = [0] * 11
-    files = ['rq2hitratio','rq1hitratio','rq3hitratio']
+    files = ['rq2_firstreviewhitratio']
     for file in files:
         datas = json.load(
             (open('../data/modelResults/' + model_name + '/' + file + '.json', 'r', encoding='utf-8')))
@@ -151,6 +161,7 @@ def popularity_avg_hitratio(model_name):
         with open('../data/modelResults/' + model_name + '/' + file + '_avg.json', 'w', encoding='utf-8') as f:
             f.write(json.dumps(sorted_dict, indent=4))
 
+
 def hitratio_type_rq1(model_name):
     quizdatas = json.load(
         (open('../data/rq1.json', 'r', encoding='utf-8')))
@@ -169,7 +180,8 @@ def hitratio_type_rq1(model_name):
         if 'directed' in question:
             type = "director"
             total_cnt[0] += 1
-        elif True in [True if word in question else False for word in ['written', 'scripted', 'authored', 'penned', 'crafted']]:
+        elif True in [True if word in question else False for word in
+                      ['written', 'scripted', 'authored', 'penned', 'crafted']]:
             type = "writer"
             total_cnt[2] += 1
         elif True in [True if word in question else False for word in ['act', 'appear', 'cast', 'role', 'perform']]:
@@ -178,7 +190,6 @@ def hitratio_type_rq1(model_name):
         elif True in [True if word in question else False for word in ['genre', 'Which is']]:
             type = "genre"
             total_cnt[1] += 1
-
 
         answer = data['ANSWER']
         label = deepcopy(answer)
@@ -190,7 +201,7 @@ def hitratio_type_rq1(model_name):
     for key, value in correctFreq.items():
         type_cnt = value
         if key == "director":
-            dir_cnt = type_cnt  / total_cnt[0]
+            dir_cnt = type_cnt / total_cnt[0]
             saveResult[key] = dir_cnt
         elif key == "genre":
             genre_cnt = type_cnt / total_cnt[1]
@@ -203,6 +214,7 @@ def hitratio_type_rq1(model_name):
             saveResult[key] = actor_cnt
     with open('../data/modelResults/' + model_name + '/rq1_typeavg.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(saveResult, indent=4))
+
 
 def hitratio_type_rq3(model_name):
     quizdatas = json.load(
@@ -232,7 +244,6 @@ def hitratio_type_rq3(model_name):
             type = "genre"
             total_cnt[1] += 1
 
-
         answer = data['ANSWER']
         label = deepcopy(answer)
         response = data['GEN']
@@ -243,7 +254,7 @@ def hitratio_type_rq3(model_name):
     for key, value in correctFreq.items():
         type_cnt = value
         if key == "director":
-            dir_cnt = type_cnt  / total_cnt[0]
+            dir_cnt = type_cnt / total_cnt[0]
             saveResult[key] = dir_cnt
         elif key == "genre":
             genre_cnt = type_cnt / total_cnt[1]
@@ -256,10 +267,58 @@ def hitratio_type_rq3(model_name):
             saveResult[key] = actor_cnt
     with open('../data/modelResults/' + model_name + '/rq3_typeavg.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(saveResult, indent=4))
+
+
+def rq2test_firstreview(model_name):
+    datas = json.load(
+        (open('../data/modelResults/' + model_name + '/rq2_5choice.json', 'r', encoding='utf-8')))
+    hit = 0
+    cnt = 0
+    save_dict = []
+    movie_name = ""
+    for data in datas:
+        label = data['ANSWER'].lower()
+        movname = label.replace('(', ')').split(')')[1].strip().lower()
+        gen = data['GEN'].lower()
+        if movie_name != movname:
+            movie_name = movname
+            cnt += 1
+            if movname in gen.lower():
+                hit += 1
+            hit_ratio = hit / cnt
+            save_dict.append({'GEN': gen, 'ANSWER': label, 'AVG_HIT': hit_ratio})
+    with open('../data/modelResults/' + model_name + '/rq2_5choice_firstreview.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps(save_dict, indent=4))
+
+def rq2_traintest_split():
+    datas = json.load(
+        (open('../data/rq2_3choice_test.json', 'r', encoding='utf-8')))
+
+    test_dict, train_dict = [], []
+    movie_name = ""
+    for data in datas:
+        question = data['Question']
+        answer = data['Answer']
+        movname = answer.replace('(', ')').split(')')[1].strip().lower()
+        if movie_name != movname:
+            movie_name = movname
+            test_dict.append({'Question': question, 'Answer': answer})
+        else:
+            train_dict.append({'Question': question, 'Answer': answer})
+    with open('../data/rq2_3choice_test_new.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps(test_dict, indent=4))
+    with open('../data/rq2_3choice_new.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps(train_dict, indent=4))
+
+
 if __name__ == "__main__":
     # popularity_crs()
-    # popularity_model_rq12("chatgpt")
+    popularity_model_rq12("llama7b")
     # popularity_model_rq3("chatgpt")
-    # popularity_avg_hitratio("chatgpt")
+    popularity_avg_hitratio("llama7b")
     # hitratio_type_rq1("chatgpt")
-    hitratio_type_rq3("llama7b")
+    # hitratio_type_rq3("chatgpt")
+
+
+    # rq2test_firstreview("llama7b")
+    rq2_traintest_split()

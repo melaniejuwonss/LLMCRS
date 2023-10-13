@@ -96,8 +96,10 @@ def createSources():
         writers = data['meta']['writers']
         reviews = data['review']
         all_titles.add(title)
-        item2feature[title] = [[] for _ in range(5)]
-        itemFeatures[title] = []
+        if title not in item2feature.keys():
+            item2feature[title] = [[] for _ in range(5)]
+            itemFeatures[title] = []
+
         for genre in genres:
             if genre not in genre2item.keys():
                 genre2item[genre] = [title]
@@ -176,10 +178,17 @@ def sample_choices(candidates, choice_num, itemFeatures, target_features=None):
         return choices
 
 
-def create_rq1(item2feature, itemFeatures):
+def create_rq1(item2feature, itemFeatures, choice):
+    global prefix_template
+    global postfix_template
     result_list = []
     title_quiz_num = dict()
     cnt = 0
+
+    if choice == 5:
+        prefix_template = prefix_template.replace("3 choices (a,b,c)", "5 choices (a,b,c,d,e)")
+        postfix_template = postfix_template + " d) %s e) %s"
+
     for title in tqdm(item2feature.keys(), bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
         all_features = item2feature[title]
         all_items = deepcopy(list(itemFeatures.keys()))
@@ -190,7 +199,7 @@ def create_rq1(item2feature, itemFeatures):
                 target_feature = feature
                 templates = random.sample(obj_templates[i], 1)
                 for template in templates:  # 각 feature type 의 template 마다 생성
-                    choices = sample_choices(all_items, 4, itemFeatures, [target_feature])
+                    choices = sample_choices(all_items, choice - 1, itemFeatures, [target_feature])
                     choices.append(title)
                     random.shuffle(choices)
                     feature_template = template % (target_feature)
@@ -207,14 +216,21 @@ def create_rq1(item2feature, itemFeatures):
     print("RQ1 AVG: " + str(cnt / len(title_quiz_num)))  # 41.2, #TOTAL: 278,665
     # with open('../data/rq1_num.json', 'w', encoding='utf-8') as result_f:
     #     result_f.write(json.dumps(title_quiz_num, indent=4))
-    with open('../data/rq1_5choice.json', 'w', encoding='utf-8') as result_f:
+    with open(f'../data/rq1_{choice}choice_test.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(result_list, indent=4))
 
 
-def create_rq2(item2feature, itemFeatures):
+def create_rq2(item2feature, itemFeatures, choice):
+    global prefix_template
+    global postfix_template
     result_list = []
     title_quiz_num = dict()
     cnt = 0
+
+    if choice == 5:
+        prefix_template = prefix_template.replace("3 choices (a,b,c)", "5 choices (a,b,c,d,e)")
+        postfix_template = postfix_template + " d) %s e) %s"
+
     for title in tqdm(item2feature.keys(), bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
         all_items = deepcopy(list(itemFeatures.keys()))
         all_items.remove(title)
@@ -225,7 +241,7 @@ def create_rq2(item2feature, itemFeatures):
             review500 = " ".join(review.split(' ')[:128])  # first 500 words
             templates = random.sample(subj_template, 1)
             for template in templates:
-                choices = sample_choices(all_items, 4, itemFeatures, None)
+                choices = sample_choices(all_items, choice - 1, itemFeatures, None)
                 choices.append(title)
                 random.shuffle(choices)
                 feature_template = template % (review500)
@@ -243,12 +259,12 @@ def create_rq2(item2feature, itemFeatures):
     print("RQ2 AVG: " + str(cnt / len(title_quiz_num)))  # 24.2, #TOTAL: 150,360
     # with open('../data/rq2_num.json', 'w', encoding='utf-8') as result_f:
     #     result_f.write(json.dumps(title_quiz_num, indent=4))
-    with open('../data/rq2_5choice.json', 'w', encoding='utf-8') as result_f:
+    with open(f'../data/rq2_{choice}choice_test.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(result_list, indent=4))
 
 
 def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature, choice=3, example=False,
-               model='llama'):
+               model='llama', type="train"):
     global prefix_template
     global postfix_template
     global choice_template
@@ -259,6 +275,24 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
     result_list = []
     title_quiz_num = dict()
     cnt = 0
+    if choice == 5:
+        prefix_template = prefix_template.replace("3 choices (a,b,c)", "5 choices (a,b,c,d,e)")
+        postfix_template = postfix_template + " d) %s e) %s"
+    if example is True:
+        if type == "test":
+            prefix_template = prefix_template + " First, I will show you an example. \n"
+        if model == 'llama' and type == "test":
+            example_prompt = "Here is an example. "
+        elif model == 'chatgpt':
+            example_prompt = "Example: "
+            choice_template = choice_template + "Please start answering by referring to the guided answer format from the above example."
+
+        if choice == 3:
+            genre_example_question = genre_example_question[:genre_example_question.find("d)")] + "\n"
+            director_example_question = director_example_question[
+                                        :director_example_question.find("d)")] + "\n"
+            actor_example_question = actor_example_question[:actor_example_question.find("d)")] + "\n"
+            writer_example_question = writer_example_question[:writer_example_question.find("d)")] + "\n"
     for title in tqdm(item2feature.keys(), bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
         all_features = item2feature[title]
         all_items = deepcopy(list(itemFeatures.keys()))
@@ -317,47 +351,95 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
                                          target_features)
                 choices.append(answer_title)
                 random.shuffle(choices)
-                if choice == 5:
-                    prefix_template = prefix_template.replace("3 choices (a,b,c)", "5 choices (a,b,c,d,e)")
-                    postfix_template = postfix_template + " d) %s e) %s"
-                if example is True:
-                    prefix_template = prefix_template + " First, I will show you an example. \n"
-                    if model == 'llama':
-                        example_prompt = "Here is an example. "
-                    elif model == 'chatgpt':
-                        example_prompt = "Example: "
-                        choice_template = choice_template + "Please start answering by referring to the guided answer format from the above example."
-
-                    if choice == 3:
-                        genre_example_question = genre_example_question[:genre_example_question.find("d)")] + "\n"
-                        director_example_question = director_example_question[
-                                                    :director_example_question.find("d)")] + "\n"
-                        actor_example_question = actor_example_question[:actor_example_question.find("d)")] + "\n"
-                        writer_example_question = writer_example_question[:writer_example_question.find("d)")] + "\n"
 
                 feature_template = template % (title)
                 choice_template = postfix_template % (tuple(choices))
+
+                if type == "train" and answer_title == "None":  # None 의 경우 train 에서 제외
+                    continue
 
                 if idx == 0:  # genre, director, actor, writer
                     if example is False:
                         whole_template = prefix_template + feature_template + choice_template
                     else:
-                        whole_template = prefix_template + example_prompt + genre_example_question + genre_example_interpret + question_prompt + feature_template + choice_template
+                        question_item_explain = f"\n 1. Explanation: {title} has genre of "
+                        for x in range(len(target_features) - 1):
+                            question_item_explain += target_features[x] + ", "
+                        question_item_explain += target_features[-1] + ". "
+
+                        target_item_genres = item2feature[answer_title][0]
+                        target_item_explain = f"{answer_title} has genre of "
+                        for x in range(len(target_item_genres) - 1):
+                            target_item_explain += target_item_genres[x] + ", "
+                        try:
+                            target_item_explain += target_item_genres[-1] + "."
+                        except:
+                            print()
+                        target_item_explain += " 2. Answer:"
+                        if type == "train":
+                            whole_template = prefix_template + feature_template + choice_template + question_item_explain + target_item_explain
+                        elif type == "test":
+                            whole_template = prefix_template + example_prompt + genre_example_question + genre_example_interpret + question_prompt + feature_template + choice_template
                 elif idx == 1:
                     if example is False:
                         whole_template = prefix_template + feature_template + choice_template
                     else:
-                        whole_template = prefix_template + example_prompt + director_example_question + director_example_interpret + question_prompt + feature_template + choice_template
+                        question_item_explain = f"\n 1. Explanation: {title} was directed by "
+                        for x in range(len(target_features) - 1):
+                            question_item_explain += target_features[x] + ", "
+                        question_item_explain += target_features[-1] + ". "
+
+                        target_item_director = item2feature[answer_title][1]
+                        target_item_explain = f"{answer_title} was directed by "
+                        for x in range(len(target_item_director) - 1):
+                            target_item_explain += target_item_director[x] + ", "
+                        target_item_explain += target_item_director[-1] + "."
+                        target_item_explain += " 2. Answer:"
+                        if type == "train":
+                            whole_template = prefix_template + feature_template + choice_template + question_item_explain + target_item_explain
+                        elif type == "test":
+                            whole_template = prefix_template + example_prompt + genre_example_question + genre_example_interpret + question_prompt + feature_template + choice_template
+
                 elif idx == 2:
                     if example is False:
                         whole_template = prefix_template + feature_template + choice_template
                     else:
-                        whole_template = prefix_template + example_prompt + actor_example_question + actor_example_interpret + question_prompt + feature_template + choice_template
+                        question_item_explain = f"\n 1. Explanation:  "
+                        for x in range(len(target_features) - 1):
+                            question_item_explain += target_features[x] + ", "
+                        question_item_explain += f"{target_features[-1]} acted in {title}. "
+
+                        target_item_actor = item2feature[answer_title][2]
+                        target_item_explain = f""
+                        for x in range(len(target_item_actor) - 1):
+                            target_item_explain += target_item_actor[x] + ", "
+                        target_item_explain += target_item_actor[-1]
+                        target_item_explain += f" acted in {answer_title}."
+                        target_item_explain += " 2. Answer:"
+                        if type == "train":
+                            whole_template = prefix_template + feature_template + choice_template + question_item_explain + target_item_explain
+                        elif type == "test":
+                            whole_template = prefix_template + example_prompt + genre_example_question + genre_example_interpret + question_prompt + feature_template + choice_template
+
                 elif idx == 3:
                     if example is False:
                         whole_template = prefix_template + feature_template + choice_template
                     else:
-                        whole_template = prefix_template + example_prompt + writer_example_question + writer_example_interpret + question_prompt + feature_template + choice_template
+                        question_item_explain = f"\n 1. Explanation: {title} was written by "
+                        for x in range(len(target_features) - 1):
+                            question_item_explain += target_features[x] + ", "
+                        question_item_explain += target_features[-1] + ". "
+
+                        target_item_writer = item2feature[answer_title][3]
+                        target_item_explain = f"{answer_title} was written by "
+                        for x in range(len(target_item_writer) - 1):
+                            target_item_explain += target_item_writer[x] + ", "
+                        target_item_explain += target_item_writer[-1] + "."
+                        target_item_explain += " 2. Answer:"
+                        if type == "train":
+                            whole_template = prefix_template + feature_template + choice_template + question_item_explain + target_item_explain
+                        elif type == "test":
+                            whole_template = prefix_template + example_prompt + genre_example_question + genre_example_interpret + question_prompt + feature_template + choice_template
 
                 alpha = choice_alphabet[choices.index(answer_title)]
                 answer = alpha + ')' + ' ' + answer_title
@@ -371,16 +453,16 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
     # with open('../data/rq3_random3choice_num.json', 'w', encoding='utf-8') as result_f:
     #     result_f.write(json.dumps(title_quiz_num, indent=4))
     if example:
-        with open(f'../data/rq3_{choice}choice_example_{model}.json', 'w', encoding='utf-8') as result_f:
+        with open(f'../data/rq3_{choice}choice_example_{model}_{type}.json', 'w', encoding='utf-8') as result_f:
             result_f.write(json.dumps(result_list, indent=4))
     else:
-        with open(f'../data/rq3_{choice}choice.json', 'w', encoding='utf-8') as result_f:
+        with open(f'../data/rq3_{choice}choice_test.json', 'w', encoding='utf-8') as result_f:
             result_f.write(json.dumps(result_list, indent=4))
 
 
 if __name__ == "__main__":
     all_titles, itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature = createSources()
-    # create_rq1(item2feature, itemFeatures)
-    # create_rq2(item2feature, itemFeatures)
-    create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature, choice=3, example=True,
-               model='llama')
+    # create_rq1(item2feature, itemFeatures, choice=3)
+    # create_rq2(item2feature, itemFeatures, choice=5)
+    create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature, choice=5, example=True,
+               model='llama', type="train")
