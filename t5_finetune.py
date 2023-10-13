@@ -84,7 +84,7 @@ def t5_finetune(
             "v_proj",
         ],
         # llm hyperparams
-        train_on_inputs: bool = True,  # if False, masks out inputs in loss
+        train_on_inputs: bool = False,  # if False, masks out inputs in loss
         add_eos_token: bool = False,
         group_by_length: bool = False,  # faster, but produces an odd training loss curve
         # wandb params
@@ -208,6 +208,11 @@ def t5_finetune(
 
     data = Dataset.from_pandas(pd.DataFrame(data))
 
+    tokenizer.pad_token_id = (
+        0  # unk. we want this to be different from the eos token
+    )
+    tokenizer.padding_side = "right"  # Allow batched inference
+
     if val_set_size > 0:
         train_val = data.train_test_split(
             test_size=val_set_size, shuffle=True, seed=42
@@ -226,11 +231,6 @@ def t5_finetune(
         base_model,
         device_map=device_map,
     )
-
-    tokenizer.pad_token_id = (
-        0  # unk. we want this to be different from the eos token
-    )
-    tokenizer.padding_side = "left"  # Allow batched inference
 
     if not ddp and torch.cuda.device_count() > 1:
         # keeps Trainer from trying its own DataParallelism when more than 1 gpu is available
