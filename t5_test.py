@@ -64,13 +64,13 @@ class T5Evaluator:
 
         if device == "cuda":
             model = T5ForConditionalGeneration.from_pretrained(
-                base_model,
+                lora_weights,
                 device_map='auto'
             )
 
         else:
             model = T5ForConditionalGeneration.from_pretrained(
-                base_model, device_map={"": device}, low_cpu_mem_usage=True
+                lora_weights, device_map={"": device}, low_cpu_mem_usage=True
             )
 
         # unwind broken decapoda-research config
