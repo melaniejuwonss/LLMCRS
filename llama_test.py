@@ -160,10 +160,10 @@ class LLaMaEvaluator:
             # generated_results.extend(responses)
             for output, label in zip(responses, labels):
                 movie_name = label.replace('(', ')').split(')')[1].strip().lower()
-                # if 'example' in self.args.rq_num:
-                #     check_response = output[output.lower().find("answer:"):].lower()
-                # else:
-                check_response = output
+                if 'example' in self.args.rq_num or 'explain' in self.args.rq_num:
+                    check_response = output[output.lower().find("answer:"):].lower()
+                else:
+                    check_response = output
                 if movie_name in check_response.lower():
                     hit += 1.0
                 cnt += 1.0
