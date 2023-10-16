@@ -57,8 +57,6 @@ class LLaMaEvaluator:
         base_model = self.args.base_model
         if self.args.lora_weights != "":
             lora_weights = self.args.lora_weights
-        else:
-            lora_weights = base_model
 
         assert (
             base_model
