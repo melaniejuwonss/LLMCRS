@@ -106,9 +106,6 @@ if __name__ == '__main__':
 
     args.lora_weights = os.path.join(args.home, args.lora_weights)
     args.log_file = log_file
-    question_data = read_data(args)
-    instructions = [i[0] for i in question_data]
-    labels = [i[1] for i in question_data]
 
     args.wandb_project = "LLMCRS"
     args.wandb_run_name = args.log_name
@@ -129,6 +126,10 @@ if __name__ == '__main__':
         elif 'test' == args.mode:
             instructions = [i['context_tokens'] for i in test_data]
             labels = [i['item'] for i in test_data]
+    elif args.stage.lower() == "quiz":
+        question_data = read_data(args)
+        instructions = [i[0] for i in question_data]
+        labels = [i[1] for i in question_data]
 
     if 'gpt' in args.base_model.lower():
         chatgpt_test(args=args, instructions=instructions, labels=labels)
