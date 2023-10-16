@@ -13,12 +13,14 @@ from datetime import datetime
 from pytz import timezone
 
 from chatgpt_test import chatgpt_test
+from dataset_rec import CRSDatasetRec
 from llama_finetune import llama_finetune
 from llama_test import LLaMaEvaluator
 from t5_finetune import t5_finetune
 from t5_test import T5Evaluator
 from utils.data import read_data
 from utils.parser import parse_args, dir_init
+from os.path import dirname, realpath
 
 
 class RQ(Dataset):
@@ -96,9 +98,11 @@ if __name__ == '__main__':
     if not os.path.exists(result_path): os.mkdir(result_path)
     args.log_name = mdhm + '_' + args.base_model.replace('/', '-') + '_' + f'rq{args.rq_num}' + '_' + args.log_name
     if args.log_file == '':
-        log_file = open(os.path.join(args.home, result_path, f'{mdhm}_rq{args.rq_num}.json'), 'a', buffering=1, encoding='UTF-8')
+        log_file = open(os.path.join(args.home, result_path, f'{mdhm}_rq{args.rq_num}.json'), 'a', buffering=1,
+                        encoding='UTF-8')
     else:
-        log_file = open(os.path.join(args.home, result_path, f'{args.log_file}.json'), 'a', buffering=1, encoding='UTF-8')
+        log_file = open(os.path.join(args.home, result_path, f'{args.log_file}.json'), 'a', buffering=1,
+                        encoding='UTF-8')
 
     args.lora_weights = os.path.join(args.home, args.lora_weights)
     args.log_file = log_file
@@ -110,6 +114,21 @@ if __name__ == '__main__':
     args.wandb_run_name = args.log_name
 
     wandb.init(project=args.wandb_project, name=args.wandb_run_name)
+
+    if args.stage.lower() == "crs":
+        ROOT_PATH = dirname(realpath(__file__))
+        DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
+        crs_dataset = CRSDatasetRec(args, DATASET_PATH)
+        train_data = crs_dataset.train_data
+        valid_data = crs_dataset.valid_data
+        test_data = crs_dataset.test_data
+
+        if 'train' in args.mode:
+            instructions = [i['context_tokens'] for i in train_data]
+            labels = [i['item'] for i in train_data]
+        elif 'test' == args.mode:
+            instructions = [i['context_tokens'] for i in test_data]
+            labels = [i['item'] for i in test_data]
 
     if 'gpt' in args.base_model.lower():
         chatgpt_test(args=args, instructions=instructions, labels=labels)
@@ -133,4 +152,3 @@ if __name__ == '__main__':
                         labels=labels, num_epochs=args.epoch)
         if 'test' == args.mode:
             evaluator.test()
-

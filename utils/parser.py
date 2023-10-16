@@ -17,10 +17,14 @@ def parse_args():
     parser.add_argument('--max_new_tokens', type=int, default=100)
     parser.add_argument('--max_input_length', type=int, default=200)
     parser.add_argument('--device_id', type=str, default='0')
+    parser.add_argument('--max_dialog_len', type=int, default=128)
     parser.add_argument('--rq_num', type=str, default='1')
     parser.add_argument('--base_model', type=str, default='gpt-3.5-turbo',
                         choices=['meta-llama/Llama-2-7b-hf', 'meta-llama/Llama-2-13b-hf',
-                                 'meta-llama/Llama-2-7b-chat-hf', 'gpt-3.5-turbo', 'google/flan-t5-large', 't5-large'])
+                                 'meta-llama/Llama-2-7b-chat-hf', 'gpt-3.5-turbo', 'google/flan-t5-large', 't5-small',
+                                 't5-large'])
+    parser.add_argument('--dataset_path', type=str, default='data/redial')
+    parser.add_argument('--stage', type=str, default='crs')  # crs or quiz
     parser.add_argument('--model_name', type=str, default='llama')
     parser.add_argument('--num_device', type=int, default=1)
     parser.add_argument("--write", action='store_true', help="Whether to write of results.")

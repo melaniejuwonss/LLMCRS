@@ -54,10 +54,12 @@ class T5Evaluator:
                       server_name: str = "0.0.0.0",  # Allows to listen on all interfaces by providing '0.
                       share_gradio: bool = False, ):
         print('prepare new model for evaluating')
-        if self.args.lora_weights != "":
-            lora_weights = self.args.lora_weights
 
         base_model = self.args.base_model
+        if self.args.lora_weights != "":
+            lora_weights = self.args.lora_weights
+        else:
+            lora_weights = base_model
         assert (
             base_model
         ), "Please specify a --base_model, e.g. --base_model='huggyllama/llama-7b'"
@@ -83,7 +85,7 @@ class T5Evaluator:
     def prepare_dataloader(self):
         self.tokenizer.padding_side = 'left'
 
-        instructions = [self.prompter.generate_prompt(i) for i in self.instructions]
+        instructions = [self.prompter.generate_prompt(instruction=instruction, label=' ') for instruction in self.instructions]
         instruction_dataset = Textdataset(self.args, instructions, self.labels, self.tokenizer)
         dataloader = DataLoader(instruction_dataset, batch_size=self.args.eval_batch_size, shuffle=False)
 
