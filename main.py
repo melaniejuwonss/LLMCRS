@@ -81,7 +81,7 @@ if __name__ == '__main__':
     if 'llama' in args.base_model.lower():
         tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
 
-        evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels)
+        evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels, negItems=negItems)
         if 'train' in args.mode:
             llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=instructions,
                            labels=labels, num_epochs=args.epoch)

@@ -15,7 +15,6 @@ if torch.cuda.is_available():
 else:
     device = "cpu"
 
-
 class Textdataset(Dataset):
     def __init__(self, args, instructions, labels, tokenizer):
         self.args = args
@@ -99,8 +98,8 @@ class LLaMaEvaluator:
     def prepare_dataloader(self):
         self.tokenizer.padding_side = 'left'
 
-        instructions = [self.prompter.generate_prompt(instruction=instruction, label=' ') for instruction in
-                        self.instructions]
+        instructions = [self.prompter.generate_prompt(instruction=instruction, label=' ', negItem=negItem) for instruction, negItem in
+                        zip(self.instructions, self.negItems)]
         instruction_dataset = Textdataset(self.args, instructions, self.labels, self.tokenizer)
         dataloader = DataLoader(instruction_dataset, batch_size=self.args.eval_batch_size, shuffle=False)
 
@@ -165,7 +164,7 @@ class LLaMaEvaluator:
                 if 'quiz' in self.args.stage:
                     movie_name = label.replace('(', ')').split(')')[1].strip().lower()
                 elif 'crs' in self.args.stage:
-                    movie_name = label.lower()
+                    movie_name = label.split('(')[0].strip().lower()
                 if 'example' in self.args.rq_num or 'explain' in self.args.lora_weights:
                     check_response = output[output.lower().find("answer:"):].lower()
                 else:

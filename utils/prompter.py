@@ -11,7 +11,7 @@ class Prompter(object):
         if not template_name:
             # Enforce the default here, so the constructor can be called with '' and will not break.
             if args.stage == "crs":
-                template_name = "crs_rec"
+                template_name = "withoutCoT_neg"
             elif args.stage == "quiz":
                 template_name = "alpaca_legacy"
         file_name = os.path.join(args.home, "templates", f"{template_name}.json")
@@ -29,6 +29,7 @@ class Prompter(object):
             instruction: str,
             input: Union[None, str] = None,
             label: Union[None, str] = None,
+            negItem: list = None,
     ) -> str:
         # returns the full prompt from instruction and optional input
         # if a label (=response, =output) is provided, it's also appended.
@@ -38,7 +39,8 @@ class Prompter(object):
             )
         else:
             res = self.template["prompt_no_input"].format(
-                instruction=instruction
+                instruction=instruction,
+                negItems=negItem
             )
         if label:
             res = f"{res}\n\n### Response:{label}"
