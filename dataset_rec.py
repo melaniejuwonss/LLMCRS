@@ -42,19 +42,29 @@ class CRSDatasetRec:
         return train_data, valid_data, test_data
 
     def _load_data(self):
-        train_data_raw, valid_data_raw, test_data_raw = self._load_raw_data()  # load raw train, valid, test data
+        augmented_data_path = os.path.join(self.data_path, 'augmented')
+        if os.path.isdir(augmented_data_path):
+            with open(os.path.join(augmented_data_path, 'train_data_augment.json'), 'r', encoding='utf-8') as f:
+                self.train_data = json.load(f)
+            with open(os.path.join(augmented_data_path, 'valid_data_augment.json'), 'r', encoding='utf-8') as f:
+                self.valid_data = json.load(f)
+            with open(os.path.join(augmented_data_path, 'test_data_augment.json'), 'r', encoding='utf-8') as f:
+                self.test_data = json.load(f)
 
-        train_data = self._raw_data_process(train_data_raw)  # training sample 생성
-        self.train_data = self.rec_process_fn(train_data)
-        logger.debug("[Finish train data process]")
+        else:
+            train_data_raw, valid_data_raw, test_data_raw = self._load_raw_data()  # load raw train, valid, test data
 
-        test_data = self._raw_data_process(test_data_raw)
-        self.test_data = self.rec_process_fn(test_data)
-        logger.debug("[Finish test data process]")
+            train_data = self._raw_data_process(train_data_raw)  # training sample 생성
+            self.train_data = self.rec_process_fn(train_data)
+            logger.debug("[Finish train data process]")
 
-        valid_data = self._raw_data_process(valid_data_raw)
-        self.valid_data = self.rec_process_fn(valid_data)
-        logger.debug("[Finish valid data process]")
+            test_data = self._raw_data_process(test_data_raw)
+            self.test_data = self.rec_process_fn(test_data)
+            logger.debug("[Finish test data process]")
+
+            valid_data = self._raw_data_process(valid_data_raw)
+            self.valid_data = self.rec_process_fn(valid_data)
+            logger.debug("[Finish valid data process]")
 
     def rec_process_fn(self, dataset):
         augment_dataset = []
@@ -90,7 +100,7 @@ class CRSDatasetRec:
                     utt['text'][idx] = '%s' % (self.movie2name[word[1:]][1])
 
             text = ' '.join(utt['text'])
-            movie_ids = [self.entityid2name[self.entity2id[movie]] for movie in utt['movies'] if
+            movie_ids = [self.entity2id[movie] for movie in utt['movies'] if
                          movie in self.entity2id]  # utterance movie(entity2id) 마다 entity2id 저장
             entity_ids = [self.entity2id[entity] for entity in utt['entity'] if
                           entity in self.entity2id]  # utterance entity(entity2id) 마다 entity2id 저장

@@ -34,10 +34,11 @@ class Textdataset(Dataset):
 
 
 class LLaMaEvaluator:
-    def __init__(self, args, tokenizer, instructions: list = None, labels: list = None, prompt_template: str = ""):
+    def __init__(self, args, tokenizer, instructions: list = None, labels: list = None, negItems: list = None, prompt_template: str = ""):
         self.args = args
         self.instructions = instructions
         self.labels = labels
+        self.negItems = negItems
         self.tokenizer = tokenizer  # , LlamaTokenizer.from_pretrained(self.args.base_model)
         self.prompter = Prompter(args, prompt_template)
 

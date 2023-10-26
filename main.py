@@ -23,71 +23,8 @@ from utils.parser import parse_args, dir_init
 from os.path import dirname, realpath
 
 
-class RQ(Dataset):
-    def __init__(self, tokenizer, args):
-        super(Dataset, self).__init__()
-        self.data_samples = []
-        self.tokenizer = tokenizer
-        self.args = args
-        self.read_data()
-
-    def read_data(self):
-        RQ_data = json.load((open('data/rq' + str(self.args.rq_num) + '.json', 'r', encoding='utf-8')))
-        question, answer = [], []
-        for data in RQ_data:
-            question.append(data['Question'])
-            answer.append(data['Answer'])
-
-        # tokenized_input = self.tokenizer(question, return_tensors="pt", padding=True, return_token_type_ids=False).to(
-        #     self.args.device_id)
-        # tokenized_output = self.tokenizer(answer, return_tensors="pt", padding=True, return_token_type_ids=False).to(
-        #     self.args.device_id)
-        for t_input, t_output in zip(question, answer):
-            self.data_samples.append((t_input, t_output))
-
-    def __getitem__(self, idx):
-        input = self.data_samples[idx][0]
-        output = self.data_samples[idx][1]
-
-        return input, output
-
-    def __len__(self):
-        return len(self.data_samples)
-
-
-class RQCollator:
-    def __init__(self, tokenizer, args):
-        self.tokenizer = tokenizer
-        self.args = args
-
-    def __call__(self, data_batch):
-        question_batch, resp_batch, input_len_batch = [], [], []
-        for data_input, data_output in data_batch:
-            question_batch.append(data_input)
-            input_len_batch.append(len(data_input))
-            resp_batch.append(data_output)
-
-        input_batch = {}
-        tokenized_input = self.tokenizer(question_batch, return_tensors="pt", padding=True,
-                                         return_token_type_ids=False).to(
-            self.args.device_id)
-        input_batch['answer'] = resp_batch
-        input_batch['question_len'] = torch.sum(tokenized_input.attention_mask, dim=1)
-        input_batch['question'] = tokenized_input
-
-        return input_batch
-
-
-def evaluate(gen_seq, answer, log_file):
-    # gen_output, result_f = [], []
-    # for seq, len in zip(gen_seq, input_len):
-    #     gen_output.append(seq[len:])
-    # decoded_output = tokenizer.batch_decode(gen_output, skip_special_tokens=True)
-    for output, label in zip(gen_seq, answer):
-        log_file.write(json.dumps({'GEN': output, 'ANSWER': label}, ensure_ascii=False) + '\n')
-    #     result_f.append({'GEN': output, 'ANSWER': label})
-    # with open('result/llama/' + str(rq_num) + '_result.json', 'w', encoding='utf-8') as f_write:
-    #     f_write.write(json.dumps(result_f, indent=4))
+def convertIds2Names(id_list, id2name):
+    return [id2name[item] for item in id_list]
 
 
 if __name__ == '__main__':
@@ -122,17 +59,24 @@ if __name__ == '__main__':
 
         if 'train' in args.mode:
             instructions = [i['context_tokens'] for i in train_data]
-            labels = [i['item'] for i in train_data]
+            labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
+
         elif 'test' == args.mode:
             instructions = [i['context_tokens'] for i in test_data]
-            labels = [i['item'] for i in test_data]
+            labels = [crs_dataset.entityid2name[i['item']] for i in test_data]
+            negItems = [convertIds2Names(i['negItems'], crs_dataset.entityid2name) for i in test_data]
+            # for idx, data in enumerate(test_data):
+            #     negItems = data['negItems']
+            #     negItems = [crs_dataset.entityid2name[item] for item in negItems]
+            #     test_data[idx]['negItems'] = negItems
+
     elif args.stage.lower() == "quiz":
         question_data = read_data(args)
         instructions = [i[0] for i in question_data]
         labels = [i[1] for i in question_data]
 
     if 'gpt' in args.base_model.lower():
-        chatgpt_test(args=args, instructions=instructions, labels=labels)
+        chatgpt_test(args=args, instructions=instructions, labels=labels, negItems=negItems)
 
     if 'llama' in args.base_model.lower():
         tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
