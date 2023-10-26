@@ -42,7 +42,7 @@ class Prompter(object):
                 instruction=instruction
             )
         if label:
-            res = f"{res}\n\n### Response:{label}"
+            res = f"{res}{label}"
         if self._verbose:
             print(res)
         return res
