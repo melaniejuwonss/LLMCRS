@@ -40,7 +40,7 @@ class Prompter(object):
         else:
             res = self.template["prompt_no_input"].format(
                 instruction=instruction,
-                negItems=negItem
+                negItems=", ".join(negItem)
             )
         if label:
             res = f"{res}\n\n### Response:{label}"
