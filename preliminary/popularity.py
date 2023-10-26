@@ -71,7 +71,7 @@ def popularity_model_rq12(model_name):
                 if label[3:].lower() not in correctFreq.keys():
                     correctFreq[label[3:].lower()] = 0
                 else:
-                    correctFreq[label[3:].lower()] =0
+                    correctFreq[label[3:].lower()] = 0
 
         if 'rq2' not in file:
             for key, value in num_datas.items():
@@ -290,9 +290,10 @@ def rq2test_firstreview(model_name):
     with open('../data/modelResults/' + model_name + '/rq2_5choice_firstreview.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(save_dict, indent=4))
 
+
 def rq2_traintest_split():
     datas = json.load(
-        (open('../data/rq2_3choice_test.json', 'r', encoding='utf-8')))
+        (open('../data/gpt-3.5-turbo/rq2_3choice_test.json', 'r', encoding='utf-8')))
 
     test_dict, train_dict = [], []
     movie_name = ""
@@ -311,14 +312,44 @@ def rq2_traintest_split():
         f.write(json.dumps(train_dict, indent=4))
 
 
+def evaluate():
+    hit, total = 0, 0
+    savejson = []
+    datas = json.load(
+        (open('../result/gpt-3.5-turbo/1024164819_rqcrs_withCoT.json', 'r', encoding='utf-8')))
+    for data in datas:
+        gen = data['RESPONSE'][data['RESPONSE'].lower().rfind('\n'):].lower()
+        answer = data['LABEL'].split('(')[0].strip().lower()
+        total += 1
+        if answer in gen:
+            hit += 1
+        AVG_HIT = hit / total
+        savejson.append({'RESPONSE': gen, 'LABEL': data['LABEL'], 'AVG_HIT': AVG_HIT})
+    print(total)
+    with open('../result/gpt-3.5-turbo/1024164819_rqcrs_withCoT_onlyName.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps(savejson, indent=4))
+
+
 if __name__ == "__main__":
     # popularity_crs()
-    popularity_model_rq12("llama7b")
+    # popularity_model_rq12("llama7b")
     # popularity_model_rq3("chatgpt")
-    popularity_avg_hitratio("llama7b")
+    # popularity_avg_hitratio("llama7b")
     # hitratio_type_rq1("chatgpt")
     # hitratio_type_rq3("chatgpt")
 
-
     # rq2test_firstreview("llama7b")
-    rq2_traintest_split()
+    # rq2_traintest_split()
+
+    # evaluate()
+    movie2name = json.load(
+        open('../data/redial/movie2name.json', 'r', encoding='utf-8'))
+    saveList= dict()
+    for key, value in movie2name.items():
+        id = value[0]
+        title = value[1]
+        if id == -1:
+            continue
+        saveList[id] = title
+    with open('entityid2name.json','w',encoding='utf-8') as wf:
+        wf.write(json.dumps(saveList, indent=4))

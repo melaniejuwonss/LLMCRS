@@ -25,6 +25,24 @@ class CRSDatasetRec:
             self.entityid2name[value[0]] = value[1]
         self.entity2id = json.load(
             open(os.path.join(self.data_path, 'entity2id.json'), 'r', encoding='utf-8'))  # {entity: entity_id}
+        ## Neg candidate
+        self.negativeList = json.load(
+            open(os.path.join(self.data_path, 'negative_id.json'), 'r', encoding='utf-8'))
+        self.movie2name = json.load(
+            open(os.path.join(self.data_path, 'movie2name.json'), 'r', encoding='utf-8'))
+        self.item_ids = json.load(
+            open(os.path.join(self.data_path, 'movie_ids.json'), 'r', encoding='utf-8'))
+        self.all_movies = json.load((open('data/content_data.json', 'r', encoding='utf-8')))[0]
+        self.all_movie_name, self.all_movie_id = [], []
+        for movie in self.all_movies:
+            title = movie['title']
+            year = movie['year']
+            if year is not None or title == str(year) or str(year) in title:
+                title = title + " (" + str(year) + ")"
+            crs_id = movie['crs_id']
+            entity_id = self.movie2name[crs_id][0]
+            self.all_movie_name.append(title)
+            self.all_movie_id.append(entity_id)
         self._load_data()
 
     def _load_raw_data(self):
@@ -56,15 +74,51 @@ class CRSDatasetRec:
 
             train_data = self._raw_data_process(train_data_raw)  # training sample 생성
             self.train_data = self.rec_process_fn(train_data)
+            # self.mergeWithNegatives(self.test_data)
+            # with open('train_data_augment.json', 'w', encoding='utf-8') as f:
+            #     f.write(json.dumps(self.train_data, indent=4))
             logger.debug("[Finish train data process]")
 
             test_data = self._raw_data_process(test_data_raw)
             self.test_data = self.rec_process_fn(test_data)
+            # self.mergeWithNegatives(self.train_data)
+            # with open('test_data_augment.json', 'w', encoding='utf-8') as f:
+            #     f.write(json.dumps(self.test_data, indent=4))
             logger.debug("[Finish test data process]")
 
             valid_data = self._raw_data_process(valid_data_raw)
             self.valid_data = self.rec_process_fn(valid_data)
+            # self.mergeWithNegatives(self.valid_data)
+            # with open('valid_data_augment.json', 'w', encoding='utf-8') as f:
+            #     f.write(json.dumps(self.valid_data, indent=4))
             logger.debug("[Finish valid data process]")
+
+    def mergeWithNegatives(self, dataset):
+        for data in tqdm(dataset, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
+            saveListId = self.sampleNegative(data['item'])
+            data['negItems'] = saveListId
+
+    def sampleNegative(self, ground_truth):
+        candName, candIdx = [], []
+        saveListName, saveListId = [], []
+        i = 0
+        while True:
+            idx = random.randrange(0, len(self.item_ids))
+            if str(ground_truth) == str(self.item_ids[idx]):
+                continue
+            if self.item_ids[idx] not in self.all_movie_id:
+                continue
+            else:
+                i += 1
+                candIdx.append(self.item_ids[idx])
+            if i == 40:
+                break
+
+        return candIdx
+        # with open('negative_name', 'w', encoding='utf-8') as f:
+        #     f.write(json.dumps(saveListName, indent=4))
+        # with open('negative_id', 'w', encoding='utf-8') as f:
+        #     f.write(json.dumps(saveListId, indent=4))
 
     def rec_process_fn(self, dataset):
         augment_dataset = []

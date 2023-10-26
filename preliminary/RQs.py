@@ -10,38 +10,42 @@ genre_example_question = " Which movie shares genre with Soul (2020)? \n Choices
 genre_example_interpret = " Answer form: \n" \
                           " 1.Explanation: The genres of Soul (2020) are animation, adventure, and comedy." \
                           " The genres of Inside Out (2015) are animation, adventure, and comedy." \
+                          " The genres of The Pianist (200) are biography, drama, and music." \
+                          " The genres of Kiss the Girls (1997) are crime, drama, and mystery." \
+                          " The genres of Harry Brown (2009) are action, crime, and drama." \
+                          " The genres of Meet Joe Black (1998) are drama, fantasy, and romance." \
                           " 2.Answer: a) Inside Out (2015). \n"
-# " The genres of The Pianist (200) are biography, drama, and music." \
-# " The genres of Kiss the Girls (1997) are crime, drama, and mystery." \
-# " The genres of Harry Brown (2009) are action, crime, and drama." \
-# " The genres of Meet Joe Black (1998) are drama, fantasy, and romance." \
+
 director_example_question = " Which movie was directed by the same person who directed Superintelligence (2020)? \n Choices: a) Pretty when you cry (2001) b) The Boss (2016) c) Ghosts of Mars (2001) d) Ace Ventura: when nature calls (1995) e) Brick (2005) \n"
 director_example_interpret = " Answer form: \n" \
                              " 1.Explanation: Superintelligence (2020) was directed by Ben Falcone." \
+                             " Pretty when you cry (2001) was directed by Jack N. Green." \
                              " The Boss (2016) was directed by Ben Falcone." \
+                             " Ghosts of Mars (2001) was directed by John Carpenter." \
+                             " Ace Ventura: when nature calls (1995) was directed by Steve Oedekerk." \
+                             " Brick (2005) was directed by Rian Johnson." \
                              " 2.Answer: b) The Boss (2016). \n"
-# " Pretty when you cry (2001) was directed by Jack N. Green." \
-# " Ghosts of Mars (2001) was directed by John Carpenter." \
-# " Ace Ventura: when nature calls (1995) was directed by Steve Oedekerk." \
-# " Brick (2005) was directed by Rian Johnson." \
+
 writer_example_question = " Which movie was also written by Tenet (2020) writer? \n Choices: a) Strange Days (1995) b) A Nightmare on Elm Street (2010)  c) Inception (2010) d) Dance with Me (1997) e) Frankenstein (1931) \n"
 writer_example_interpret = " Answer form: \n " \
                            " 1.Explanation: The writer of Tenet (2020) is Christopher Nolan." \
+                           " Strange Days (1995) is written by James Cameron." \
+                           " A Nightmare on Elm Street (2010) is written by Wesley Strick." \
                            " Inception (2010) is written by Christopher Nolan." \
+                           " Dance with Me (1997) is written by Daryl Matthews." \
+                           " Frankenstein (1931) is written by John L. Balderston." \
                            " 2.Answer: c) Inception (2010). \n"
-# " Strange Days (1995) is written by James Cameron." \
-# " A Nightmare on Elm Street (2010) is written by Wesley Strick." \
-# " Dance with Me (1997) is written by Daryl Matthews." \
-# " Frankenstein (1931) is written by John L. Balderston."
+
 actor_example_question = " In which another movie did an actor from Pixie (2020) act? \n Choices: a) The wolf of wall street (2013) b) Chicago (1927) c) Ouija (2014) d) This Space between Us (1999) e) Mean Girls (2004) \n"
 actor_example_interpret = " Answer form: \n " \
                           " 1.Explanation: Olivia Cooke appeared in Pixie (2020)." \
+                          " Leonardo DiCaprio acted in The wolf of wall street (1929)." \
+                          " Phyllis Haver acted in Chicago (1927)." \
                           " Olivia Cooke acted in Ouija (2014)." \
+                          " Jeremy Sisto acted in This Space between Us (1999)." \
+                          " Lindsay Lohan acted in Mean Girls (2004)." \
                           " 2.Answer: c) Ouija (2014). \n"
-# " Leonardo DiCaprio acted in The wolf of wall street (1929)." \
-# " Phyllis Haver acted in Chicago (1927)." \
-# " Jeremy Sisto acted in This Space between Us (1999)." \
-# " Lindsay Lohan acted in Mean Girls (2004)." \
+
 question_prompt = "Here is our question. "
 prefix_template = "The following multiple-choice quiz has 3 choices (a,b,c). Select the best answer from the given choices. \n"
 obj_templates = [
@@ -157,7 +161,7 @@ def createSources():
     return all_titles, itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature
 
 
-def sample_choices(candidates, choice_num, itemFeatures, target_features=None):
+def sample_choices(candidates, choice_num, itemFeatures, target_features=None, idx=None):
     cnt = 0
     if target_features is None:
         choices = random.sample(candidates, choice_num)
@@ -169,8 +173,12 @@ def sample_choices(candidates, choice_num, itemFeatures, target_features=None):
             for choice in choices:
                 feature_cnt = 0
                 for target_feature in target_features:
-                    if target_feature not in itemFeatures[choice]:
-                        feature_cnt += 1
+                    if idx is not None:
+                        if target_feature not in itemFeatures[choice][idx] and len(itemFeatures[choice][idx]) > 0:
+                            feature_cnt += 1
+                    else:
+                        if target_feature not in itemFeatures[choice] and len(itemFeatures[choice]) > 0:
+                            feature_cnt += 1
                 if feature_cnt == len(target_features):
                     cnt += 1
             if cnt == choice_num:
@@ -293,15 +301,18 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
                                         :director_example_question.find("d)")] + "\n"
             actor_example_question = actor_example_question[:actor_example_question.find("d)")] + "\n"
             writer_example_question = writer_example_question[:writer_example_question.find("d)")] + "\n"
+    cntcnt = dict()
     for title in tqdm(item2feature.keys(), bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
         all_features = item2feature[title]
         all_items = deepcopy(list(itemFeatures.keys()))
         all_items.remove(title)
 
         for idx in range(4):  # genre, director, actor, writer
+
             target_features = all_features[idx]
             templates = random.sample(item_template[idx], 1)
             for template in templates:
+                target_item_explain = f""
                 if idx == 0:
                     if len(target_features) == 0:
                         continue
@@ -336,6 +347,7 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
                         answer_title = "None"
                     else:
                         answer_title = random.sample(actor_items, 1)[0]
+
                 elif idx == 3:
                     if len(target_features) == 0:
                         continue
@@ -347,16 +359,15 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
                         answer_title = "None"
                     else:
                         answer_title = random.sample(writer_items, 1)[0]
-                choices = sample_choices(all_items, choice - 1, itemFeatures,
-                                         target_features)
+                choices = sample_choices(all_items, choice - 1, item2feature, target_features, idx)
                 choices.append(answer_title)
                 random.shuffle(choices)
 
                 feature_template = template % (title)
                 choice_template = postfix_template % (tuple(choices))
 
-                if type == "train" and answer_title == "None":  # None 의 경우 train 에서 제외
-                    continue
+                # if answer_title == "None":  # None 의 경우 train 에서 제외
+                #     continue
 
                 if idx == 0:  # genre, director, actor, writer
                     if example is False:
@@ -367,19 +378,20 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
                             question_item_explain += target_features[x] + ", "
                         question_item_explain += target_features[-1] + ". "
 
-                        target_item_genres = item2feature[answer_title][0]
-                        target_item_explain = f"{answer_title} has genre of "
-                        for x in range(len(target_item_genres) - 1):
-                            target_item_explain += target_item_genres[x] + ", "
-                        try:
+                        for each_choice in choices:
+                            if each_choice == 'None':
+                                continue
+                            target_item_genres = item2feature[each_choice][0]
+                            target_item_explain += f" {each_choice} has genre of "
+                            for x in range(len(target_item_genres) - 1):
+                                target_item_explain += target_item_genres[x] + ", "
                             target_item_explain += target_item_genres[-1] + "."
-                        except:
-                            print()
+
                         target_item_explain += " 2. Answer:"
                         if type == "train":
-                            whole_template = prefix_template + feature_template + choice_template + question_item_explain + target_item_explain
+                            whole_template = prefix_template + feature_template + choice_template
                         elif type == "test":
-                            whole_template = prefix_template + example_prompt + genre_example_question + genre_example_interpret + question_prompt + feature_template + choice_template
+                            whole_template = prefix_template + example_prompt + genre_example_question + genre_example_interpret + question_prompt + feature_template + choice_template + question_item_explain + target_item_explain
                 elif idx == 1:
                     if example is False:
                         whole_template = prefix_template + feature_template + choice_template
@@ -389,16 +401,22 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
                             question_item_explain += target_features[x] + ", "
                         question_item_explain += target_features[-1] + ". "
 
-                        target_item_director = item2feature[answer_title][1]
-                        target_item_explain = f"{answer_title} was directed by "
-                        for x in range(len(target_item_director) - 1):
-                            target_item_explain += target_item_director[x] + ", "
-                        target_item_explain += target_item_director[-1] + "."
+
+                        for each_choice in choices:
+                            if each_choice == 'None':
+                                continue
+                            target_item_director = item2feature[each_choice][1]
+                            target_item_explain += f" {each_choice} was directed by "
+                            for x in range(len(target_item_director) - 1):
+                                target_item_explain += target_item_director[x] + ", "
+                            target_item_explain += target_item_director[-1] + "."
+
+
                         target_item_explain += " 2. Answer:"
                         if type == "train":
-                            whole_template = prefix_template + feature_template + choice_template + question_item_explain + target_item_explain
+                            whole_template = prefix_template + feature_template + choice_template
                         elif type == "test":
-                            whole_template = prefix_template + example_prompt + genre_example_question + genre_example_interpret + question_prompt + feature_template + choice_template
+                            whole_template = prefix_template + example_prompt + genre_example_question + genre_example_interpret + question_prompt + feature_template + choice_template + question_item_explain + target_item_explain
 
                 elif idx == 2:
                     if example is False:
@@ -409,17 +427,21 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
                             question_item_explain += target_features[x] + ", "
                         question_item_explain += f"{target_features[-1]} acted in {title}. "
 
-                        target_item_actor = item2feature[answer_title][2]
-                        target_item_explain = f""
-                        for x in range(len(target_item_actor) - 1):
-                            target_item_explain += target_item_actor[x] + ", "
-                        target_item_explain += target_item_actor[-1]
-                        target_item_explain += f" acted in {answer_title}."
+                        for each_choice in choices:
+                            if each_choice == 'None':
+                                continue
+                            target_item_actor = item2feature[each_choice][2]
+
+                            for x in range(len(target_item_actor) - 1):
+                                target_item_explain += target_item_actor[x] + ", "
+                            target_item_explain += target_item_actor[-1]
+                            target_item_explain += f" acted in {each_choice}."
+
                         target_item_explain += " 2. Answer:"
                         if type == "train":
-                            whole_template = prefix_template + feature_template + choice_template + question_item_explain + target_item_explain
+                            whole_template = prefix_template + feature_template + choice_template
                         elif type == "test":
-                            whole_template = prefix_template + example_prompt + genre_example_question + genre_example_interpret + question_prompt + feature_template + choice_template
+                            whole_template = prefix_template + example_prompt + genre_example_question + genre_example_interpret + question_prompt + feature_template + choice_template + question_item_explain + target_item_explain
 
                 elif idx == 3:
                     if example is False:
@@ -430,35 +452,47 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
                             question_item_explain += target_features[x] + ", "
                         question_item_explain += target_features[-1] + ". "
 
-                        target_item_writer = item2feature[answer_title][3]
-                        target_item_explain = f"{answer_title} was written by "
-                        for x in range(len(target_item_writer) - 1):
-                            target_item_explain += target_item_writer[x] + ", "
-                        target_item_explain += target_item_writer[-1] + "."
+                        for each_choice in choices:
+                            if each_choice == 'None':
+                                continue
+                            target_item_writer = item2feature[each_choice][3]
+                            target_item_explain += f" {each_choice} was written by "
+                            for x in range(len(target_item_writer) - 1):
+                                target_item_explain += target_item_writer[x] + ", "
+                            target_item_explain += target_item_writer[-1] + "."
+
                         target_item_explain += " 2. Answer:"
                         if type == "train":
-                            whole_template = prefix_template + feature_template + choice_template + question_item_explain + target_item_explain
+                            whole_template = prefix_template + feature_template + choice_template
                         elif type == "test":
-                            whole_template = prefix_template + example_prompt + genre_example_question + genre_example_interpret + question_prompt + feature_template + choice_template
+                            whole_template = prefix_template + example_prompt + genre_example_question + genre_example_interpret + question_prompt + feature_template + choice_template + question_item_explain + target_item_explain
 
                 alpha = choice_alphabet[choices.index(answer_title)]
-                answer = alpha + ')' + ' ' + answer_title
+                if type == "train":
+                    answer = question_item_explain + target_item_explain + alpha + ')' + ' ' + answer_title
+                else:
+                    answer = alpha + ')' + ' ' + answer_title
                 cnt += 1
                 if title not in title_quiz_num.keys():
                     title_quiz_num[title] = 1
                 else:
                     title_quiz_num[title] += 1
+                if title not in cntcnt.keys():
+                    cntcnt[title] = 1
+                else:
+                    cntcnt[title] += 1
                 result_list.append({'Question': whole_template, 'Answer': answer})
     print("RQ3 AVG: " + str(cnt / len(title_quiz_num)))  # 19.2, TOTAL: 129,690
     # with open('../data/rq3_random3choice_num.json', 'w', encoding='utf-8') as result_f:
     #     result_f.write(json.dumps(title_quiz_num, indent=4))
     if example:
-        with open(f'../data/rq3_{choice}choice_example_{model}_{type}.json', 'w', encoding='utf-8') as result_f:
+        with open(f'../data/rq3_{choice}choice_fullexplain_t5_{type}.json', 'w', encoding='utf-8') as result_f:
             result_f.write(json.dumps(result_list, indent=4))
     else:
-        with open(f'../data/rq3_{choice}choice_test.json', 'w', encoding='utf-8') as result_f:
+        with open(f'../data/rq3_{choice}choice_shortanswer_test.json', 'w', encoding='utf-8') as result_f:
             result_f.write(json.dumps(result_list, indent=4))
-
+    with open(f'../data/rq3_testcnt.json', 'w', encoding='utf-8') as result_f:
+        result_f.write(json.dumps(cntcnt, indent=4))
 
 if __name__ == "__main__":
     all_titles, itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature = createSources()
