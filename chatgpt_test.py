@@ -13,7 +13,7 @@ from utils.parser import parse_args
 
 MODEL = "gpt-3.5-turbo"
 
-template = """
+template_cot_cand = """
 I will give you dialogs between an user and you (a recommender system) and candidate items.
 Based on the context of each dialog, guess step-by-step which movie should be recommended to the user among the items in candidate items.
 
@@ -39,6 +39,19 @@ Candidate items 2.
 Answer 2.
 """
 
+template_cand = """
+Pretend you are a movie recommender system. I will give you a conversation between a user and you (a recommender system).
+
+Based on the conversation, guess which movie should be recommended to the user among the items in candidate items.
+Do not provide any extra sentences.
+
+Here is the conversation:
+%s
+
+Candidate items:
+%s
+"""
+
 
 def execute(args,
             instructions: list = None,
@@ -57,7 +70,7 @@ def execute(args,
                 model=MODEL,
                 messages=[
                     {"role": "user",
-                     "content": template % (instruction, ', '.join(candidate_item))}
+                     "content": template_cand % (instruction, ', '.join(candidate_item))}
                 ],
                 temperature=0,
             )
@@ -66,7 +79,7 @@ def execute(args,
             if 'quiz' in args.stage:
                 movie_name = label.replace('(', ')').split(')')[1].strip().lower()
             elif 'crs' in args.stage:
-                check_response = response[response.lower().rfind("\n"):].lower()
+                check_response = response.lower()
                 movie_name = label.split('(')[0].strip().lower()
 
             # if 'example' in args.rq_num:
