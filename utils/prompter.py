@@ -11,7 +11,7 @@ class Prompter(object):
         if not template_name:
             # Enforce the default here, so the constructor can be called with '' and will not break.
             if args.stage == "crs":
-                template_name = "withCoT"
+                template_name = "withCoT_explain"
             elif args.stage == "quiz":
                 template_name = "alpaca_legacy"
         file_name = os.path.join(args.home, "templates", f"{template_name}.json")

@@ -26,8 +26,8 @@ class CRSDatasetRec:
         self.entity2id = json.load(
             open(os.path.join(self.data_path, 'entity2id.json'), 'r', encoding='utf-8'))  # {entity: entity_id}
         ## Neg candidate
-        self.negativeList = json.load(
-            open(os.path.join(self.data_path, 'negative_id.json'), 'r', encoding='utf-8'))
+        # self.negativeList = json.load(
+        #     open(os.path.join(self.data_path, 'negative_id.json'), 'r', encoding='utf-8'))
         self.movie2name = json.load(
             open(os.path.join(self.data_path, 'movie2name.json'), 'r', encoding='utf-8'))
         self.item_ids = json.load(

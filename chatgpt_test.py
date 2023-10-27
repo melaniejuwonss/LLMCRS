@@ -14,26 +14,20 @@ from utils.parser import parse_args
 MODEL = "gpt-3.5-turbo"
 
 template_cot_cand = """
-I will give you dialogs between an user and you (a recommender system) and candidate items.
-Based on the context of each dialog, guess step-by-step which movie should be recommended to the user among the items in candidate items.
+I will give you dialogs between an user and you (a recommender system).
+Based on the context of each dialog, guess step-by-step which movie should be recommended to the user.
 
 Dialog 1. 
 System: hello User: Hello , I am looking for some movie recommendations . Do you have any Horror Movies that you could suggest for me ? System: I do ! have you ever seen The Conjuring (2013) ? User: I have seen The Conjuring (2013) I very much enjoyed this movie . When I was younger I liked movies like Friday the 13th (1980) . System: I liked that one too ! User: I also liked to watch the A Nightmare on Elm Street (1984) Series . System: I loved that as well mainly because Johnny Depp is in it User: I love Johnny Depp ! So handsome , such a great actor . I love johnny Depp in Alice in Wonderland (2010) .
-
-Candidate items 1.
-Stalingrad  (2013), Grey Gardens (1975), Forget Paris (1995), 12 Monkeys (1995), Hunter  (2015), Strange Circus (2005), Garfield: The Movie (2004), Chicken Little  (2005), The Girl on the Train  (2009), What's Eating Gilbert Grape (1993), The Hot Chick (2002), Snowpiercer (2013), Money  (1993), Poltergeist III (1988), The Puppetmaster  (1993), Écoute voir (1979), The Duchess  (2008), Driven  (2016), Miss You Already (2015), The Truth About Cats & Dogs (1996), The Cake Eaters (2007), Inferno  (2016), Red Firecracker, Green Firecracker (1994), PT 109  (1963), Jiro Dreams of Sushi (2011), H  (2002), The Warrior  (2001), Jack Frost  (1998), Archie: To Riverdale and Back Again (1990), Anabelle Acosta, The Astronaut's Wife (1999), Day of the Dead  (2008), The Phantom of the Opera  (1925), The Texas Chainsaw Massacre 2 (1986), Grimm  (2003), Where the Heart Is  (2000), Blood Diamond  (2006), The Arrow (1996), What Women Want (2000), Captain Blood  (1960), The Wind in the Willows  (1987)
 
 Answer 1.
 - The user is looking for horror movie recommendations.
 - The user has mentioned enjoying movies like The Conjuring (2013), Friday the 13th (1980), and A Nightmare on Elm Street (1984) series.
 - The user also mentioned liking Johnny Depp and specifically mentioned enjoying his performance in Alice in Wonderland (2010).
 - Based on the user's preferences for horror movies and their appreciation for Johnny Depp, a recommended movie could be a horror film that features Johnny Depp in a prominent role. 
-Therefore, The Astronaut's Wife (1999) should be recommended.
+Therefore, The Astronaut's Wife (1999) should be recommended since Johnny Depp stars in this sci-fi horror film, and it aligns with the user's interest in horror movies and their appreciation for Johnny Depp's acting.
 
 Dialog 2.
-%s
-
-Candidate items 2.
 %s
 
 Answer 2.
@@ -46,9 +40,6 @@ Based on the conversation, guess which movie should be recommended to the user a
 Do not provide any extra sentences.
 
 Here is the conversation:
-%s
-
-Candidate items:
 %s
 """
 
@@ -70,7 +61,7 @@ def execute(args,
                 model=MODEL,
                 messages=[
                     {"role": "user",
-                     "content": template_cand % (instruction, ', '.join(candidate_item))}
+                     "content": template_cot_cand % instruction}
                 ],
                 temperature=0,
             )
