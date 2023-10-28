@@ -86,7 +86,7 @@ if __name__ == '__main__':
         evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels)
         if 'train' in args.mode:
             llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=instructions,
-                           labels=labels, num_epochs=args.epoch)
+                           labels=labels, num_epochs=args.epoch, prompt_template_name="withoutCoT")
         if 'test' == args.mode:
             evaluator.test()
 
