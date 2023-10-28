@@ -31,6 +31,7 @@ def parse_args():
     parser.add_argument("--lora_weights", type=str, default='/lora-alpaca/checkpoint-1600')
     parser.add_argument('--mode', type=str, default='test', choices=['train', 'test'])
     parser.add_argument('--log_name', type=str, default='')
+    parser.add_argument('--prompt', type=str, default='withoutCoT')
 
     # ChatGPT
     parser.add_argument('--log_file', type=str, default='')

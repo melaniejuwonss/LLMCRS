@@ -83,19 +83,21 @@ if __name__ == '__main__':
     if 'llama' in args.base_model.lower():
         tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
 
-        evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels)
+        evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels,
+                                   prompt_template_name=args.prompt)
         if 'train' in args.mode:
             llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=instructions,
-                           labels=labels, num_epochs=args.epoch, prompt_template_name="withoutCoT")
+                           labels=labels, num_epochs=args.epoch, prompt_template_name=args.prompt)
         if 'test' == args.mode:
             evaluator.test()
 
     if 't5' in args.base_model.lower():
         tokenizer = T5Tokenizer.from_pretrained(args.base_model)
 
-        evaluator = T5Evaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels)
+        evaluator = T5Evaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels,
+                                prompt_template_name=args.prompt)
         if 'train' in args.mode:
             t5_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=instructions,
-                        labels=labels, num_epochs=args.epoch)
+                        labels=labels, num_epochs=args.epoch, prompt_template_name=args.prompt)
         if 'test' == args.mode:
             evaluator.test()

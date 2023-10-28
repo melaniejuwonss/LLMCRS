@@ -34,12 +34,12 @@ class Textdataset(Dataset):
 
 
 class T5Evaluator:
-    def __init__(self, args, tokenizer, instructions: list = None, labels: list = None, prompt_template: str = ""):
+    def __init__(self, args, tokenizer, instructions: list = None, labels: list = None, prompt_template_name: str = ""):
         self.args = args
         self.instructions = instructions
         self.labels = labels
         self.tokenizer = tokenizer  # , LlamaTokenizer.from_pretrained(self.args.base_model)
-        self.prompter = Prompter(args, prompt_template)
+        self.prompter = Prompter(args, prompt_template_name)
 
         self.dataloader = self.prepare_dataloader()
         # self.model = self.prepare_model()
@@ -85,7 +85,8 @@ class T5Evaluator:
     def prepare_dataloader(self):
         self.tokenizer.padding_side = 'left'
 
-        instructions = [self.prompter.generate_prompt(instruction=instruction, label=' ') for instruction in self.instructions]
+        instructions = [self.prompter.generate_prompt(instruction=instruction, label=' ') for instruction in
+                        self.instructions]
         instruction_dataset = Textdataset(self.args, instructions, self.labels, self.tokenizer)
         dataloader = DataLoader(instruction_dataset, batch_size=self.args.eval_batch_size, shuffle=False)
 
