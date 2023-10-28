@@ -33,6 +33,10 @@ class CRSDatasetRec:
         self.item_ids = json.load(
             open(os.path.join(self.data_path, 'movie_ids.json'), 'r', encoding='utf-8'))
         self.all_movies = json.load((open('data/content_data.json', 'r', encoding='utf-8')))[0]
+        self.entityid2crsid = dict()
+        for key, value in self.movie2name.items():
+            if value[0] != -1:
+                self.entityid2crsid[value[0]] = key
         self.all_movie_name, self.all_movie_id = [], []
         for movie in self.all_movies:
             title = movie['title']
@@ -61,37 +65,37 @@ class CRSDatasetRec:
 
     def _load_data(self):
         augmented_data_path = os.path.join(self.data_path, 'augmented')
-        if os.path.isdir(augmented_data_path):
-            with open(os.path.join(augmented_data_path, 'train_data_augment.json'), 'r', encoding='utf-8') as f:
-                self.train_data = json.load(f)
-            with open(os.path.join(augmented_data_path, 'valid_data_augment.json'), 'r', encoding='utf-8') as f:
-                self.valid_data = json.load(f)
-            with open(os.path.join(augmented_data_path, 'test_data_augment.json'), 'r', encoding='utf-8') as f:
-                self.test_data = json.load(f)
+        # if os.path.isdir(augmented_data_path):
+        #     with open(os.path.join(augmented_data_path, 'train_data_augment.json'), 'r', encoding='utf-8') as f:
+        #         self.train_data = json.load(f)
+        #     with open(os.path.join(augmented_data_path, 'valid_data_augment.json'), 'r', encoding='utf-8') as f:
+        #         self.valid_data = json.load(f)
+        #     with open(os.path.join(augmented_data_path, 'test_data_augment.json'), 'r', encoding='utf-8') as f:
+        #         self.test_data = json.load(f)
+        #
+        # else:
+        train_data_raw, valid_data_raw, test_data_raw = self._load_raw_data()  # load raw train, valid, test data
 
-        else:
-            train_data_raw, valid_data_raw, test_data_raw = self._load_raw_data()  # load raw train, valid, test data
+        train_data = self._raw_data_process(train_data_raw)  # training sample 생성
+        self.train_data = self.rec_process_fn(train_data)
+        # self.mergeWithNegatives(self.test_data)
+        # with open('train_data_augment.json', 'w', encoding='utf-8') as f:
+        #     f.write(json.dumps(self.train_data, indent=4))
+        logger.debug("[Finish train data process]")
 
-            train_data = self._raw_data_process(train_data_raw)  # training sample 생성
-            self.train_data = self.rec_process_fn(train_data)
-            # self.mergeWithNegatives(self.test_data)
-            # with open('train_data_augment.json', 'w', encoding='utf-8') as f:
-            #     f.write(json.dumps(self.train_data, indent=4))
-            logger.debug("[Finish train data process]")
+        test_data = self._raw_data_process(test_data_raw)
+        self.test_data = self.rec_process_fn(test_data)
+        # self.mergeWithNegatives(self.train_data)
+        # with open('test_data_augment.json', 'w', encoding='utf-8') as f:
+        #     f.write(json.dumps(self.test_data, indent=4))
+        logger.debug("[Finish test data process]")
 
-            test_data = self._raw_data_process(test_data_raw)
-            self.test_data = self.rec_process_fn(test_data)
-            # self.mergeWithNegatives(self.train_data)
-            # with open('test_data_augment.json', 'w', encoding='utf-8') as f:
-            #     f.write(json.dumps(self.test_data, indent=4))
-            logger.debug("[Finish test data process]")
-
-            valid_data = self._raw_data_process(valid_data_raw)
-            self.valid_data = self.rec_process_fn(valid_data)
-            # self.mergeWithNegatives(self.valid_data)
-            # with open('valid_data_augment.json', 'w', encoding='utf-8') as f:
-            #     f.write(json.dumps(self.valid_data, indent=4))
-            logger.debug("[Finish valid data process]")
+        valid_data = self._raw_data_process(valid_data_raw)
+        self.valid_data = self.rec_process_fn(valid_data)
+        # self.mergeWithNegatives(self.valid_data)
+        # with open('valid_data_augment.json', 'w', encoding='utf-8') as f:
+        #     f.write(json.dumps(self.valid_data, indent=4))
+        logger.debug("[Finish valid data process]")
 
     def mergeWithNegatives(self, dataset):
         for data in tqdm(dataset, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
@@ -151,10 +155,11 @@ class CRSDatasetRec:
             # @IDX 를 해당 movie의 name으로 replace
             for idx, word in enumerate(utt['text']):
                 if word[0] == '@' and word[1:].isnumeric():
-                    utt['text'][idx] = '%s' % (self.movie2name[word[1:]][1])
+                    utt['text'][idx] = '%s' %(word[1:])
+                    # utt['text'][idx] = '%s' % (self.movie2name[word[1:]][1])
 
             text = ' '.join(utt['text'])
-            movie_ids = [self.entity2id[movie] for movie in utt['movies'] if
+            movie_ids = [self.entityid2crsid[self.entity2id[movie]] for movie in utt['movies'] if
                          movie in self.entity2id]  # utterance movie(entity2id) 마다 entity2id 저장
             entity_ids = [self.entity2id[entity] for entity in utt['entity'] if
                           entity in self.entity2id]  # utterance entity(entity2id) 마다 entity2id 저장
