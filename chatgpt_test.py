@@ -33,10 +33,10 @@ Dialog 2.
 Answer 2.
 """
 
-template_cand = """
+template = """
 Pretend you are a movie recommender system. I will give you a conversation between a user and you (a recommender system).
 
-Based on the conversation, guess which movie should be recommended to the user among the items in candidate items.
+Based on the conversation, guess which movie should be recommended to the user.
 Do not provide any extra sentences.
 
 Here is the conversation:

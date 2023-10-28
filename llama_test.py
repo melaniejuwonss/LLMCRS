@@ -165,8 +165,8 @@ class LLaMaEvaluator:
                 if 'quiz' in self.args.stage:
                     movie_name = label.replace('(', ')').split(')')[1].strip().lower()
                 elif 'crs' in self.args.stage:
-                    movie_name = label.split('(')[0].strip().lower()
-                    check_response = output[output.rfind('\n'):].lower()
+                    movie_name = label
+                    check_response = output
                 if 'example' in self.args.rq_num or 'explain' in self.args.lora_weights:
                     check_response = output[output.lower().find("answer:"):].lower()
 
