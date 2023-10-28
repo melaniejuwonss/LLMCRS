@@ -63,8 +63,9 @@ if __name__ == '__main__':
 
         elif 'test' == args.mode:
             instructions = [i['context_tokens'] for i in test_data]
-            labels = [crs_dataset.entityid2name[i['item']] for i in test_data]
-            negItems = [convertIds2Names(i['negItems'], crs_dataset.entityid2name) for i in test_data]
+            # labels = [crs_dataset.entityid2name[i['item']] for i in test_data]
+            labels = [i['item'] for i in test_data]
+            # negItems = [convertIds2Names(i['negItems'], crs_dataset.entityid2name) for i in test_data]
             # for idx, data in enumerate(test_data):
             #     negItems = data['negItems']
             #     negItems = [crs_dataset.entityid2name[item] for item in negItems]
@@ -76,12 +77,12 @@ if __name__ == '__main__':
         labels = [i[1] for i in question_data]
 
     if 'gpt' in args.base_model.lower():
-        chatgpt_test(args=args, instructions=instructions, labels=labels, negItems=negItems)
+        chatgpt_test(args=args, instructions=instructions, labels=labels)
 
     if 'llama' in args.base_model.lower():
         tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
 
-        evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels, negItems=negItems)
+        evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels)
         if 'train' in args.mode:
             llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=instructions,
                            labels=labels, num_epochs=args.epoch)
