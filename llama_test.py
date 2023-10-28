@@ -161,7 +161,7 @@ class LLaMaEvaluator:
             # print("Response:", response)
             # print("#################################################")
             # generated_results.extend(responses)
-            for output, label in zip(responses, labels):
+            for dialog, output, label in zip(batch[0], responses, labels):
                 if 'quiz' in self.args.stage:
                     movie_name = label.replace('(', ')').split(')')[1].strip().lower()
                 elif 'crs' in self.args.stage:
@@ -175,7 +175,7 @@ class LLaMaEvaluator:
                 cnt += 1.0
                 hit_ratio = hit / cnt
                 # args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio}, ensure_ascii=False) + '\n')
-                generated_results.append({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio})
+                generated_results.append({'DIALOG': dialog, 'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio})
 
             if self.args.write:
                 for i in generated_results:
