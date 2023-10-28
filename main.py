@@ -59,7 +59,8 @@ if __name__ == '__main__':
 
         if 'train' in args.mode:
             instructions = [i['context_tokens'] for i in train_data]
-            labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
+            labels = [i['item'] for i in train_data]
+            # labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
 
         elif 'test' == args.mode:
             instructions = [i['context_tokens'] for i in test_data]
