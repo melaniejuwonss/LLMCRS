@@ -59,13 +59,18 @@ if __name__ == '__main__':
 
         if 'train' in args.mode:
             instructions = [i['context_tokens'] for i in train_data]
-            # labels = [i['item'] for i in train_data]
-            labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
+            if args.data_type == "augment":
+                labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
+            else:
+                labels = [i['item'] for i in train_data]
+
 
         elif 'test' == args.mode:
             instructions = [i['context_tokens'] for i in test_data]
-            labels = [crs_dataset.entityid2name[i['item']] for i in test_data]
-            # labels = [i['item'] for i in test_data]
+            if args.data_type == "augment":
+                labels = [crs_dataset.entityid2name[i['item']] for i in test_data]
+            else:
+                labels = [i['item'] for i in test_data]
             # negItems = [convertIds2Names(i['negItems'], crs_dataset.entityid2name) for i in test_data]
             # for idx, data in enumerate(test_data):
             #     negItems = data['negItems']
