@@ -76,6 +76,10 @@ if __name__ == '__main__':
             #     negItems = data['negItems']
             #     negItems = [crs_dataset.entityid2name[item] for item in negItems]
             #     test_data[idx]['negItems'] = negItems
+        elif 'valid' == args.mode:
+            instructions = [i['context_tokens'] for i in valid_data]
+            labels = [crs_dataset.entityid2name[i['item']] for i in valid_data]
+
 
     elif args.stage.lower() == "quiz":
         question_data = read_data(args)

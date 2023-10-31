@@ -43,25 +43,67 @@ Here is the conversation:
 %s
 """
 
+template_analyze_preference = """
+I will give you dialogs between an user and you (a recommender system).
+Based on the context of each dialog, guess step-by-step the preference of the user.
+
+Dialog 1.
+System: hello 
+User: hi how are you 
+System: good what kind of movies do you like?
+User: I like all types of movies but today I'm in the mood for something scary I love ghost movies like Paranormal Activity (2007) 
+System: It (2017) is a great movie choice 
+User: I've watched It (2017) I think it was really good, but I love the original It (1990) 
+System: oh ok 
+User: I'm definitely not into movies with a lot of blood like Saw (2004). Those make me want to throw up.
+
+Answer 1.
+- The user is in the mood for a scary movie and specifically mentions enjoying ghost movies like Paranormal Activity (2007).
+- The system recommends It (2017), but the user mentions already having watched it and preferring the original It (1990).
+- The user expresses a dislike for movies with a lot of blood, specifically mentioning Saw (2004).
+- Based on the user's preference for ghost movies and their dislike for movies with excessive blood, a recommended movie could be a ghost movie that is not overly gory.
+Therefore, the user prefers ghost movies and dislikes for movies with excessive blood.
+
+Dialog 2.
+User: Hello 
+System: Hi. I heard you are interested in a movie. What type of movies do you like? 
+User: I am looking for recommendations for older 80 's Comedies like The Breakfast Club (1985) 
+System: How about Pretty in Pink (1986) or Sixteen Candles (1984) Another good one is Some Kind of Wonderful (1987) 
+User: I think I have seen Pretty in Pink (1986) but it has been a while. I haven't seen Sixteen Candles (1984) 
+System: It is a classic to be sure 
+User: I'm not familiar with Some Kind of Wonderful (1987) Who is in that one? 
+System: I also really liked Lucas (1986) staring Charlie Sheen 
+User: I Liked Lucas (1986) when I was a kid. It's been a while since I have seen that one.
+
+Answer 2.
+- The user is looking for recommendations for older 80's comedies.
+- The user has mentioned enjoying movies like The Breakfast Club (1985) and Pretty in Pink (1986).
+- The user has not seen Sixteen Candles (1984) and is not familiar with Some Kind of Wonderful (1987).
+- The user also mentioned liking Lucas (1986) when they were a kid.
+Therefore, the user prefers 80's comedies, and the actor Charlie Sheen.
+
+Dialog 3.
+%s
+
+Answer 3.
+
+"""
 
 def execute(args,
             instructions: list = None,
-            labels: list = None,
-            negItems: list = None):
+            labels: list = None):
     openai.api_key = args.chatgpt_key
     hit = args.chatgpt_hit
     cnt = args.chatgpt_cnt
-    for instruction, label, negItem in tqdm(zip(instructions[cnt:], labels[cnt:], negItems[cnt:]),
+    for instruction, label in tqdm(zip(instructions[cnt:], labels[cnt:]),
                                    bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
 
-        candidate_item = negItem + [label]
-        random.shuffle(candidate_item)
         try:
             response = openai.ChatCompletion.create(
                 model=MODEL,
                 messages=[
                     {"role": "user",
-                     "content": template_cot_cand % instruction}
+                     "content": template_analyze_preference % instruction.replace('User:', '\nUser:').replace('System:', '\nSystem:')}
                 ],
                 temperature=0,
             )
@@ -107,11 +149,10 @@ def execute(args,
 def chatgpt_test(args,
                  instructions: list = None,
                  labels: list = None,
-                 negItems: list = None
                  ):
     print('CHATGPT_TEST_START')
     while True:
-        if execute(args=args, instructions=instructions, labels=labels, negItems=negItems) == False:
+        if execute(args=args, instructions=instructions, labels=labels) == False:
             break
 
 
