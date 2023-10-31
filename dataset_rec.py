@@ -65,7 +65,7 @@ class CRSDatasetRec:
 
     def _load_data(self):
         augmented_data_path = os.path.join(self.data_path, 'augmented')
-        if os.path.isdir(augmented_data_path):
+        if self.args.data_type == "augment":
             with open(os.path.join(augmented_data_path, 'train_data_augment.json'), 'r', encoding='utf-8') as f:
                 self.train_data = json.load(f)
             with open(os.path.join(augmented_data_path, 'valid_data_augment.json'), 'r', encoding='utf-8') as f:
@@ -81,6 +81,8 @@ class CRSDatasetRec:
             # self.mergeWithNegatives(self.test_data)
             # with open('train_data_augment.json', 'w', encoding='utf-8') as f:
             #     f.write(json.dumps(self.train_data, indent=4))
+            if self.args.data_type == "trainNew":
+                self.train_data = [data for data in self.train_data if data['exist'] == False]
             logger.debug("[Finish train data process]")
 
             test_data = self._raw_data_process(test_data_raw)
@@ -131,7 +133,7 @@ class CRSDatasetRec:
                 for idx, movie in enumerate(conv_dict['items']):
                     augment_conv_dict = deepcopy(conv_dict)
                     augment_conv_dict['item'] = movie
-                    augment_conv_dict['response'] = conv_dict['response']
+                    augment_conv_dict['exist'] = movie in conv_dict['context_items']
                     augment_dataset.append(augment_conv_dict)
 
         logger.info('[Finish dataset process before rec batchify]')
