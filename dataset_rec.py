@@ -161,7 +161,7 @@ class CRSDatasetRec:
                     utt['text'][idx] = '%s' % (self.movie2name[word[1:]][1])
 
             text = ' '.join(utt['text'])
-            movie_ids = [self.entity2id[movie] for movie in utt['movies'] if
+            movie_ids = [self.entityid2crsid[self.entity2id[movie]] for movie in utt['movies'] if
                          movie in self.entity2id]  # utterance movie(entity2id) 마다 entity2id 저장
             entity_ids = [self.entity2id[entity] for entity in utt['entity'] if
                           entity in self.entity2id]  # utterance entity(entity2id) 마다 entity2id 저장
