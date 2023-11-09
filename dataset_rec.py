@@ -14,10 +14,10 @@ import numpy as np
 
 
 class CRSDatasetRec:
-    def __init__(self, args, data_path):
+    def __init__(self, args):
         super(CRSDatasetRec, self).__init__()
         self.args = args
-        self.data_path = data_path
+        self.data_path = self.args.dataset_path
         self.movie2name = json.load(
             open(os.path.join(self.data_path, 'movie2name.json'), 'r', encoding='utf-8'))  # {entity: entity_id}
         self.entityid2name = dict()

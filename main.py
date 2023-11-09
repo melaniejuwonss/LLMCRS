@@ -52,7 +52,8 @@ if __name__ == '__main__':
     if args.stage.lower() == "crs":
         ROOT_PATH = dirname(realpath(__file__))
         DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
-        crs_dataset = CRSDatasetRec(args, DATASET_PATH)
+        args.dataset_path = DATASET_PATH
+        crs_dataset = CRSDatasetRec(args)
         train_data = crs_dataset.train_data
         valid_data = crs_dataset.valid_data
         test_data = crs_dataset.test_data

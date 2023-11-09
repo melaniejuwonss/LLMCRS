@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 import torch
 import wandb
@@ -42,6 +43,8 @@ class LLaMaEvaluator:
         self.negItems = negItems
         self.tokenizer = tokenizer  # , LlamaTokenizer.from_pretrained(self.args.base_model)
         self.prompter = Prompter(args, prompt_template_name)
+        self.new_idx = json.load(open(os.path.join(self.data_path, 'new_idx.json'), 'r', encoding='utf-8'))
+        self.old_idx = json.load(open(os.path.join(self.data_path, 'old_idx.json'), 'r', encoding='utf-8'))
 
         self.dataloader = self.prepare_dataloader()
         # self.model = self.prepare_model()
@@ -147,7 +150,7 @@ class LLaMaEvaluator:
             model = torch.compile(model)
 
         hit, cnt = 0.0, 0.0
-
+        idx = 0
         for batch in tqdm(self.dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
             generated_results = []
             batched_inputs = self.tokenizer(batch[0], padding=True, return_tensors="pt")
@@ -179,7 +182,8 @@ class LLaMaEvaluator:
                 hit_ratio = hit / cnt
                 # args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio}, ensure_ascii=False) + '\n')
                 generated_results.append({'DIALOG': dialog, 'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio,
-                                          'NEW_ITEM': movie_name not in dialog.lower()})
+                                          'NEW_ITEM': idx in self.new_idx})
+                idx += 1
 
             if self.args.write:
                 for i in generated_results:
