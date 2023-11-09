@@ -7,6 +7,7 @@ import transformers
 from datasets import load_dataset, Dataset
 from transformers import Trainer, TrainingArguments, TrainerState, TrainerControl
 import wandb
+from peft import PeftModel
 
 from utils.parser import parse_args
 
@@ -270,7 +271,14 @@ def llama_finetune(
         bias="none",
         task_type="CAUSAL_LM",
     )
-    model = get_peft_model(model, config)
+    if args.lora_weights != "":
+        model = PeftModel.from_pretrained(
+            model,
+            args.lora_weights,
+            torch_dtype=torch.float16,
+        )
+    else:
+        model = get_peft_model(model, config)
 
     if resume_from_checkpoint:
         # Check the available weights and load them
