@@ -61,8 +61,8 @@ Answer 1.
 - The user is in the mood for a scary movie and specifically mentions enjoying ghost movies like Paranormal Activity (2007).
 - The system recommends It (2017), but the user mentions already having watched it and preferring the original It (1990).
 - The user expresses a dislike for movies with a lot of blood, specifically mentioning Saw (2004).
-- Based on the user's preference for ghost movies and their dislike for movies with excessive blood, a recommended movie could be a ghost movie that is not overly gory.
-Therefore, the user prefers ghost movies and dislikes for movies with excessive blood.
+- Based on the user's preference, a recommended movie could be a ghost movie that is not overly gory.
+- Therefore, Blair Witch (2016) should be recommended.
 
 Dialog 2.
 User: Hello 
@@ -80,14 +80,31 @@ Answer 2.
 - The user has mentioned enjoying movies like The Breakfast Club (1985) and Pretty in Pink (1986).
 - The user has not seen Sixteen Candles (1984) and is not familiar with Some Kind of Wonderful (1987).
 - The user also mentioned liking Lucas (1986) when they were a kid.
-Therefore, the user prefers 80's comedies, and the actor Charlie Sheen.
+- Based on the user's preference, a recommended movie could be 80's comedies that stars Charlie Sheen.
+- Therefore, Major League (1989) should be recommended.
 
 Dialog 3.
-%s
+User: Hi.
+System: Hi. What kind of movie are you looking for today?
+User: Some movie similar to Harry Potter?
+System: I love Harry Potter and the Goblet of Fire (2005). Have you seen them all?
+User: Yeah.
+System: Fantastic Beasts and Where to Find Them (2016) is great! It goes along with the story.
+User: Recommend something similar I have read all the books.
 
 Answer 3.
+- The user is looking for a movie similar to the Harry Potter series.
+- The user has seen all the Harry Potter movies and read all the books, including related works like Fantastic Beasts and Where to Find Them.
+- Given the user's familiarity with the Harry Potter universe, they are looking for similar fantasy movies but outside the Harry Potter series.
+- Based on the user's preference, a recommended movie could be within the fantasy genre with a similar magical or school setting, but not directly connected to the Harry Potter or Fantastic Beasts series.
+- Therefore, The Lord of the Rings: The Fellowship of the Ring (2001) should be recommended.
 
+Dialog 4.
+%s
+
+Answer 4.
 """
+
 
 def execute(args,
             instructions: list = None,
@@ -103,7 +120,8 @@ def execute(args,
                 model=MODEL,
                 messages=[
                     {"role": "user",
-                     "content": template_analyze_preference % instruction.replace('User:', '\nUser:').replace('System:', '\nSystem:')}
+                     "content": template_analyze_preference % instruction.replace('User:', '\nUser:').replace('System:',
+                                                                                                              '\nSystem:')}
                 ],
                 temperature=0,
             )
@@ -126,8 +144,7 @@ def execute(args,
 
             args.log_file.write(
                 json.dumps(
-                    {'DIALOG': instruction, 'LABEL': label, 'CHECK_RESPONSE': check_response, 'RESPONSE': response,
-                     'AVG_HIT': hit_ratio, 'NEW_ITEM': label.lower() not in instruction.lower()},
+                    {'DIALOG': instruction, 'LABEL': label, 'RESPONSE': response},
                     ensure_ascii=False,
                     indent=4) + '\n')
 
