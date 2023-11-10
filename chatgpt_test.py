@@ -62,7 +62,6 @@ Answer 1.
 - The system recommends It (2017), but the user mentions already having watched it and preferring the original It (1990).
 - The user expresses a dislike for movies with a lot of blood, specifically mentioning Saw (2004).
 - Based on the user's preference, a recommended movie could be a ghost movie that is not overly gory.
-- Therefore, Blair Witch (2016) should be recommended.
 
 Dialog 2.
 User: Hello 
@@ -81,7 +80,6 @@ Answer 2.
 - The user has not seen Sixteen Candles (1984) and is not familiar with Some Kind of Wonderful (1987).
 - The user also mentioned liking Lucas (1986) when they were a kid.
 - Based on the user's preference, a recommended movie could be 80's comedies that stars Charlie Sheen.
-- Therefore, Major League (1989) should be recommended.
 
 Dialog 3.
 User: Hi.
@@ -97,15 +95,16 @@ Answer 3.
 - The user has seen all the Harry Potter movies and read all the books, including related works like Fantastic Beasts and Where to Find Them.
 - Given the user's familiarity with the Harry Potter universe, they are looking for similar fantasy movies but outside the Harry Potter series.
 - Based on the user's preference, a recommended movie could be within the fantasy genre with a similar magical or school setting, but not directly connected to the Harry Potter or Fantastic Beasts series.
-- Therefore, The Lord of the Rings: The Fellowship of the Ring (2001) should be recommended.
 
-Dialog 4.
-%s
+Dialog 4. %s
 
 Answer 4.
 """
 
 
+# - Therefore, Blair Witch (2016) should be recommended.
+# - Therefore, Major League (1989) should be recommended.
+# - Therefore, The Lord of the Rings: The Fellowship of the Ring (2001) should be recommended.
 def execute(args,
             instructions: list = None,
             labels: list = None):
@@ -127,6 +126,7 @@ def execute(args,
             )
 
             response = response['choices'][0]['message']['content']
+            response += "\n -Therefore, %s should be recommended." % (label)
             if 'quiz' in args.stage:
                 movie_name = label.replace('(', ')').split(')')[1].strip().lower()
             elif 'crs' in args.stage:
@@ -143,10 +143,7 @@ def execute(args,
             hit_ratio = hit / cnt
 
             args.log_file.write(
-                json.dumps(
-                    {'DIALOG': instruction, 'LABEL': label, 'RESPONSE': response},
-                    ensure_ascii=False,
-                    indent=4) + '\n')
+                json.dumps({'DIALOG': instruction, 'LABEL': response}, ensure_ascii=False, indent=4) + '\n')
 
             if cnt % 100 == 0 and cnt != 0:
                 print("%.2f" % (hit / cnt))
