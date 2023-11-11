@@ -48,20 +48,12 @@ I will give you dialogs between an user and you (a recommender system).
 Based on the context of each dialog, guess step-by-step the preference of the user.
 
 Dialog 1.
-System: hello 
-User: hi how are you 
-System: good what kind of movies do you like?
-User: I like all types of movies but today I'm in the mood for something scary I love ghost movies like Paranormal Activity (2007) 
-System: It (2017) is a great movie choice 
-User: I've watched It (2017) I think it was really good, but I love the original It (1990) 
-System: oh ok 
-User: I'm definitely not into movies with a lot of blood like Saw (2004). Those make me want to throw up.
+System: Hello. How can I help you?
+User: Hello. I'm looking for a great documentary do you have any suggestions?
 
 Answer 1.
-- The user is in the mood for a scary movie and specifically mentions enjoying ghost movies like Paranormal Activity (2007).
-- The system recommends It (2017), but the user mentions already having watched it and preferring the original It (1990).
-- The user expresses a dislike for movies with a lot of blood, specifically mentioning Saw (2004).
-- Based on the user's preference, a recommended movie could be a ghost movie that is not overly gory.
+- The user is specifically looking for a documentary.
+- Based on the user's preference, a recommended documentary could be one that is critically acclaimed or popular in general, as there are no specific preferences indicated yet.
 
 Dialog 2.
 User: Hello 
@@ -124,6 +116,7 @@ def execute(args,
                 ],
                 temperature=0,
             )
+
 
             response = response['choices'][0]['message']['content']
             response += "\n -Therefore, %s should be recommended." % (label)
