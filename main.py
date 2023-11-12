@@ -53,17 +53,30 @@ if __name__ == '__main__':
         ROOT_PATH = dirname(realpath(__file__))
         DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
         args.dataset_path = DATASET_PATH
-        crs_dataset = CRSDatasetRec(args)
-        train_data = crs_dataset.train_data
-        valid_data = crs_dataset.valid_data
-        test_data = crs_dataset.test_data
+        if "cot" in args.data_type:
+            cot_data_path = os.path.join(DATASET_PATH, 'cot')
+            with open(os.path.join(cot_data_path, 'train_data_cot.json'), 'r', encoding='utf-8') as f:
+                train_data = json.load(f)
+            # with open(os.path.join(augmented_data_path, 'valid_data_cot.json'), 'r', encoding='utf-8') as f:
+            #     self.valid_data = json.load(f)
+            # with open(os.path.join(augmented_data_path, 'test_data_cot.json'), 'r', encoding='utf-8') as f:
+            #     self.test_data = json.load(f)
+        else:
+            crs_dataset = CRSDatasetRec(args)
+            train_data = crs_dataset.train_data
+            valid_data = crs_dataset.valid_data
+            test_data = crs_dataset.test_data
 
         if 'train' in args.mode:
-            instructions = [i['context_tokens'] for i in train_data]
-            if args.data_type == "augment":
-                labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
+            if args.data_type == "cot_wo":
+                instructions = [i['context_tokens'] for i in train_data if "Based on the user's preference" in i['item']]
+                labels = [i['item'] for i in train_data if "Based on the user's preference" in i['item']]
             else:
-                labels = [i['item'] for i in train_data]
+                instructions = [i['context_tokens'] for i in train_data]
+                if args.data_type == "augment":
+                    labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
+                else:
+                    labels = [i['item'] for i in train_data]
 
 
         elif 'test' == args.mode:

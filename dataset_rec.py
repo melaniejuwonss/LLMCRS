@@ -64,15 +64,14 @@ class CRSDatasetRec:
         return train_data, valid_data, test_data
 
     def _load_data(self):
-        augmented_data_path = os.path.join(self.data_path, 'augmented')
         if self.args.data_type == "augment":
+            augmented_data_path = os.path.join(self.data_path, 'augmented')
             with open(os.path.join(augmented_data_path, 'train_data_augment.json'), 'r', encoding='utf-8') as f:
                 self.train_data = json.load(f)
             with open(os.path.join(augmented_data_path, 'valid_data_augment.json'), 'r', encoding='utf-8') as f:
                 self.valid_data = json.load(f)
             with open(os.path.join(augmented_data_path, 'test_data_augment.json'), 'r', encoding='utf-8') as f:
                 self.test_data = json.load(f)
-
         else:
             train_data_raw, valid_data_raw, test_data_raw = self._load_raw_data()  # load raw train, valid, test data
 
