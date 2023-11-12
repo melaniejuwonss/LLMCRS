@@ -170,7 +170,7 @@ class LLaMaEvaluator:
                     movie_name = label.split('(')[0].strip().lower()
                     check_response = output.lower()
                     if 'withCoT' in self.args.prompt:
-                        check_response = check_response[check_response.rfind('\n'):]
+                        check_response = check_response[check_response.rfind('Therefore'):]
                 if 'example' in self.args.rq_num or 'explain' in self.args.lora_weights:
                     check_response = output[output.lower().find("answer:"):].lower()
 
@@ -180,7 +180,7 @@ class LLaMaEvaluator:
                 cnt += 1.0
                 hit_ratio = hit / cnt
                 # args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio}, ensure_ascii=False) + '\n')
-                generated_results.append({'DIALOG': dialog, 'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio,
+                generated_results.append({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio,
                                           'NEW_ITEM': idx in self.new_idx})
                 idx += 1
 
