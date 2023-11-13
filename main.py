@@ -57,6 +57,8 @@ if __name__ == '__main__':
             cot_data_path = os.path.join(DATASET_PATH, 'cot')
             with open(os.path.join(cot_data_path, 'train_data_cot.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
+            with open(os.path.join(cot_data_path, 'test_data_cot_split.json'), 'r', encoding='utf-8') as f:
+                test_data = json.load(f)
 
         else:
             crs_dataset = CRSDatasetRec(args)
@@ -66,7 +68,8 @@ if __name__ == '__main__':
 
         if 'train' in args.mode:
             if args.data_type == "cot_wo":
-                instructions = [i['context_tokens'] for i in train_data if "Based on the user's preference" in i['item']]
+                instructions = [i['context_tokens'] for i in train_data if
+                                "Based on the user's preference" in i['item']]
                 labels = [i['item'] for i in train_data if "Based on the user's preference" in i['item']]
             else:
                 instructions = [i['context_tokens'] for i in train_data]
