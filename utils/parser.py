@@ -32,7 +32,7 @@ def parse_args():
     parser.add_argument('--mode', type=str, default='test', choices=['train', 'test', 'valid'])
     parser.add_argument('--log_name', type=str, default='')
     parser.add_argument('--prompt', type=str, default='withoutCoT')
-    parser.add_argument('--data_type', type=str, default='default', choices=['default', 'augment', 'trainNew', 'cot', "cot_wo"])
+    parser.add_argument('--data_type', type=str, default='default', choices=['default', 'augment', 'trainNew', 'cot', "cot_wo", "cot_p", "cot_s", "cot_sp"])
 
     # ChatGPT
     parser.add_argument('--log_file', type=str, default='')

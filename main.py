@@ -55,10 +55,10 @@ if __name__ == '__main__':
         args.dataset_path = DATASET_PATH
         if "cot" in args.data_type:
             cot_data_path = os.path.join(DATASET_PATH, 'cot')
-            with open(os.path.join(cot_data_path, 'train_data_cot.json'), 'r', encoding='utf-8') as f:
+            with open(os.path.join(cot_data_path, f'train_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
-            with open(os.path.join(cot_data_path, 'test_data_cot_split.json'), 'r', encoding='utf-8') as f:
-                test_data = json.load(f)
+            # with open(os.path.join(cot_data_path, 'test_data_cot_split.json'), 'r', encoding='utf-8') as f:
+            #     test_data = json.load(f)
 
         else:
             crs_dataset = CRSDatasetRec(args)
