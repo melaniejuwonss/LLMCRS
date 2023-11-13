@@ -182,8 +182,9 @@ class LLaMaEvaluator:
                 cnt += 1.0
                 hit_ratio = hit / cnt
                 # args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio}, ensure_ascii=False) + '\n')
-                generated_results.append({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio,
-                                          'NEW_ITEM': idx in self.new_idx})
+                generated_results.append(
+                    {'GEN': output, 'ANSWER': label, 'HIT': movie_name in check_response.lower(), 'AVG_HIT': hit_ratio,
+                     'NEW_ITEM': idx in self.new_idx})
                 idx += 1
 
             if self.args.write:

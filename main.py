@@ -57,10 +57,7 @@ if __name__ == '__main__':
             cot_data_path = os.path.join(DATASET_PATH, 'cot')
             with open(os.path.join(cot_data_path, 'train_data_cot.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
-            # with open(os.path.join(augmented_data_path, 'valid_data_cot.json'), 'r', encoding='utf-8') as f:
-            #     self.valid_data = json.load(f)
-            # with open(os.path.join(augmented_data_path, 'test_data_cot.json'), 'r', encoding='utf-8') as f:
-            #     self.test_data = json.load(f)
+
         else:
             crs_dataset = CRSDatasetRec(args)
             train_data = crs_dataset.train_data
