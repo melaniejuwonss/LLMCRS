@@ -56,11 +56,11 @@ if __name__ == '__main__':
         if "cot" in args.data_type:
             cot_data_path = os.path.join(DATASET_PATH, 'cot')
             with open(os.path.join(cot_data_path, f'train_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
-                train_data_temp = json.load(f)
-                train_data = []
-                for i in train_data_temp:
-                    if i['item'] not in i['context_tokens']:
-                        train_data.append(i)
+                train_data = json.load(f)
+                # train_data = []
+                # for i in train_data_temp:
+                #     if i['item'] not in i['context_tokens']:
+                #         train_data.append(i)
             with open(os.path.join(cot_data_path, f'test_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 test_data = json.load(f)
 
