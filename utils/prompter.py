@@ -43,9 +43,9 @@ class Prompter(object):
             )
         if label:
             if isNew is False:
-                res = f"{res}\nChat about the item mentioned in a given dialog.\n{label}"
+                res = f"{res}{label}"  # \nChat about the item mentioned in a given dialog.\n
             elif isNew is True:
-                res = f"{res}\nRecommend the item (Do not recommend the items already mentioned in a given dialog).\n{label}"
+                res = f"{res}{label}"  # \nRecommend the item (Do not recommend the items already mentioned in a given dialog).\n
         if self._verbose:
             print(res)
         return res
