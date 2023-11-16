@@ -40,8 +40,9 @@ from utils.prompter import Prompter
 #         # return {'accuracy': accuracy_score(labels, predictions)}
 
 class QueryEvalCallback(TrainerCallback):
-    def __init__(self, log_name):
+    def __init__(self, log_name, evaluator):
         self.log_name = log_name
+        self.evaluator = evaluator
 
     def on_epoch_end(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
         model = kwargs['model']
@@ -56,7 +57,7 @@ class QueryEvalCallback(TrainerCallback):
         # # predictions, labels = trainer.predict(trainer.eval_dataset)
         # # print(predictions.size())
         if 'test' in args.mode:
-            args.evaluator.test(model)
+            self.evaluator.test(model)
         # # print(kwargs)
         # print("==============================End of evaluate step==============================")
 
@@ -336,7 +337,7 @@ def llama_finetune(
         data_collator=transformers.DataCollatorForSeq2Seq(
             tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
         ),
-        callbacks=[QueryEvalCallback(args.log_name)]
+        callbacks=[QueryEvalCallback(args.log_name, evaluator)]
     )
     model.config.use_cache = False
 
