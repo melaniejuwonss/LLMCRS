@@ -64,21 +64,21 @@ if __name__ == '__main__':
             valid_data = crs_dataset.valid_data
             test_data = crs_dataset.test_data
 
-        if 'train' in args.mode:
-            train_instructions = [i['context_tokens'] for i in train_data]
-            if args.data_type == "augment":
-                train_labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
-            else:
-                train_labels = [i['item'] for i in train_data]
+        # if 'train' in args.mode:
+        train_instructions = [i['context_tokens'] for i in train_data]
+        if args.data_type == "augment":
+            train_labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
+        else:
+            train_labels = [i['item'] for i in train_data]
 
-        if 'test' in args.mode:
-            test_instructions = [i['context_tokens'] for i in test_data]
-            if args.data_type == "augment":
-                test_labels = [crs_dataset.entityid2name[i['item']] for i in test_data]
-            else:
-                test_labels = [i['item'] for i in test_data]
+        # if 'test' in args.mode:
+        test_instructions = [i['context_tokens'] for i in test_data]
+        if args.data_type == "augment":
+            test_labels = [crs_dataset.entityid2name[i['item']] for i in test_data]
+        else:
+            test_labels = [i['item'] for i in test_data]
 
-        elif 'valid' == args.mode:
+        if 'valid' == args.mode:
             valid_instructions = [i['context_tokens'] for i in valid_data]
             valid_labels = [crs_dataset.entityid2name[i['item']] for i in valid_data]
 
