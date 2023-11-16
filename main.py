@@ -107,7 +107,7 @@ if __name__ == '__main__':
                                    prompt_template_name=args.prompt)
         if 'train' in args.mode:
             llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=train_instructions,
-                           labels=train_labels, isNew=train_new, num_epochs=args.epoch,
+                           labels=train_labels, isNews=train_new, num_epochs=args.epoch,
                            prompt_template_name=args.prompt)
         if 'test' in args.mode:
             if args.lora_weights != "":
