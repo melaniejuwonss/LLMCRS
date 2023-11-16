@@ -62,6 +62,10 @@ if __name__ == '__main__':
                 train_data = json.load(f)
             with open(os.path.join(cot_data_path, f'test_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 test_data = json.load(f)
+            new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
+            train_data = [{'context_tokens': data['context_tokens', 'item': data['item'], 'new': idx in new_idx]} for
+                          idx, data in enumerate(train_data)]
+
         else:
             crs_dataset = CRSDatasetRec(args)
             train_data = crs_dataset.train_data
@@ -74,6 +78,7 @@ if __name__ == '__main__':
             train_labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
         else:
             train_labels = [i['item'] for i in train_data]
+        train_new = [i['new'] for i in train_data]
 
         # if 'test' in args.mode:
         test_instructions = [i['context_tokens'] for i in test_data]
@@ -102,7 +107,8 @@ if __name__ == '__main__':
                                    prompt_template_name=args.prompt)
         if 'train' in args.mode:
             llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=train_instructions,
-                           labels=train_labels, num_epochs=args.epoch, prompt_template_name=args.prompt)
+                           labels=train_labels, isNew=train_new, num_epochs=args.epoch,
+                           prompt_template_name=args.prompt)
         if 'test' in args.mode:
             if args.lora_weights != "":
                 for e in range(args.epoch):

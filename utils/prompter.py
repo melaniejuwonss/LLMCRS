@@ -29,7 +29,7 @@ class Prompter(object):
             instruction: str,
             input: Union[None, str] = None,
             label: Union[None, str] = None,
-            negItem: list = None,
+            isNew: bool = False,
     ) -> str:
         # returns the full prompt from instruction and optional input
         # if a label (=response, =output) is provided, it's also appended.
@@ -42,7 +42,10 @@ class Prompter(object):
                 instruction=instruction
             )
         if label:
-            res = f"{res}{label}"
+            if isNew is False:
+                res = f"{res}\nChat about the item mentioned in a given dialog.\n{label}"
+            elif isNew is True:
+                res = f"{res}\nRecommend the item (Do not recommend the items already mentioned in a given dialog).\n{label}"
         if self._verbose:
             print(res)
         return res

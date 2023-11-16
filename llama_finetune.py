@@ -70,6 +70,7 @@ def llama_finetune(
         evaluator,
         instructions: list = None,
         labels: list = None,
+        isNews: list = None,
         # model/data params
         base_model: str = "",  # the only required argument
         data_path: str = "yahma/alpaca-cleaned",
@@ -203,6 +204,7 @@ def llama_finetune(
             data_point["instruction"],
             data_point["input"],
             data_point["output"],
+            data_point['isNew']
         )
         tokenized_full_prompt = tokenize(full_prompt)
         if not train_on_inputs:
@@ -231,8 +233,8 @@ def llama_finetune(
     #     data = load_dataset(data_path)
 
     data = []
-    for inst, lab in zip(instructions, labels):
-        data.append({"instruction": inst, "input": "", "output": lab})
+    for inst, lab, isNew in zip(instructions, labels, isNews):
+        data.append({"instruction": inst, "input": "", "output": lab, "isNew": isNew})
 
     data = Dataset.from_pandas(pd.DataFrame(data))
 

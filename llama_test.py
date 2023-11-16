@@ -43,7 +43,7 @@ class LLaMaEvaluator:
         self.negItems = negItems
         self.tokenizer = tokenizer  # , LlamaTokenizer.from_pretrained(self.args.base_model)
         self.prompter = Prompter(args, prompt_template_name)
-        self.new_idx = json.load(open(os.path.join(self.args.dataset_path, 'new_idx.json'), 'r', encoding='utf-8'))
+        self.new_idx = json.load(open(os.path.join(self.args.dataset_path, 'test_new_idx.json'), 'r', encoding='utf-8'))
 
         self.dataloader = self.prepare_dataloader()
         # self.model = self.prepare_model()

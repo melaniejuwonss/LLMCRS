@@ -80,7 +80,7 @@ class CRSDatasetRec:
             # self.mergeWithNegatives(self.test_data)
             # with open('train_data_augment.json', 'w', encoding='utf-8') as f:
             #     f.write(json.dumps(self.train_data, indent=4))
-            if self.args.data_type == "trainNew":
+            if self.args.isNew == True:
                 self.train_data = [data for data in self.train_data if data['exist'] == False]
             logger.debug("[Finish train data process]")
 
