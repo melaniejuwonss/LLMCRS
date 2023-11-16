@@ -140,15 +140,19 @@ class LLaMaEvaluator:
         output = self.tokenizer.batch_decode(s, skip_special_tokens=True)
         return [self.prompter.get_response(i) for i in output]
 
-    def test(self, model=None):
+    def test(self, model=None, epoch=None):
         if model is None:
             model = self.prepare_model()
+        if epoch is not None:
+            log_file = open(f'{self.args.log_file}_E{epoch}.json', 'a', buffering=1,
+                            encoding='UTF-8')
+            self.args.log_file = log_file
 
         model.eval()
         if torch.__version__ >= "2" and sys.platform != "win32":
             model = torch.compile(model)
 
-        hit, cnt = 0.0, 0.0
+        hit, mentioned_hit, not_mentioned_hit, cnt, mentioned_cnt, not_mentioned_cnt = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
         idx = 0
         for batch in tqdm(self.dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
             generated_results = []
@@ -178,18 +182,29 @@ class LLaMaEvaluator:
 
                 if movie_name in check_response.lower():
                     hit += 1.0
-
+                    if idx in self.new_idx:
+                        not_mentioned_hit += 1.0
+                    elif idx not in self.new_idx:
+                        mentioned_hit += 1.0
                 cnt += 1.0
                 hit_ratio = hit / cnt
-                # args.log_file.write(json.dumps({'GEN': output, 'ANSWER': label, 'AVG_HIT': hit_ratio}, ensure_ascii=False) + '\n')
+                if idx in self.new_idx:
+                    not_mentioned_cnt += 1.0
+                elif idx not in self.new_idx:
+                    mentioned_cnt += 1.0
+
                 generated_results.append(
                     {'GEN': output, 'ANSWER': label, 'HIT': movie_name in check_response.lower(), 'AVG_HIT': hit_ratio,
                      'NEW_ITEM': idx in self.new_idx})
                 idx += 1
 
+            mentioned_hit_ratio = mentioned_hit / mentioned_cnt
+            not_mentioned_hit_ratio = not_mentioned_hit / not_mentioned_cnt
+
             if self.args.write:
                 for i in generated_results:
                     self.args.log_file.write(json.dumps(i, ensure_ascii=False) + '\n')
+                self.args.score_file.write(f'{hit_ratio}\t{mentioned_hit_ratio}\t{not_mentioned_hit_ratio}\n')
             if cnt % 100 == 0 and cnt != 0:
                 wandb.log({"hit_ratio": (hit / cnt)})
                 print("%.4f" % (hit / cnt))

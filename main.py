@@ -38,7 +38,7 @@ if __name__ == '__main__':
     args.log_name = mdhm + '_' + args.base_model.replace('/', '-') + '_' + args.log_name
     log_file = open(os.path.join(args.home, result_path, f'{args.log_file}.json'), 'a', buffering=1, encoding='UTF-8')
     score_file = open(os.path.join(args.home, score_path, f'{args.log_file}.json'), 'a', buffering=1, encoding='UTF-8')
-
+    score_file.write('Overall\tMentioned\tNot-mentioned\n')
     args.lora_weights = os.path.join(args.home, args.lora_weights)
     args.log_file = log_file
     args.score_file = score_file
