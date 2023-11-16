@@ -57,8 +57,9 @@ class QueryEvalCallback(TrainerCallback):
         # print("==============================Evaluate step==============================")
         # # predictions, labels = trainer.predict(trainer.eval_dataset)
         # # print(predictions.size())
-        if 'test' in self.mode:
-            self.evaluator.test(model, epoch)
+        # if 'test' in self.mode:
+        #     self.evaluator.test(model, epoch)
+        # model.train()
         # # print(kwargs)
         # print("==============================End of evaluate step==============================")
 
