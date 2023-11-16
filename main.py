@@ -62,15 +62,16 @@ if __name__ == '__main__':
                 train_data = json.load(f)
             with open(os.path.join(cot_data_path, f'test_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 test_data = json.load(f)
-            new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
-            train_data = [{'context_tokens': data['context_tokens'], 'item': data['item'], 'isNew': idx in new_idx} for
-                          idx, data in enumerate(train_data)]
 
         else:
             crs_dataset = CRSDatasetRec(args)
             train_data = crs_dataset.train_data
             valid_data = crs_dataset.valid_data
             test_data = crs_dataset.test_data
+
+        new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
+        train_data = [{'context_tokens': data['context_tokens'], 'item': data['item'], 'isNew': idx in new_idx} for
+                      idx, data in enumerate(train_data)]
 
         # if 'train' in args.mode:
         train_instructions = [i['context_tokens'] for i in train_data]
