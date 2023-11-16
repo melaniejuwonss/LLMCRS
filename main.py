@@ -32,12 +32,16 @@ if __name__ == '__main__':
     args = dir_init(args)
     mdhm = str(datetime.now(timezone('Asia/Seoul')).strftime('%m%d%H%M%S'))
     result_path = os.path.join(args.home, args.output_dir, args.base_model.replace('/', '-'))
+    score_path = os.path.join(args.home, args.score_dir, args.base_model.replace('/', '-'))
     if not os.path.exists(result_path): os.mkdir(result_path)
+    if not os.path.exists(score_path): os.mkdir(score_path)
     args.log_name = mdhm + '_' + args.base_model.replace('/', '-') + '_' + args.log_name
     log_file = open(os.path.join(args.home, result_path, f'{args.log_file}.json'), 'a', buffering=1, encoding='UTF-8')
+    score_file = open(os.path.join(args.home, score_path, f'{args.log_file}.json'), 'a', buffering=1, encoding='UTF-8')
 
     args.lora_weights = os.path.join(args.home, args.lora_weights)
     args.log_file = log_file
+    args.score_file = score_file
 
     args.wandb_project = "LLMCRS"
     args.wandb_run_name = args.log_name
@@ -61,23 +65,23 @@ if __name__ == '__main__':
             test_data = crs_dataset.test_data
 
         if 'train' in args.mode:
-            instructions = [i['context_tokens'] for i in train_data]
+            train_instructions = [i['context_tokens'] for i in train_data]
             if args.data_type == "augment":
-                labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
+                train_labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
             else:
-                labels = [i['item'] for i in train_data]
+                train_labels = [i['item'] for i in train_data]
 
 
         elif 'test' == args.mode:
-            instructions = [i['context_tokens'] for i in test_data]
+            test_instructions = [i['context_tokens'] for i in test_data]
             if args.data_type == "augment":
-                labels = [crs_dataset.entityid2name[i['item']] for i in test_data]
+                test_labels = [crs_dataset.entityid2name[i['item']] for i in test_data]
             else:
-                labels = [i['item'] for i in test_data]
+                test_labels = [i['item'] for i in test_data]
 
         elif 'valid' == args.mode:
-            instructions = [i['context_tokens'] for i in valid_data]
-            labels = [crs_dataset.entityid2name[i['item']] for i in valid_data]
+            valid_instructions = [i['context_tokens'] for i in valid_data]
+            valid_labels = [crs_dataset.entityid2name[i['item']] for i in valid_data]
 
 
     elif args.stage.lower() == "quiz":
@@ -86,26 +90,26 @@ if __name__ == '__main__':
         labels = [i[1] for i in question_data]
 
     if 'gpt' in args.base_model.lower():
-        chatgpt_test(args=args, instructions=instructions, labels=labels)
+        chatgpt_test(args=args, instructions=test_instructions, labels=test_labels)
 
     if 'llama' in args.base_model.lower():
         tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
 
-        evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels,
+        evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=test_instructions, labels=test_labels,
                                    prompt_template_name=args.prompt)
         if 'train' in args.mode:
-            llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=instructions,
-                           labels=labels, num_epochs=args.epoch, prompt_template_name=args.prompt, eval=evaluator)
+            llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=train_instructions,
+                           labels=train_labels, num_epochs=args.epoch, prompt_template_name=args.prompt, eval=evaluator)
         if 'test' == args.mode:
             evaluator.test()
 
     if 't5' in args.base_model.lower():
         tokenizer = T5Tokenizer.from_pretrained(args.base_model)
 
-        evaluator = T5Evaluator(args=args, tokenizer=tokenizer, instructions=instructions, labels=labels,
+        evaluator = T5Evaluator(args=args, tokenizer=tokenizer, instructions=test_instructions, labels=test_labels,
                                 prompt_template_name=args.prompt)
         if 'train' in args.mode:
-            t5_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=instructions,
-                        labels=labels, num_epochs=args.epoch, prompt_template_name=args.prompt)
+            t5_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=train_instructions,
+                        labels=train_labels, num_epochs=args.epoch, prompt_template_name=args.prompt)
         if 'test' == args.mode:
             evaluator.test()

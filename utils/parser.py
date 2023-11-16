@@ -53,6 +53,9 @@ def parse_args():
     args.output_dir = 'result'
     if not os.path.exists(args.output_dir): os.mkdir(args.output_dir)
 
+    args.score_dir = 'score'
+    if not os.path.exists(args.score_dir): os.mkdir(args.score_dir)
+
     print(args)
     # logging.info(args)
     return args
