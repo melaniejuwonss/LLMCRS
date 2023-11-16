@@ -60,7 +60,7 @@ if __name__ == '__main__':
                 test_data = json.load(f)
         else:
             crs_dataset = CRSDatasetRec(args)
-            train_data = crs_dataset.train_data
+            train_data = crs_dataset.train_data[:10]
             valid_data = crs_dataset.valid_data
             test_data = crs_dataset.test_data
 
