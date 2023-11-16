@@ -104,7 +104,7 @@ if __name__ == '__main__':
             llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=train_instructions,
                            labels=train_labels, num_epochs=args.epoch, prompt_template_name=args.prompt)
         if 'test' in args.mode:
-            args.lora_weights = os.path.join(args.output_dir, args.log_name + '_E' + str(int(args.epoch)))
+            args.lora_weights = os.path.join("./lora-alpaca", args.log_name + '_E' + str(int(args.epoch)))
             evaluator.test()
 
     if 't5' in args.base_model.lower():
