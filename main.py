@@ -33,13 +33,8 @@ if __name__ == '__main__':
     mdhm = str(datetime.now(timezone('Asia/Seoul')).strftime('%m%d%H%M%S'))
     result_path = os.path.join(args.home, args.output_dir, args.base_model.replace('/', '-'))
     if not os.path.exists(result_path): os.mkdir(result_path)
-    args.log_name = mdhm + '_' + args.base_model.replace('/', '-') + '_' + f'rq{args.rq_num}' + '_' + args.log_name
-    if args.log_file == '':
-        log_file = open(os.path.join(args.home, result_path, f'{mdhm}_rq{args.rq_num}.json'), 'a', buffering=1,
-                        encoding='UTF-8')
-    else:
-        log_file = open(os.path.join(args.home, result_path, f'{args.log_file}.json'), 'a', buffering=1,
-                        encoding='UTF-8')
+    args.log_name = mdhm + '_' + args.base_model.replace('/', '-') + '_' + args.log_name
+    log_file = open(os.path.join(args.home, result_path, f'{args.log_file}.json'), 'a', buffering=1, encoding='UTF-8')
 
     args.lora_weights = os.path.join(args.home, args.lora_weights)
     args.log_file = log_file
@@ -57,13 +52,8 @@ if __name__ == '__main__':
             cot_data_path = os.path.join(DATASET_PATH, 'cot')
             with open(os.path.join(cot_data_path, f'train_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
-                # train_data = []
-                # for i in train_data_temp:
-                #     if i['item'] not in i['context_tokens']:
-                #         train_data.append(i)
             with open(os.path.join(cot_data_path, f'test_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 test_data = json.load(f)
-
         else:
             crs_dataset = CRSDatasetRec(args)
             train_data = crs_dataset.train_data
@@ -71,16 +61,11 @@ if __name__ == '__main__':
             test_data = crs_dataset.test_data
 
         if 'train' in args.mode:
-            if args.data_type == "cot_wo":
-                instructions = [i['context_tokens'] for i in train_data if
-                                "Based on the user's preference" in i['item']]
-                labels = [i['item'] for i in train_data if "Based on the user's preference" in i['item']]
+            instructions = [i['context_tokens'] for i in train_data]
+            if args.data_type == "augment":
+                labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
             else:
-                instructions = [i['context_tokens'] for i in train_data]
-                if args.data_type == "augment":
-                    labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
-                else:
-                    labels = [i['item'] for i in train_data]
+                labels = [i['item'] for i in train_data]
 
 
         elif 'test' == args.mode:
@@ -89,11 +74,7 @@ if __name__ == '__main__':
                 labels = [crs_dataset.entityid2name[i['item']] for i in test_data]
             else:
                 labels = [i['item'] for i in test_data]
-            # negItems = [convertIds2Names(i['negItems'], crs_dataset.entityid2name) for i in test_data]
-            # for idx, data in enumerate(test_data):
-            #     negItems = data['negItems']
-            #     negItems = [crs_dataset.entityid2name[item] for item in negItems]
-            #     test_data[idx]['negItems'] = negItems
+
         elif 'valid' == args.mode:
             instructions = [i['context_tokens'] for i in valid_data]
             labels = [crs_dataset.entityid2name[i['item']] for i in valid_data]
@@ -114,7 +95,7 @@ if __name__ == '__main__':
                                    prompt_template_name=args.prompt)
         if 'train' in args.mode:
             llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=instructions,
-                           labels=labels, num_epochs=args.epoch, prompt_template_name=args.prompt)
+                           labels=labels, num_epochs=args.epoch, prompt_template_name=args.prompt, eval=evaluator)
         if 'test' == args.mode:
             evaluator.test()
 

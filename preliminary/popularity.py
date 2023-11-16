@@ -313,43 +313,39 @@ def rq2_traintest_split():
 
 
 def evaluate():
-    hit, total = 0, 0
+    hit, total = 0, 0  # 1023222514_rqcrsrec_hit1_onlyName
     savejson = []
     datas = json.load(
-        (open('../result/gpt-3.5-turbo/1024164819_rqcrs_withCoT.json', 'r', encoding='utf-8')))
-    for data in datas:
-        gen = data['RESPONSE'][data['RESPONSE'].lower().rfind('\n'):].lower()
-        answer = data['LABEL'].split('(')[0].strip().lower()
-        total += 1
-        if answer in gen:
-            hit += 1
-        AVG_HIT = hit / total
-        savejson.append({'RESPONSE': gen, 'LABEL': data['LABEL'], 'AVG_HIT': AVG_HIT})
-    print(total)
-    with open('../result/gpt-3.5-turbo/1024164819_rqcrs_withCoT_onlyName.json', 'w', encoding='utf-8') as f:
-        f.write(json.dumps(savejson, indent=4))
-
+        (open('../result/meta-llama-Llama-2-7b-chat-hf/1028172815_rqwithoutCoT_id_epoch4.json', 'r', encoding='utf-8')))
+    test_datas = json.load(
+        (open('../data/redial/cot/test_data_cot.json', 'r', encoding='utf-8')))
+    llamadata = json.load(
+        (open('../result/meta-llama-Llama-2-7b-chat-hf/1113202228_rqfineTuneCRS_CoT_p2i_E3.json', 'r',
+              encoding='utf-8'))) # 1028225629_rqwithoutCoT_title_epoch5 # 1113202228_rqfineTuneCRS_CoT_p2i_E3
+    gptdata = json.load(
+        (open('../data/redial/cot/test_data_cot.json', 'r', encoding='utf-8')))
+    cnt = 0
+    items, refineItem = [], []
+    for llama, test in zip(llamadata, test_datas):
+        gen = llama['GEN'].split('(')[0]
+        # items.append(gen)
+        context_tokens = test['context_tokens']
+        if llama['ANSWER'].split('(')[0].strip() in gen:
+            cnt += 1
+            # savejson.append({'context_tokens': test['context_tokens'], 'COT': test['item'], 'GEN': llama['GEN']})
+    print(cnt)
+    # with open('llama_and_test_onlyNew.json', 'w', encoding='utf-8') as f:
+    #     f.write(json.dumps(savejson, indent=4))
 
 if __name__ == "__main__":
-    # popularity_crs()
-    # popularity_model_rq12("llama7b")
-    # popularity_model_rq3("chatgpt")
-    # popularity_avg_hitratio("llama7b")
-    # hitratio_type_rq1("chatgpt")
-    # hitratio_type_rq3("chatgpt")
+# popularity_crs()
+# popularity_model_rq12("llama7b")
+# popularity_model_rq3("chatgpt")
+# popularity_avg_hitratio("llama7b")
+# hitratio_type_rq1("chatgpt")
+# hitratio_type_rq3("chatgpt")
 
-    # rq2test_firstreview("llama7b")
-    # rq2_traintest_split()
+# rq2test_firstreview("llama7b")
+# rq2_traintest_split()
 
-    # evaluate()
-    movie2name = json.load(
-        open('../data/redial/movie2name.json', 'r', encoding='utf-8'))
-    saveList= dict()
-    for key, value in movie2name.items():
-        id = value[0]
-        title = value[1]
-        if id == -1:
-            continue
-        saveList[id] = title
-    with open('entityid2name.json','w',encoding='utf-8') as wf:
-        wf.write(json.dumps(saveList, indent=4))
+    evaluate()

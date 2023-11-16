@@ -19,7 +19,7 @@ def parse_args():
     parser.add_argument('--device_id', type=str, default='0')
     parser.add_argument('--max_dialog_len', type=int, default=128)
     parser.add_argument('--rq_num', type=str, default='1')
-    parser.add_argument('--base_model', type=str, default='gpt-3.5-turbo',
+    parser.add_argument('--base_model', type=str, default='meta-llama/Llama-2-7b-chat-hf',
                         choices=['meta-llama/Llama-2-7b-hf', 'meta-llama/Llama-2-13b-hf',
                                  'meta-llama/Llama-2-7b-chat-hf', 'gpt-3.5-turbo', 'google/flan-t5-large', 't5-small',
                                  't5-large'])
@@ -28,11 +28,13 @@ def parse_args():
     parser.add_argument('--model_name', type=str, default='llama')
     parser.add_argument('--num_device', type=int, default=1)
     parser.add_argument("--write", action='store_true', help="Whether to write of results.")
-    parser.add_argument("--lora_weights", type=str, default='/lora-alpaca/checkpoint-1600')
-    parser.add_argument('--mode', type=str, default='test', choices=['train', 'test', 'valid'])
+    parser.add_argument("--lora_weights", type=str, default='/lora-alpaca')
+    parser.add_argument('--mode', type=str, default='test', choices=['train', 'test', 'valid', 'train_test'])
     parser.add_argument('--log_name', type=str, default='')
     parser.add_argument('--prompt', type=str, default='withoutCoT')
-    parser.add_argument('--data_type', type=str, default='default', choices=['default', 'augment', 'trainNew', 'cot', "cot_wo", "cot_p", "cot_s", "cot_sp", "cot_onlyp", "cot_onlys", "cot_onlysp"])
+    parser.add_argument('--data_type', type=str, default='default',
+                        choices=['default', 'augment', 'trainNew', 'cot', "cot_wo", "cot_p", "cot_s", "cot_sp",
+                                 "cot_onlyp", "cot_onlys", "cot_onlysp"])
 
     # ChatGPT
     parser.add_argument('--log_file', type=str, default='')
