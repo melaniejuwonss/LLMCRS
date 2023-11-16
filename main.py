@@ -63,7 +63,7 @@ if __name__ == '__main__':
             with open(os.path.join(cot_data_path, f'test_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 test_data = json.load(f)
             new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
-            train_data = [{'context_tokens': data['context_tokens'], 'item': data['item'], 'new': idx in new_idx} for
+            train_data = [{'context_tokens': data['context_tokens'], 'item': data['item'], 'isNew': idx in new_idx} for
                           idx, data in enumerate(train_data)]
 
         else:
@@ -78,7 +78,7 @@ if __name__ == '__main__':
             train_labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
         else:
             train_labels = [i['item'] for i in train_data]
-        train_new = [i['new'] for i in train_data]
+        train_new = [i['isNew'] for i in train_data]
 
         # if 'test' in args.mode:
         test_instructions = [i['context_tokens'] for i in test_data]
