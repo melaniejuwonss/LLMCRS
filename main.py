@@ -71,8 +71,7 @@ if __name__ == '__main__':
             else:
                 train_labels = [i['item'] for i in train_data]
 
-
-        elif 'test' == args.mode:
+        if 'test' in args.mode:
             test_instructions = [i['context_tokens'] for i in test_data]
             if args.data_type == "augment":
                 test_labels = [crs_dataset.entityid2name[i['item']] for i in test_data]
