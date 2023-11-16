@@ -56,7 +56,7 @@ class QueryEvalCallback(TrainerCallback):
         # # predictions, labels = trainer.predict(trainer.eval_dataset)
         # # print(predictions.size())
         if 'test' in args.mode:
-            args.eval.test(model)
+            args.evaluator.test(model)
         # # print(kwargs)
         # print("==============================End of evaluate step==============================")
 
@@ -64,7 +64,7 @@ class QueryEvalCallback(TrainerCallback):
 def llama_finetune(
         args,
         tokenizer,
-        eval,
+        evaluator,
         instructions: list = None,
         labels: list = None,
         # model/data params
