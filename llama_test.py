@@ -144,8 +144,7 @@ class LLaMaEvaluator:
         if model is None:
             model = self.prepare_model()
         if epoch is not None:
-            log_file = open(f'{self.args.log_file}_E{epoch}.json', 'a', buffering=1,
-                            encoding='UTF-8')
+            log_file = open(f"{self.args.log_file}_E{int(epoch)}.json", 'a', buffering=1, encoding='UTF-8')
             self.args.log_file = log_file
 
         model.eval()
