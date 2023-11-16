@@ -105,7 +105,7 @@ if __name__ == '__main__':
                            labels=train_labels, num_epochs=args.epoch, prompt_template_name=args.prompt)
         if 'test' in args.mode:
             args.lora_weights = os.path.join("./lora-alpaca", args.log_name + '_E' + str(int(args.epoch)))
-            evaluator.test()
+            evaluator.test(epoch=args.epoch)
 
     if 't5' in args.base_model.lower():
         tokenizer = T5Tokenizer.from_pretrained(args.base_model)
