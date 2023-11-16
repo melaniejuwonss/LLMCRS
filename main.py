@@ -64,7 +64,7 @@ if __name__ == '__main__':
                 test_data = json.load(f)
         else:
             crs_dataset = CRSDatasetRec(args)
-            train_data = crs_dataset.train_data[:10]
+            train_data = crs_dataset.train_data
             valid_data = crs_dataset.valid_data
             test_data = crs_dataset.test_data
 
@@ -104,8 +104,12 @@ if __name__ == '__main__':
             llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=train_instructions,
                            labels=train_labels, num_epochs=args.epoch, prompt_template_name=args.prompt)
         if 'test' in args.mode:
-            # args.lora_weights = os.path.join("./lora-alpaca", args.log_name + '_E' + str(int(args.epoch)))
-            evaluator.test()
+            if args.lora_weights != "":
+                for e in range(args.epoch):
+                    args.lora_weights = os.path.join("./lora-alpaca", args.log_name + '_E' + str(int(e)))
+                    evaluator.test(epoch=e)
+            else:
+                evaluator.test(epoch=args.epoch)
 
     if 't5' in args.base_model.lower():
         tokenizer = T5Tokenizer.from_pretrained(args.base_model)

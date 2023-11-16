@@ -209,7 +209,7 @@ class LLaMaEvaluator:
                 wandb.log({"hit_ratio": (hit / cnt)})
                 print("%.4f" % (hit / cnt))
 
-        self.args.score_file.write(f'{hit_ratio}\t{mentioned_hit_ratio}\t{not_mentioned_hit_ratio}\n')
+        self.args.score_file.write('%.2f\t%.2f\t%.2f\n' % (hit_ratio, mentioned_hit_ratio, not_mentioned_hit_ratio))
     # return generated_results
 
 # if __name__ == "__main__":
