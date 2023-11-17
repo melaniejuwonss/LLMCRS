@@ -4,7 +4,7 @@ import os
 
 
 class Prompter(object):
-    __slots__ = ("template", "_verbose")
+    __slots__ = ("template", "_verbose", "args")
 
     def __init__(self, args, template_name: str = "", verbose: bool = False):
         self._verbose = verbose
