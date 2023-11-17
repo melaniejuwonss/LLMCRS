@@ -31,8 +31,8 @@ if __name__ == '__main__':
     args = parse_args()
     args = dir_init(args)
     mdhm = str(datetime.now(timezone('Asia/Seoul')).strftime('%m%d%H%M%S'))
-    result_path = os.path.join(args.home, args.output_dir, args.base_model.replace('/', '-'))
-    score_path = os.path.join(args.home, args.score_dir, args.base_model.replace('/', '-'))
+    result_path = os.path.join(args.home, args.output_dir, args.base_model.replace('/', '-'), mdhm[:4])
+    score_path = os.path.join(args.home, args.score_dir, args.base_model.replace('/', '-'), mdhm[:4])
     if not os.path.exists(result_path): os.mkdir(result_path)
     if not os.path.exists(score_path): os.mkdir(score_path)
     args.log_name = mdhm + '_' + args.base_model.replace('/', '-') + '_' + args.log_name
@@ -114,7 +114,7 @@ if __name__ == '__main__':
             if args.lora_weights != "":
                 for e in range(args.epoch):
                     args.lora_weights = os.path.join("./lora-alpaca", args.log_name + '_E' + str(int(e + 1)))
-                    evaluator.test(epoch=e)
+                    evaluator.test(epoch=e + 1)
             else:
                 evaluator.test(epoch=args.epoch)
 
