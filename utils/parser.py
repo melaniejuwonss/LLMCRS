@@ -35,7 +35,7 @@ def parse_args():
     parser.add_argument('--data_type', type=str, default='default',
                         choices=['default', 'augment', 'cot', "cot_wo", "cot_p", "cot_s", "cot_sp",
                                  "cot_onlyp", "cot_onlys", "cot_onlysp"])
-    parser.add_argument('--isNew', type=bool, default=False)
+    parser.add_argument('--newPrompt', type=bool, default=False)
 
     # ChatGPT
     parser.add_argument('--log_file', type=str, default='')

@@ -42,12 +42,12 @@ class Prompter(object):
             res = self.template["prompt_no_input"].format(
                 instruction=instruction
             )
-        if label and self.args.isNew is True:
+        if label and self.args.newPrompt is True:
             if isNew is False:
                 res = f"{res}\nChat about the item mentioned in a given dialog.\n{label}"
             elif isNew is True:
                 res = f"{res}\nRecommend the item (Do not recommend the items already mentioned in a given dialog).\n{label}"
-        elif label and self.args.isNew is False:
+        elif label and self.args.newPrompt is False:
             if isNew is False:
                 res = f"{res}{label}"  # \nChat about the item mentioned in a given dialog.\n
             elif isNew is True:
