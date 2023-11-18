@@ -90,7 +90,7 @@ def llama_finetune(
             "v_proj",
         ],
         # llm hyperparams
-        train_on_inputs: bool = False, # True,  # if False, masks out inputs in loss
+        train_on_inputs: bool = True,  # if False, masks out inputs in loss
         add_eos_token: bool = False,
         group_by_length: bool = False,  # faster, but produces an odd training loss curve
         # wandb params
