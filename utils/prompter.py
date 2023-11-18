@@ -44,9 +44,9 @@ class Prompter(object):
             )
         if label and self.args.isNew is True:
             if isNew is False:
-                res = f"{res}\n1)Chat about the item mentioned in a given conversation.\n2){label}" # \nChat about the item mentioned in a given dialog.\n
+                res = f"{res}\nChat about the item mentioned in a given dialog.\n{label}" # \nChat about the item mentioned in a given dialog.\n
             elif isNew is True:
-                res = f"{res}\n1)Recommend new item that did not appear in a given conversation.\n2){label}" # \nRecommend the item (Do not recommend the items already mentioned in a given dialog).\n
+                res = f"{res}\nRecommend the item (Do not recommend the items already mentioned in a given dialog).\n{label}" # \nRecommend the item (Do not recommend the items already mentioned in a given dialog).\n
         elif label and self.args.isNew is False:
             if isNew is False:
                 res = f"{res}{label}"
