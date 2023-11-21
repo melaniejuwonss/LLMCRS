@@ -88,7 +88,7 @@ class CRSDatasetRec:
                      'response': data['response'], 'context_entities': data['context_entities'],
                      'context_items': data['context_items'], 'items': data['items'], 'item': data['item'],
                      'exist': data['exist']} for data in self.train_data]
-                logger.debug("[Finish train data process]")
+            logger.debug(f"[Finish train data process] LEN: {len(self.train_data)}")
 
             test_data = self._raw_data_process(test_data_raw)
             self.test_data = self.rec_process_fn(test_data)
@@ -101,14 +101,14 @@ class CRSDatasetRec:
                      'response': data['response'], 'context_entities': data['context_entities'],
                      'context_items': data['context_items'], 'items': data['items'], 'item': data['item'],
                      'exist': data['exist']} for data in self.train_data]
-            logger.debug("[Finish test data process]")
+            logger.debug(f"[Finish test data process] LEN: {len(self.test_data)}")
 
             valid_data = self._raw_data_process(valid_data_raw)
             self.valid_data = self.rec_process_fn(valid_data)
             # self.mergeWithNegatives(self.valid_data)
             # with open('valid_data_augment.json', 'w', encoding='utf-8') as f:
             #     f.write(json.dumps(self.valid_data, indent=4))
-            logger.debug("[Finish valid data process]")
+            logger.debug(f"[Finish valid data process] LEN: {len(self.valid_data)}")
 
     def mergeWithNegatives(self, dataset):
         for data in tqdm(dataset, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
