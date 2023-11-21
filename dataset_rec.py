@@ -82,13 +82,25 @@ class CRSDatasetRec:
             #     f.write(json.dumps(self.train_data, indent=4))
             # if self.args.isNew == True:
             #     self.train_data = [data for data in self.train_data if data['exist'] == False]
-            logger.debug("[Finish train data process]")
+            if self.args.data_type == "lastutt":
+                self.train_data = [
+                    {'role': data['role'], 'context_tokens': data['context_tokens'][data['context_tokens'].rfind('User:'):],
+                     'response': data['response'], 'context_entities': data['context_entities'],
+                     'context_items': data['context_items'], 'items': data['items'], 'item': data['item'],
+                     'exist': data['exist']} for data in self.train_data]
+                logger.debug("[Finish train data process]")
 
             test_data = self._raw_data_process(test_data_raw)
             self.test_data = self.rec_process_fn(test_data)
             # self.mergeWithNegatives(self.train_data)
             # with open('test_data_augment.json', 'w', encoding='utf-8') as f:
             #     f.write(json.dumps(self.test_data, indent=4))
+            if self.args.data_type == "lastutt":
+                self.test_data = [
+                    {'role': data['role'], 'context_tokens': data['context_tokens'][data['context_tokens'].rfind('User:'):],
+                     'response': data['response'], 'context_entities': data['context_entities'],
+                     'context_items': data['context_items'], 'items': data['items'], 'item': data['item'],
+                     'exist': data['exist']} for data in self.train_data]
             logger.debug("[Finish test data process]")
 
             valid_data = self._raw_data_process(valid_data_raw)

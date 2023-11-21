@@ -99,7 +99,7 @@ if __name__ == '__main__':
         labels = [i[1] for i in question_data]
 
     if 'gpt' in args.base_model.lower():
-        chatgpt_test(args=args, instructions=test_instructions, labels=test_labels)
+        chatgpt_test(args=args, instructions=train_instructions, labels=train_labels)
 
     if 'llama' in args.base_model.lower():
         tokenizer = LlamaTokenizer.from_pretrained(args.base_model)

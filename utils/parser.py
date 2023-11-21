@@ -34,7 +34,7 @@ def parse_args():
     parser.add_argument('--prompt', type=str, default='withoutCoT')
     parser.add_argument('--data_type', type=str, default='default',
                         choices=['default', 'augment', 'cot', "cot_wo", "cot_p", "cot_s", "cot_sp",
-                                 "cot_onlyp", "cot_onlys", "cot_onlysp"])
+                                 "cot_onlyp", "cot_onlys", "cot_onlysp", 'lastutt'])
     parser.add_argument('--isNew', type=bool, default=False)
 
     # ChatGPT
