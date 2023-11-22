@@ -42,7 +42,7 @@ if __name__ == '__main__':
         args.log_file = log_file
     args.result_path = os.path.join(args.home, result_path)
     score_file = open(os.path.join(args.home, score_path, f'{args.log_name}.json'), 'a', buffering=1, encoding='UTF-8')
-    score_file.write('Overall\tMentioned\tNot-mentioned\n')
+    score_file.write('Overall\tMentioned\tNot-mentioned\tGen-mentioned\tGen-Not-mentioned\n')
     args.lora_weights = os.path.join(args.home, args.lora_weights)
 
     args.score_file = score_file

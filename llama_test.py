@@ -152,7 +152,7 @@ class LLaMaEvaluator:
         if torch.__version__ >= "2" and sys.platform != "win32":
             model = torch.compile(model)
 
-        hit, mentioned_hit, not_mentioned_hit, cnt, mentioned_cnt, not_mentioned_cnt = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+        hit, mentioned_hit, not_mentioned_hit, cnt, mentioned_cnt, not_mentioned_cnt, gen_mentioned_cnt, gen_not_mentioned_cnt = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
         idx = 0
         for batch in tqdm(self.dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
             generated_results = []
@@ -193,6 +193,11 @@ class LLaMaEvaluator:
                 elif idx not in self.new_idx:
                     mentioned_cnt += 1.0
 
+                if movie_name in dialog.lower():
+                    gen_mentioned_cnt += 1
+                elif movie_name not in dialog.lower():
+                    gen_not_mentioned_cnt += 1
+
                 generated_results.append(
                     {'GEN': output, 'ANSWER': label, 'HIT': movie_name in check_response.lower(), 'AVG_HIT': hit_ratio,
                      'NEW_ITEM': idx in self.new_idx})
@@ -209,7 +214,8 @@ class LLaMaEvaluator:
                 wandb.log({"hit_ratio": (hit / cnt)})
                 print("%.4f" % (hit / cnt))
 
-        self.args.score_file.write('%.4f\t%.4f\t%.4f\n' % (hit_ratio, mentioned_hit_ratio, not_mentioned_hit_ratio))
+        self.args.score_file.write('%.4f\t%.4f\t%.4f\t%d\t%d\n' % (
+        hit_ratio, mentioned_hit_ratio, not_mentioned_hit_ratio, gen_mentioned_cnt, gen_not_mentioned_cnt))
     # return generated_results
 
 # if __name__ == "__main__":
