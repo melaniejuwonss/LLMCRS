@@ -112,8 +112,9 @@ if __name__ == '__main__':
                            prompt_template_name=args.prompt)
         if 'test' in args.mode:
             if args.lora_weights != "":
+                origin_lora_weights = args.lora_weights
                 for e in range(args.epoch):
-                    args.lora_weights = args.lora_weights + '_E' + str(int(e + 1))
+                    args.lora_weights = origin_lora_weights + '_E' + str(int(e + 1))
                     evaluator.test(epoch=e + 1)
             else:
                 evaluator.test(epoch=args.epoch)
