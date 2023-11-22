@@ -113,7 +113,7 @@ if __name__ == '__main__':
         if 'test' in args.mode:
             if args.lora_weights != "":
                 for e in range(args.epoch):
-                    args.lora_weights = os.path.join("./lora-alpaca", args.log_name + '_E' + str(int(e + 1)))
+                    args.lora_weights = args.lora_weights + '_E' + str(int(e + 1))
                     evaluator.test(epoch=e + 1)
             else:
                 evaluator.test(epoch=args.epoch)
