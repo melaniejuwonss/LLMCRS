@@ -100,7 +100,7 @@ class CRSDatasetRec:
                     {'role': data['role'], 'context_tokens': data['context_tokens'][data['context_tokens'].rfind('User:'):],
                      'response': data['response'], 'context_entities': data['context_entities'],
                      'context_items': data['context_items'], 'items': data['items'], 'item': data['item'],
-                     'exist': data['exist']} for data in self.train_data]
+                     'exist': data['exist']} for data in self.test_data]
             logger.debug(f"[Finish test data process] LEN: {len(self.test_data)}")
 
             valid_data = self._raw_data_process(valid_data_raw)
