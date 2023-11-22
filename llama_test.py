@@ -75,20 +75,20 @@ class LLaMaEvaluator:
             )  # .to(self.args.device_id)
 
             # todo: For evaluating the PEFT model
-            model = PeftModel.from_pretrained(
-                model,
-                lora_weights,
-                torch_dtype=torch.float16,
-            )
+            # model = PeftModel.from_pretrained(
+            #     model,
+            #     lora_weights,
+            #     torch_dtype=torch.float16,
+            # )
         else:
             model = LlamaForCausalLM.from_pretrained(
                 base_model, device_map={"": device}, low_cpu_mem_usage=True
             )
-            model = PeftModel.from_pretrained(
-                model,
-                lora_weights,
-                device_map={"": device},
-            )
+            # model = PeftModel.from_pretrained(
+            #     model,
+            #     lora_weights,
+            #     device_map={"": device},
+            # )
         # unwind broken decapoda-research config
         model.config.pad_token_id = self.tokenizer.pad_token_id = 0  # unk
         model.config.bos_token_id = 1
