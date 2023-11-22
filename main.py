@@ -111,7 +111,7 @@ if __name__ == '__main__':
                            labels=train_labels, isNews=train_new, num_epochs=args.epoch,
                            prompt_template_name=args.prompt)
         if 'test' in args.mode:
-            if args.lora_weights != "":
+            if args.lora_weights != "lora-alpaca":
                 origin_lora_weights = args.lora_weights
                 for e in range(args.epoch):
                     args.lora_weights = origin_lora_weights + '_E' + str(int(e + 1))
