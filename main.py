@@ -117,7 +117,10 @@ if __name__ == '__main__':
                     args.lora_weights = origin_lora_weights + '_E' + str(int(e + 1))
                     evaluator.test(epoch=e + 1)
             else:
-                evaluator.test(epoch=args.epoch)
+                if args.lora_weights[args.lora_weights.rfind('/') + 1:] == "lora-alpaca":
+                    evaluator.test()
+                else:
+                    evaluator.test(epoch=args.epoch)
 
     if 't5' in args.base_model.lower():
         tokenizer = T5Tokenizer.from_pretrained(args.base_model)
