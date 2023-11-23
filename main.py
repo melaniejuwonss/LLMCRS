@@ -36,7 +36,7 @@ if __name__ == '__main__':
     if not os.path.exists(result_path): os.mkdir(result_path)
     if not os.path.exists(score_path): os.mkdir(score_path)
     args.log_name = mdhm + '_' + args.base_model.replace('/', '-') + '_' + args.log_name
-    if args.mode == "test":
+    if 'gpt' in args.base_model.lower() or args.lora_weights[-1].isdigit() is True:
         log_file = open(os.path.join(args.home, result_path, f'{args.log_name}.json'), 'a', buffering=1,
                         encoding='UTF-8')
         args.log_file = log_file
@@ -114,13 +114,15 @@ if __name__ == '__main__':
                            labels=train_labels, isNews=train_new, num_epochs=args.epoch,
                            prompt_template_name=args.prompt)
         if 'test' in args.mode:
-            if args.lora_weights[args.lora_weights.rfind('/') + 1:] != "lora-alpaca":
+            # 특정 weight 지정 없이, 모든 epoch 에 해당하는 weights test
+            if args.lora_weights[args.lora_weights.rfind('/') + 1:] != "lora-alpaca" and args.lora_weights[-1].isdigit() is False:
                 origin_lora_weights = args.lora_weights
                 for e in range(args.epoch):
                     args.lora_weights = origin_lora_weights + '_E' + str(int(e + 1))
                     evaluator.test(epoch=e + 1)
             else:
-                if args.lora_weights[args.lora_weights.rfind('/') + 1:] == "lora-alpaca":
+                if args.lora_weights[args.lora_weights.rfind(
+                        '/') + 1:] == "lora-alpaca":  # default lora_weights (i.e., not-trained LLaMa)
                     evaluator.test()
                 else:
                     evaluator.test(epoch=args.epoch)
