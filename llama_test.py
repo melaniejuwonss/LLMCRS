@@ -193,9 +193,9 @@ class LLaMaEvaluator:
                 elif idx not in self.new_idx:
                     mentioned_cnt += 1.0
 
-                if movie_name in dialog.lower():
+                if check_response.split('(')[0].strip() in dialog.lower():
                     gen_mentioned_cnt += 1
-                elif movie_name not in dialog.lower():
+                elif check_response.split('(')[0].strip() not in dialog.lower():
                     gen_not_mentioned_cnt += 1
 
                 generated_results.append(
