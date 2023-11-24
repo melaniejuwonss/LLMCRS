@@ -137,7 +137,7 @@ class LLaMaEvaluator:
                 max_new_tokens=max_new_tokens,
             )
         s = generation_output.sequences
-        output = self.tokenizer.batch_decode(s, skip_special_tokens=True)
+        output = self.tokenizer.batch_decode(s, skip_special_tokens=False)
         return [self.prompter.get_response(i) for i in output]
 
     def test(self, model=None, epoch=None):
