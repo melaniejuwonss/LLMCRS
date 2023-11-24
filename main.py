@@ -61,12 +61,12 @@ if __name__ == '__main__':
             cot_data_path = os.path.join(DATASET_PATH, 'cot')
             with open(os.path.join(cot_data_path, f'train_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
-            with open(os.path.join(cot_data_path, f'test_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
-                test_data = json.load(f)
+            # with open(os.path.join(cot_data_path, f'test_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
+            #     test_data = json.load(f)
         elif "cot" not in args.data_type:
             train_data = crs_dataset.train_data
             valid_data = crs_dataset.valid_data
-            test_data = crs_dataset.test_data
+        test_data = crs_dataset.test_data
 
         new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
         train_data = [{'context_tokens': data['context_tokens'], 'item': data['item'], 'isNew': idx in new_idx} for
