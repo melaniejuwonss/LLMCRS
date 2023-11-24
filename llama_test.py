@@ -173,6 +173,10 @@ class LLaMaEvaluator:
                 elif 'crs' in self.args.stage:
                     movie_name = label.split('(')[0].strip().lower()
                     check_response = output.split('\n')[1].strip().lower()
+                    check_response = check_response.replace(
+                        "in this context, the system should recommend the following new item:", "").strip()
+                    check_response = check_response.replace(
+                        "in this context, the system should chat about the following mentioned item:", "").strip()
                     # if 'fineTuneCRS' in self.args.prompt:
                     #     check_response = check_response[check_response.rfind('therefore'):]
                     # elif 'withCoT' in self.args.prompt:
