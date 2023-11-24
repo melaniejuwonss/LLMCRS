@@ -204,7 +204,7 @@ class LLaMaEvaluator:
                     gen_not_mentioned_cnt += 1
 
                 generated_results.append(
-                    {'CONTEXT': dialog, 'GEN': output, 'ANSWER': label, 'HIT': movie_name in output.lower(),
+                    {'CONTEXT': dialog, 'GEN': output, 'ANSWER': label, 'HIT': title == gen_title and year == gen_year,
                      'AVG_HIT': hit_ratio, 'NEW_ITEM': idx in self.new_idx})
                 idx += 1
 
