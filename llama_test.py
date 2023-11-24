@@ -172,7 +172,7 @@ class LLaMaEvaluator:
                     movie_name = label.replace('(', ')').split(')')[1].strip().lower()
                 elif 'crs' in self.args.stage:
                     movie_name = label.split('(')[0].strip().lower()
-                    check_response = output.lower()
+                    check_response = output.split(':')[1].strip().lower()
                     # if 'fineTuneCRS' in self.args.prompt:
                     #     check_response = check_response[check_response.rfind('therefore'):]
                     # elif 'withCoT' in self.args.prompt:
@@ -199,8 +199,8 @@ class LLaMaEvaluator:
                     gen_not_mentioned_cnt += 1
 
                 generated_results.append(
-                    {'GEN': output, 'ANSWER': label, 'HIT': movie_name in check_response.lower(), 'AVG_HIT': hit_ratio,
-                     'NEW_ITEM': idx in self.new_idx})
+                    {'CONTEXT': dialog, 'GEN': output, 'ANSWER': label, 'HIT': movie_name in check_response.lower(),
+                     'AVG_HIT': hit_ratio, 'NEW_ITEM': idx in self.new_idx})
                 idx += 1
 
             mentioned_hit_ratio = mentioned_hit / mentioned_cnt
@@ -215,7 +215,7 @@ class LLaMaEvaluator:
                 print("%.4f" % (hit / cnt))
 
         self.args.score_file.write('%.4f\t%.4f\t%.4f\t%d\t%d\n' % (
-        hit_ratio, mentioned_hit_ratio, not_mentioned_hit_ratio, gen_mentioned_cnt, gen_not_mentioned_cnt))
+            hit_ratio, mentioned_hit_ratio, not_mentioned_hit_ratio, gen_mentioned_cnt, gen_not_mentioned_cnt))
     # return generated_results
 
 # if __name__ == "__main__":
