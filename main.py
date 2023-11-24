@@ -125,7 +125,7 @@ if __name__ == '__main__':
                         '/') + 1:] == "lora-alpaca":  # default lora_weights (i.e., not-trained LLaMa)
                     evaluator.test()
                 else:
-                    evaluator.test(epoch=args.epoch)
+                    evaluator.test()
 
     if 't5' in args.base_model.lower():
         tokenizer = T5Tokenizer.from_pretrained(args.base_model)
