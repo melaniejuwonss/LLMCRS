@@ -114,10 +114,15 @@ if __name__ == '__main__':
                            prompt_template_name=args.prompt)
         if 'test' in args.mode:
             # 특정 weight 지정 없이, 모든 epoch 에 해당하는 weights test
-            if args.lora_weights[args.lora_weights.rfind('/') + 1:] != "lora-alpaca" and args.lora_weights[-1].isdigit() is False:
+            if args.lora_weights[args.lora_weights.rfind('/') + 1:] != "lora-alpaca" and args.lora_weights[
+                -1].isdigit() is False:
                 origin_lora_weights = args.lora_weights
                 for e in range(args.epoch):
                     args.lora_weights = origin_lora_weights + '_E' + str(int(e + 1))
+                    evaluator.test(epoch=e + 1)
+            elif 'train' in args.mode:
+                for e in range(args.epoch):
+                    args.lora_weights = os.path.join("./lora-alpaca", args.log_name + '_E' + str(int(e + 1)))
                     evaluator.test(epoch=e + 1)
             else:
                 if args.lora_weights[args.lora_weights.rfind(
