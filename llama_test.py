@@ -116,7 +116,7 @@ class LLaMaEvaluator:
                  temperature=0.1,
                  top_p=0.75,
                  top_k=40,
-                 num_beams=4,  # todo: beam 1개로 바꿔보기
+                 num_beams=1,  # todo: beam 1개로 바꿔보기
                  max_new_tokens=50,
                  **kwargs):
         generation_config = GenerationConfig(
