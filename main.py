@@ -63,6 +63,15 @@ if __name__ == '__main__':
                 train_data = json.load(f)
             with open(os.path.join(cot_data_path, f'test_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 test_data = json.load(f)
+            if args.oversampling:
+                train_new_idx = json.load(open(f'data/redial/train_new_idx.json', 'r', encoding='utf-8'))
+                train_old_idx = list(range(len(train_data)))
+                train_old_idx = [item for item in train_old_idx if item not in train_new_idx]
+                rec_train_data = [train_data[x] for x in train_new_idx]
+                chat_train_data = [train_data[x] for x in train_old_idx]
+                oversample_ratio = int(len(rec_train_data) / len(chat_train_data))
+                chat_train_data = chat_train_data * oversample_ratio
+                train_data = rec_train_data + chat_train_data
         elif "cot" not in args.data_type:
             train_data = crs_dataset.train_data
             valid_data = crs_dataset.valid_data
