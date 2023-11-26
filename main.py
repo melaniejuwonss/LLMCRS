@@ -57,11 +57,11 @@ if __name__ == '__main__':
         DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
         args.dataset_path = DATASET_PATH
         crs_dataset = CRSDatasetRec(args)
-        if "cot" not in args.data_type:
-            train_data = crs_dataset.train_data
-            valid_data = crs_dataset.valid_data
-            test_data = crs_dataset.test_data
-        elif "cot" in args.data_type:
+        # if "cot" not in args.data_type:
+        train_data = crs_dataset.train_data
+        valid_data = crs_dataset.valid_data
+        test_data = crs_dataset.test_data
+        if "cot" in args.data_type:
             cot_data_path = os.path.join(DATASET_PATH, 'cot')
             if 'train' in args.mode:
                 with open(os.path.join(cot_data_path, f'train_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
