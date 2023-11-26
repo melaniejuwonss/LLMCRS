@@ -57,12 +57,18 @@ if __name__ == '__main__':
         DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
         args.dataset_path = DATASET_PATH
         crs_dataset = CRSDatasetRec(args)
-        if "cot" in args.data_type:
+        if "cot" not in args.data_type:
+            train_data = crs_dataset.train_data
+            valid_data = crs_dataset.valid_data
+            test_data = crs_dataset.test_data
+        elif "cot" in args.data_type:
             cot_data_path = os.path.join(DATASET_PATH, 'cot')
-            with open(os.path.join(cot_data_path, f'train_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
-                train_data = json.load(f)
-            with open(os.path.join(cot_data_path, f'test_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
-                test_data = json.load(f)
+            if 'train' in args.mode:
+                with open(os.path.join(cot_data_path, f'train_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
+                    train_data = json.load(f)
+            if 'test' in args.mode:
+                with open(os.path.join(cot_data_path, f'test_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
+                    test_data = json.load(f)
             if args.oversample_ratio > 1:
                 train_new_idx = json.load(open(f'data/redial/train_new_idx.json', 'r', encoding='utf-8'))
                 train_old_idx = list(range(len(train_data)))
@@ -72,10 +78,7 @@ if __name__ == '__main__':
                 # oversample_ratio = int(len(rec_train_data) / len(chat_train_data))
                 chat_train_data = chat_train_data * args.oversample_ratio
                 train_data = rec_train_data + chat_train_data
-        elif "cot" not in args.data_type:
-            train_data = crs_dataset.train_data
-            valid_data = crs_dataset.valid_data
-            test_data = crs_dataset.test_data
+
 
         new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
         train_data = [{'context_tokens': data['context_tokens'], 'item': data['item'], 'isNew': idx in new_idx} for
