@@ -175,7 +175,7 @@ class LLaMaEvaluator:
                     title = label.split('(')[0].strip().lower()
                     year = label.split('(')[-1].replace(')', '').strip()
                     # check_response = output[output.rfind('\n') + 1:].lower()
-                    gen_title = output.split('(')[0].strip()
+                    gen_title = output.split('(')[0].strip().lower()
                     gen_year = output.split('(')[-1].replace(')', '').strip()
 
                     if year.isdigit() is False:
