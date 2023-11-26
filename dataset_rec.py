@@ -147,7 +147,8 @@ class CRSDatasetRec:
                     augment_conv_dict['exist'] = movie in conv_dict['context_items']
                     augment_conv_dict['response'] = conv_dict['response']
                     augment_dataset.append(augment_conv_dict)
-                    break
+                    if self.args.train_response:
+                        break
 
         logger.info('[Finish dataset process before rec batchify]')
         logger.info(f'[Rec Dataset size: {len(augment_dataset)}]')

@@ -79,9 +79,12 @@ if __name__ == '__main__':
                 chat_train_data = chat_train_data * args.oversample_ratio
                 train_data = rec_train_data + chat_train_data
 
-
         new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
-        train_data = [{'context_tokens': data['context_tokens'], 'item': data['item'], 'isNew': idx in new_idx} for
+
+        target = 'item'
+        if args.train_response:  # 구분하기 위한 코드 (item으로 학습할 지? response?)
+            target = 'response'
+        train_data = [{'context_tokens': data['context_tokens'], 'item': data[target], 'isNew': idx in new_idx} for
                       idx, data in enumerate(train_data)]
 
         # if 'train' in args.mode:

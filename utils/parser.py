@@ -35,6 +35,9 @@ def parse_args():
     parser.add_argument('--data_type', type=str, default='default')
     parser.add_argument('--isNew', type=bool, default=False)
     parser.add_argument('--oversample_ratio', type=int, default=1)
+    parser.add_argument('--train_response', type=bool, default=False)
+
+
 
     # ChatGPT
     parser.add_argument('--log_file', type=str, default='')
