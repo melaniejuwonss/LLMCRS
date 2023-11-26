@@ -2,6 +2,7 @@ import json
 from copy import deepcopy
 import pandas as pd
 import numpy as np
+import jsonlines
 
 
 def popularity_crs():
@@ -313,39 +314,151 @@ def rq2_traintest_split():
 
 
 def evaluate():
-    hit, total = 0, 0  # 1023222514_rqcrsrec_hit1_onlyName
-    savejson = []
-    datas = json.load(
-        (open('../result/meta-llama-Llama-2-7b-chat-hf/1028172815_rqwithoutCoT_id_epoch4.json', 'r', encoding='utf-8')))
-    test_datas = json.load(
-        (open('../data/redial/cot/test_data_cot.json', 'r', encoding='utf-8')))
-    llamadata = json.load(
-        (open('../result/meta-llama-Llama-2-7b-chat-hf/1113202228_rqfineTuneCRS_CoT_p2i_E3.json', 'r',
-              encoding='utf-8'))) # 1028225629_rqwithoutCoT_title_epoch5 # 1113202228_rqfineTuneCRS_CoT_p2i_E3
-    gptdata = json.load(
-        (open('../data/redial/cot/test_data_cot.json', 'r', encoding='utf-8')))
-    cnt = 0
-    items, refineItem = [], []
-    for llama, test in zip(llamadata, test_datas):
-        gen = llama['GEN'].split('(')[0]
-        # items.append(gen)
-        context_tokens = test['context_tokens']
-        if llama['ANSWER'].split('(')[0].strip() in gen:
-            cnt += 1
-            # savejson.append({'context_tokens': test['context_tokens'], 'COT': test['item'], 'GEN': llama['GEN']})
-    print(cnt)
-    # with open('llama_and_test_onlyNew.json', 'w', encoding='utf-8') as f:
-    #     f.write(json.dumps(savejson, indent=4))
+    new_idx = json.load(open('../data/redial/test_new_idx.json', 'r'))
+    # for i in range(5):
+    llamadatas = jsonlines.open(
+        f'../result/meta-llama-Llama-2-7b-chat-hf/231126/1126181050_meta-llama-Llama-2-7b-chat-hf_DT2I_real_E2.json')
+    # gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/lastUtt.json', 'r', encoding='utf-8'))
+    test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r'))
+    hit, cnt, mentioned_cnt, not_mentioned_cnt, mentioned_hit, not_mentioned_hit = 0, 0, 0, 0, 0, 0
+    for idx, (test_data, data) in enumerate(zip(test_datas, llamadatas)):
+        context = test_data['context_tokens']
+        # data['GEN'][data['GEN'].rfind('\n') + 1:].lower()
+        gen = data['GEN'][data['GEN'].rfind('\n') + 1:].lower()
+        gen_title = gen.split('(')[0].strip()
+        gen_year = gen.split('(')[-1].replace(')','').replace('</s>','').replace('<unk>','').strip()
+        title = data['ANSWER'].split('(')[0].strip().lower()
+        year = data['ANSWER'].split('(')[-1].replace(')','').strip()
+        if year.isdigit() is False:
+            year=''
+            gen_year = ''
+        # if idx in new_idx:
+        #     if title in gen:
+        #         not_mentioned_hit += 1
+        #     not_mentioned_cnt += 1
+        if gen_title == title and year == gen_year:
+            hit += 1
+            if idx in new_idx:
+                not_mentioned_hit += 1
+            else:
+                mentioned_hit += 1
+        if idx in new_idx:
+            not_mentioned_cnt += 1
+        else:
+            mentioned_cnt += 1
+        cnt += 1
+    print(f"{round(hit / cnt * 100,2)}\t{round(mentioned_hit / mentioned_cnt * 100,2)}\t{round(not_mentioned_hit / not_mentioned_cnt * 100, 2)}")  # 55
+    ############################################
+    # test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r'))
+    # # for i in range(5):
+    # hit, cnt, mentioned_cnt, mentioned_hit, not_mentioned_cnt, not_mentioned_hit = 0, 0, 0, 0, 0, 0,
+    # gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/lastUtt.json', 'r',encoding='utf-8'))
+    # with jsonlines.open(
+    #         f'../result/meta-llama-Llama-2-7b-chat-hf/231116/1116203131_meta-llama-Llama-2-7b-chat-hf_D2I_new구분_E4.json') as llamadata:  # 1028225629_rqwithoutCoT_title_epoch5 # 1113202228_rqfineTuneCRS_CoT_p2i_E3
+    #     for idx, (data, test_data) in enumerate(zip(llamadata, test_datas)):
+    #         gen = data['GEN'].split('\n')[1].strip().split('(')[0].strip().lower()
+    #         # gen = gen.replace("in this context, the system should recommend the following new item:", "").strip()
+    #         # gen = gen.replace("in this context, the system should chat about the following mentioned item:",
+    #         #                   "").strip()
+    #         # gen = gen.replace("in this context, the system should mention the following item:", "").strip()
+    #         context = test_data['context_tokens'].lower()
+    #         if gen in context:
+    #             mentioned_cnt += 1
+    #         else:
+    #             not_mentioned_cnt += 1
+    # print(mentioned_cnt, mentioned_cnt/4003 * 100, not_mentioned_cnt, not_mentioned_cnt/4003 * 100)
+    ############################################
+    # new_idx = json.load(open('../data/redial/test_new_idx.json', 'r', encoding='utf-8'))
+    # test_datas = json.load(open('../data/redial/cot/test_data_cot_intention.json', 'r', encoding='utf-8'))
+    # result_datas_prompt = jsonlines.open(
+    #     '../result/meta-llama-Llama-2-7b-chat-hf/231124/1124144016_meta-llama-Llama-2-7b-chat-hf_intention_validation_D2INIPROMPT_E2.json')
+    # result_datas_real = jsonlines.open(
+    #     '../result/meta-llama-Llama-2-7b-chat-hf/231124/1124160933_meta-llama-Llama-2-7b-chat-hf_intention_validation_D2INPROMPTI_E3.json')
+    # revise_list = []
+    # prompt_recommend, real_recommend, prompt_chat, real_chat = 0, 0, 0, 0
+    # for idx, (prompt_data, test_data) in enumerate(zip(result_datas_real, test_datas)):
+    #     context = test_data['context_tokens'].split('\n')[0].lower()
+    #     prompt_type = prompt_data['GEN'].split('\n')[1].lower()  # .split('(')[0].strip()
+    #     prompt_type = prompt_type.replace("in this context, the system should chat about the following mentioned item:",
+    #                                       "")
+    #     prompt_type = prompt_type.replace("in this context, the system should recommend the following new item:", "")
+    #     prompt_type = prompt_type.replace("in this context, the system should mention the following item:", "")
+    #     prompt_type = prompt_type.split('(')[0].strip()
+    #     if idx in new_idx:
+    #         if prompt_type not in context:
+    #             real_recommend += 1
+    #     elif idx not in new_idx:
+    #         if prompt_type in context:
+    #             real_chat += 1
+    #
+    # print(real_recommend, real_chat)
+    ####################################### train_data_cot_only구분
+    # train_datas = json.load(open('../data/redial/cot/train_data_cot_only구분.json', 'r', encoding='utf-8'))
+    # for train_data in train_datas:
+    #     context = train_data['context_tokens'].split('\n')[0]
+    #     item = train_data['item']
+    #     revise_list.append({'context_tokens': context, 'item': item})
+    # with open('train_data_cot_d2ti.json', 'w', encoding='utf-8') as f:
+    #     f.write(json.dumps(revise_list, indent=1))
+    #########################################################
+    # for i in range(5):
+    #     llamadatas = jsonlines.open(
+    #         f'../result/meta-llama-Llama-2-7b-chat-hf/231125/1125172950_meta-llama-Llama-2-7b-chat-hf_DINT2I_E4.json')
+    #     gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/lastUtt.json', 'r', encoding='utf-8'))
+    #     new_idx = json.load(open('../data/redial/test_new_idx.json', 'r'))
+    #     test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r', encoding='utf-8'))
+    #     hit, cnt, mentioned_cnt, not_mentioned_cnt, mentioned_hit, not_mentioned_hit = 0, 0, 0, 0, 0, 0
+    #     for idx, (llama_data, test_data) in enumerate(zip(llamadatas,test_datas)):
+    #         gen = llama_data['GEN'].lower()
+    #         context = test_data['context_tokens'].lower()
+    #         gen_title = gen.split('(')[0].strip()
+    #         gen_year = gen.split('(')[-1].replace(')', '').replace('</s>','').replace('<unk>','').strip()
+    #
+    #         if gen_year.isdigit() is False:
+    #             gen_year = ''
+    #
+    #         if idx in new_idx:
+    #             # if "recommend" in gen:
+    #             #     not_mentioned_hit += 1
+    #             if gen_title not in context or gen_year not in context:
+    #                 not_mentioned_hit += 1
+    #             not_mentioned_cnt += 1
+    #         elif idx not in new_idx:
+    #             # if "chat" in gen:
+    #             #     mentioned_hit += 1
+    #             if gen_title in context and gen_year in context:
+    #                 mentioned_hit += 1
+    #             mentioned_cnt += 1
+    #
+    #     print(round(mentioned_hit / mentioned_cnt * 100, 2) ,round(not_mentioned_hit / not_mentioned_cnt * 100, 2))
+    ###################################
+    # dt2is = json.load(open('../data/redial/cot/train_data_cot_dt2i.json', 'r'))
+    # din2is = json.load(open('../data/redial/cot/train_data_cot_intention_input.json', 'r'))
+    # prev_context = ""
+    # new_train_list = []
+    # for dt2i, din2i in zip(dt2is, din2is):
+    #     dt_context = dt2i['context_tokens']
+    #     din_context = din2i['context_tokens']
+    #     if "Recommend the item (Do not recommend the items already mentioned in a given dialog)." in dt_context:
+    #         din_context += "\n Recommend the item (Do not recommend the items already mentioned in a given dialog)."
+    #     else:
+    #         din_context += "\n Chat about the item mentioned in a given dialog."
+    #
+    #     item = dt2i['item']
+    #     new_train_list.append({'context_tokens': din_context, 'item': item})
+    # with open('../data/redial/cot/train_data_cot_dint2i.json','w',encoding='utf-8') as f:
+    #     f.write(json.dumps(new_train_list, indent=2))
+
 
 if __name__ == "__main__":
-# popularity_crs()
-# popularity_model_rq12("llama7b")
-# popularity_model_rq3("chatgpt")
-# popularity_avg_hitratio("llama7b")
-# hitratio_type_rq1("chatgpt")
-# hitratio_type_rq3("chatgpt")
+    # popularity_crs()
+    # popularity_model_rq12("llama7b")
+    # popularity_model_rq3("chatgpt")
+    # popularity_avg_hitratio("llama7b")
+    # hitratio_type_rq1("chatgpt")
+    # hitratio_type_rq3("chatgpt")
 
-# rq2test_firstreview("llama7b")
-# rq2_traintest_split()
+    # rq2test_firstreview("llama7b")
+    # rq2_traintest_split()
 
     evaluate()
