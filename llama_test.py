@@ -127,7 +127,7 @@ class LLaMaEvaluator:
             top_k=top_k,
             num_beams=num_beams,
             num_return_sequences=num_beams,
-            ** kwargs,
+            **kwargs,
         )
 
         with torch.no_grad():
@@ -164,7 +164,7 @@ class LLaMaEvaluator:
             attention_mask = batched_inputs["attention_mask"].to(self.args.device_id)
 
             responses = self.evaluate(input_ids, attention_mask, model, max_new_tokens=self.args.max_new_tokens,
-                                    num_beams=self.args.num_beams)
+                                      num_beams=self.args.num_beams)
             responses = np.reshape(responses, (-1, self.args.num_beams)).tolist()
             labels = batch[1]
             # print("Instruction:", instruction)
@@ -200,7 +200,7 @@ class LLaMaEvaluator:
                             mentioned_hit += 1.0
                     cnt += 1.0
                     hit_ratio = hit / cnt
-                    topk_results.append(hit_ratio)
+                    topk_results.append('%.2f' % hit_ratio * 100)
                     if idx in self.new_idx:
                         not_mentioned_cnt += 1.0
                     elif idx not in self.new_idx:
