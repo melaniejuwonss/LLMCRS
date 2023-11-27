@@ -165,7 +165,7 @@ class LLaMaEvaluator:
 
             responses = self.evaluate(input_ids, attention_mask, model, max_new_tokens=self.args.max_new_tokens,
                                     num_beams=self.args.num_beams)
-            responses = np.reshape(responses, (-1, self.args.num_beams))
+            responses = np.reshape(responses, (-1, self.args.num_beams)).tolist()
             labels = batch[1]
             # print("Instruction:", instruction)
             # print("Response:", response)
@@ -188,7 +188,7 @@ class LLaMaEvaluator:
 
                 # if 'example' in self.args.rq_num or 'explain' in self.args.lora_weights:
                 #     check_response = output[output.lower().find("answer:"):].lower()
-                output = ', '.join(output.to_list())
+                output = ', '.join(output)
                 if label.lower() in output.lower():
                     # if title == gen_title and year == gen_year:
                     hit += 1.0
