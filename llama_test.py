@@ -156,6 +156,7 @@ class LLaMaEvaluator:
             model = torch.compile(model)
 
         hit, mentioned_hit, not_mentioned_hit, cnt, mentioned_cnt, not_mentioned_cnt, gen_mentioned_cnt, gen_not_mentioned_cnt = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+        hits, cnts = [0, 0, 0], [0, 0, 0]
         idx = 0
         for batch in tqdm(self.dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
             generated_results = []
@@ -189,17 +190,17 @@ class LLaMaEvaluator:
                 # if 'example' in self.args.rq_num or 'explain' in self.args.lora_weights:
                 #     check_response = output[output.lower().find("answer:"):].lower()
                 topk_results = []
-                for k in [1, 3, 5]:
+                for j, k in enumerate([1, 3, 5]):
                     output = ', '.join(response[:k])
                     if label.lower() in output.lower():
                         # if title == gen_title and year == gen_year:
-                        hit += 1.0
+                        hits[j] += 1.0
                         if idx in self.new_idx:
                             not_mentioned_hit += 1.0
                         elif idx not in self.new_idx:
                             mentioned_hit += 1.0
-                    cnt += 1.0
-                    hit_ratio = (hit / cnt) * 100
+                    cnts[j] += 1.0
+                    hit_ratio = (hits[j] / cnts[j]) * 100
                     topk_results.append('%.2f' % hit_ratio)
                     if idx in self.new_idx:
                         not_mentioned_cnt += 1.0
