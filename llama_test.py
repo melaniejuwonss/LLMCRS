@@ -171,7 +171,7 @@ class LLaMaEvaluator:
             # print("Response:", response)
             # print("#################################################")
             # generated_results.extend(responses)
-            for dialog, output, label in zip(batch[0], responses, labels):
+            for dialog, response, label in zip(batch[0], responses, labels):
                 # if 'quiz' in self.args.stage:
                 #     movie_name = label.replace('(', ')').split(')')[1].strip().lower()
                 # elif 'crs' in self.args.stage:
@@ -190,7 +190,7 @@ class LLaMaEvaluator:
                 #     check_response = output[output.lower().find("answer:"):].lower()
                 topk_results = []
                 for k in [1, 3, 5]:
-                    output = ', '.join(output[:k])
+                    output = ', '.join(response[:k])
                     if label.lower() in output.lower():
                         # if title == gen_title and year == gen_year:
                         hit += 1.0
