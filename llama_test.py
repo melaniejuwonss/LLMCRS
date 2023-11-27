@@ -199,8 +199,8 @@ class LLaMaEvaluator:
                         elif idx not in self.new_idx:
                             mentioned_hit += 1.0
                     cnt += 1.0
-                    hit_ratio = hit / cnt
-                    topk_results.append('%.2f' % hit_ratio * 100)
+                    hit_ratio = (hit / cnt) * 100
+                    topk_results.append('%.2f' % hit_ratio)
                     if idx in self.new_idx:
                         not_mentioned_cnt += 1.0
                     elif idx not in self.new_idx:
