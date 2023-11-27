@@ -1,6 +1,8 @@
 import json
 import os
 import sys
+
+import numpy as np
 import torch
 import wandb
 from torch.utils.data import Dataset, DataLoader
@@ -125,7 +127,7 @@ class LLaMaEvaluator:
             top_k=top_k,
             num_beams=num_beams,
             num_return_sequences=num_beams
-            **kwargs,
+                                 ** kwargs,
         )
 
         with torch.no_grad():
@@ -160,10 +162,10 @@ class LLaMaEvaluator:
             batched_inputs = self.tokenizer(batch[0], padding=True, return_tensors="pt")
             input_ids = batched_inputs["input_ids"].to(self.args.device_id)
             attention_mask = batched_inputs["attention_mask"].to(self.args.device_id)
-            batch_size = input_ids.size(0)
 
             responses = self.evaluate(input_ids, attention_mask, model, max_new_tokens=self.args.max_new_tokens,
-                                      num_beams=self.args.num_beams)
+                                    num_beams=self.args.num_beams)
+            responses = np.reshape(responses, (-1, self.args.num_beams))
             labels = batch[1]
             # print("Instruction:", instruction)
             # print("Response:", response)
@@ -173,21 +175,22 @@ class LLaMaEvaluator:
                 # if 'quiz' in self.args.stage:
                 #     movie_name = label.replace('(', ')').split(')')[1].strip().lower()
                 # elif 'crs' in self.args.stage:
-                    # movie_name = label.split('(')[0].strip().lower()
-                    # title = label.split('(')[0].strip().lower()
-                    # year = label.split('(')[-1].replace(')', '').strip()
-                    # # check_response = output[output.rfind('\n') + 1:].lower()
-                    # gen_title = output.split('(')[0].strip().lower()
-                    # gen_year = output.split('(')[-1].replace(')', '').strip()
-                    #
-                    # if year.isdigit() is False:
-                    #     year = ''
-                    #     gen_year = ''
+                # movie_name = label.split('(')[0].strip().lower()
+                # title = label.split('(')[0].strip().lower()
+                # year = label.split('(')[-1].replace(')', '').strip()
+                # # check_response = output[output.rfind('\n') + 1:].lower()
+                # gen_title = output.split('(')[0].strip().lower()
+                # gen_year = output.split('(')[-1].replace(')', '').strip()
+                #
+                # if year.isdigit() is False:
+                #     year = ''
+                #     gen_year = ''
 
                 # if 'example' in self.args.rq_num or 'explain' in self.args.lora_weights:
                 #     check_response = output[output.lower().find("answer:"):].lower()
+                output = ', '.join(output.to_list())
                 if label.lower() in output.lower():
-                # if title == gen_title and year == gen_year:
+                    # if title == gen_title and year == gen_year:
                     hit += 1.0
                     if idx in self.new_idx:
                         not_mentioned_hit += 1.0

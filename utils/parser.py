@@ -15,7 +15,7 @@ def parse_args():
     parser.add_argument('--eval_batch_size', type=int, default=8)
     parser.add_argument('--epoch', type=int, default=5)
     parser.add_argument('--max_new_tokens', type=int, default=100)
-    parser.add_argument('--num_beams', type=int, default=4)
+    parser.add_argument('--num_beams', type=int, default=5)
     parser.add_argument('--device_id', type=str, default='0')
     parser.add_argument('--max_dialog_len', type=int, default=128)
     parser.add_argument('--rq_num', type=str, default='1')
