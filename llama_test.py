@@ -188,20 +188,23 @@ class LLaMaEvaluator:
 
                 # if 'example' in self.args.rq_num or 'explain' in self.args.lora_weights:
                 #     check_response = output[output.lower().find("answer:"):].lower()
-                output = ', '.join(output)
-                if label.lower() in output.lower():
-                    # if title == gen_title and year == gen_year:
-                    hit += 1.0
+                topk_results = []
+                for k in [1, 3, 5]:
+                    output = ', '.join(output[:k])
+                    if label.lower() in output.lower():
+                        # if title == gen_title and year == gen_year:
+                        hit += 1.0
+                        if idx in self.new_idx:
+                            not_mentioned_hit += 1.0
+                        elif idx not in self.new_idx:
+                            mentioned_hit += 1.0
+                    cnt += 1.0
+                    hit_ratio = hit / cnt
+                    topk_results.append(hit_ratio)
                     if idx in self.new_idx:
-                        not_mentioned_hit += 1.0
+                        not_mentioned_cnt += 1.0
                     elif idx not in self.new_idx:
-                        mentioned_hit += 1.0
-                cnt += 1.0
-                hit_ratio = hit / cnt
-                if idx in self.new_idx:
-                    not_mentioned_cnt += 1.0
-                elif idx not in self.new_idx:
-                    mentioned_cnt += 1.0
+                        mentioned_cnt += 1.0
 
                 # if gen_title in dialog.lower() and gen_year in dialog.lower():
                 #     gen_mentioned_cnt += 1
@@ -210,7 +213,7 @@ class LLaMaEvaluator:
 
                 generated_results.append(
                     {'CONTEXT': dialog, 'GEN': output, 'ANSWER': label, 'HIT': label.lower() in output.lower(),
-                     'AVG_HIT': hit_ratio, 'NEW_ITEM': idx in self.new_idx})
+                     'AVG_HIT': ', '.join(topk_results), 'NEW_ITEM': idx in self.new_idx})
                 idx += 1
 
             mentioned_hit_ratio = mentioned_hit / mentioned_cnt
