@@ -168,24 +168,24 @@ class LLaMaEvaluator:
             # print("#################################################")
             # generated_results.extend(responses)
             for dialog, output, label in zip(batch[0], responses, labels):
-                if 'quiz' in self.args.stage:
-                    movie_name = label.replace('(', ')').split(')')[1].strip().lower()
-                elif 'crs' in self.args.stage:
+                # if 'quiz' in self.args.stage:
+                #     movie_name = label.replace('(', ')').split(')')[1].strip().lower()
+                # elif 'crs' in self.args.stage:
                     # movie_name = label.split('(')[0].strip().lower()
-                    title = label.split('(')[0].strip().lower()
-                    year = label.split('(')[-1].replace(')', '').strip()
-                    # check_response = output[output.rfind('\n') + 1:].lower()
-                    gen_title = output.split('(')[0].strip().lower()
-                    gen_year = output.split('(')[-1].replace(')', '').strip()
-
-                    if year.isdigit() is False:
-                        year = ''
-                        gen_year = ''
+                    # title = label.split('(')[0].strip().lower()
+                    # year = label.split('(')[-1].replace(')', '').strip()
+                    # # check_response = output[output.rfind('\n') + 1:].lower()
+                    # gen_title = output.split('(')[0].strip().lower()
+                    # gen_year = output.split('(')[-1].replace(')', '').strip()
+                    #
+                    # if year.isdigit() is False:
+                    #     year = ''
+                    #     gen_year = ''
 
                 # if 'example' in self.args.rq_num or 'explain' in self.args.lora_weights:
                 #     check_response = output[output.lower().find("answer:"):].lower()
-
-                if title == gen_title and year == gen_year:
+                if label.lower() in output.lower():
+                # if title == gen_title and year == gen_year:
                     hit += 1.0
                     if idx in self.new_idx:
                         not_mentioned_hit += 1.0
@@ -198,13 +198,13 @@ class LLaMaEvaluator:
                 elif idx not in self.new_idx:
                     mentioned_cnt += 1.0
 
-                if gen_title in dialog.lower() and gen_year in dialog.lower():
-                    gen_mentioned_cnt += 1
-                elif gen_title not in dialog.lower() or gen_year not in dialog.lower():
-                    gen_not_mentioned_cnt += 1
+                # if gen_title in dialog.lower() and gen_year in dialog.lower():
+                #     gen_mentioned_cnt += 1
+                # elif gen_title not in dialog.lower() or gen_year not in dialog.lower():
+                #     gen_not_mentioned_cnt += 1
 
                 generated_results.append(
-                    {'CONTEXT': dialog, 'GEN': output, 'ANSWER': label, 'HIT': title == gen_title and year == gen_year,
+                    {'CONTEXT': dialog, 'GEN': output, 'ANSWER': label, 'HIT': label.lower() in output.lower(),
                      'AVG_HIT': hit_ratio, 'NEW_ITEM': idx in self.new_idx})
                 idx += 1
 
