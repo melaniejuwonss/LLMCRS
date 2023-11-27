@@ -116,7 +116,7 @@ class LLaMaEvaluator:
                  temperature=0.1,
                  top_p=0.75,
                  top_k=40,
-                 num_beams=4,  # todo: beam 1개로 바꿔보기
+                 num_beams=5,  # todo: beam 1개로 바꿔보기
                  max_new_tokens=50,
                  **kwargs):
         generation_config = GenerationConfig(
@@ -124,6 +124,7 @@ class LLaMaEvaluator:
             top_p=top_p,
             top_k=top_k,
             num_beams=num_beams,
+            num_return_sequences=num_beams
             **kwargs,
         )
 
@@ -159,6 +160,7 @@ class LLaMaEvaluator:
             batched_inputs = self.tokenizer(batch[0], padding=True, return_tensors="pt")
             input_ids = batched_inputs["input_ids"].to(self.args.device_id)
             attention_mask = batched_inputs["attention_mask"].to(self.args.device_id)
+            batch_size = input_ids.size(0)
 
             responses = self.evaluate(input_ids, attention_mask, model, max_new_tokens=self.args.max_new_tokens,
                                       num_beams=self.args.num_beams)
