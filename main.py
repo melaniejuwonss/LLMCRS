@@ -13,7 +13,7 @@ from datetime import datetime
 from pytz import timezone
 
 from chatgpt_test import chatgpt_test
-from dataset_rec import CRSDatasetRec
+from dataset_rec import CRSDatasetRec, ReviewDataset
 from llama_finetune import llama_finetune
 from llama_test import LLaMaEvaluator
 from t5_finetune import t5_finetune
@@ -52,10 +52,11 @@ if __name__ == '__main__':
 
     wandb.init(project=args.wandb_project, name=args.wandb_run_name)
 
+    ROOT_PATH = dirname(realpath(__file__))
+    DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
+    args.dataset_path = DATASET_PATH
+
     if args.stage.lower() == "crs":
-        ROOT_PATH = dirname(realpath(__file__))
-        DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
-        args.dataset_path = DATASET_PATH
         crs_dataset = CRSDatasetRec(args)
         # if "cot" not in args.data_type:
         train_data = crs_dataset.train_data
@@ -106,6 +107,10 @@ if __name__ == '__main__':
             valid_instructions = [i['context_tokens'] for i in valid_data]
             valid_labels = [crs_dataset.entityid2name[i['item']] for i in valid_data]
 
+    elif args.stage.lower() == "review_dialog":
+        review_dataset = ReviewDataset(args)
+        train_instructions = [i['context_tokens'] for i in review_dataset.return_data]
+        train_labels = [i['item'] for i in review_dataset.return_data]
 
     elif args.stage.lower() == "quiz":
         question_data = read_data(args)

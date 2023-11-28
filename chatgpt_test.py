@@ -36,8 +36,7 @@ Answer 2.
 template = """
 Pretend you are a movie recommender system. I will give you a conversation between a user and you (a recommender system).
 
-Based on the conversation, guess which movie should be recommended to the user.
-Do not provide any extra sentences.
+Based on the conversation, you reply me with 1 recommendation without extra sentences.
 
 Here is the conversation:
 %s
@@ -93,6 +92,22 @@ Dialog 4. %s
 Answer 4.
 """
 
+template_user_intention = "What is the user's intention of the last utterance in terms of the context of the dialog: Please tell me only one short sentence. Starts with 'The user's intention in the last utterance is'\n %s"
+
+template_dialog_generation = """I will give you a review of movie %s.
+%s
+
+I will give you a example dialog.
+User: Hey, I'm in the mood for a heartwarming and meaningful movie. Could you recommend a movie?
+System: Have you seen Forrest Gump (1994)? It's a classic that has touched the hearts of many. It's a beautiful story of a man's extraordinary journey through life. Some say it's like a box of chocolates—you never know what you're gonna get.
+User: It sounds interesting! What's so special about it?
+System: Well, Forrest Gump (1994) is one of those movies that can have a different impact on you depending on where you are in life when you watch it. It's more than just a story about a man with a low IQ; it’s also a tale of resilience, innocence, and the profound impact one person can have on the lives of many. It teaches you to appreciate the little things in life and to keep moving forward no matter what challenges come your way.
+User: That sounds like a powerful message. I'll give it a try.
+System: You're welcome! I hope you find a deep connection with the movie. It's known to touch the hearts of many and leave them with a sense of inspiration and appreciation for the beauty of life. Enjoy your movie night!
+
+Can you make a dialogue (within 3-turns) for talking about the movie %s by considering a review and sample dialogue?
+"""
+
 
 # - Therefore, Blair Witch (2016) should be recommended.
 # - Therefore, Major League (1989) should be recommended.
@@ -111,15 +126,13 @@ def execute(args,
                 model=MODEL,
                 messages=[
                     {"role": "user",
-                     "content": template_analyze_preference % instruction.replace('User:', '\nUser:').replace('System:',
-                                                                                                              '\nSystem:')}
+                     "content": template_dialog_generation % (label, instruction, label)}
                 ],
                 temperature=0,
             )
 
-
             response = response['choices'][0]['message']['content']
-            response += "\n -Therefore, %s should be recommended." % (label)
+            # response += "\n -Therefore, %s should be recommended." % (label)
             if 'quiz' in args.stage:
                 movie_name = label.replace('(', ')').split(')')[1].strip().lower()
             elif 'crs' in args.stage:
@@ -136,7 +149,8 @@ def execute(args,
             hit_ratio = hit / cnt
 
             args.log_file.write(
-                json.dumps({'DIALOG': instruction, 'LABEL': response}, ensure_ascii=False, indent=4) + '\n')
+                json.dumps({'INPUT': template_dialog_generation % (label, instruction, label), 'OUTPUT': response}, ensure_ascii=False,
+                           indent=4) + '\n')
 
             if cnt % 100 == 0 and cnt != 0:
                 print("%.2f" % (hit / cnt))

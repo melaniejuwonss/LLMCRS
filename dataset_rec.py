@@ -225,3 +225,26 @@ class CRSDatasetRec:
                     context_entities.append(entity)
 
         return augmented_conv_dicts
+
+class ReviewDataset:
+    def __init__(self, args):
+        super(ReviewDataset, self).__init__()
+        self.args = args
+        self.data_path = self.args.dataset_path
+        self.content_data = json.load(
+            open(os.path.join(self.data_path, 'content_data.json'), 'r', encoding='utf-8'))[0]  # {entity: entity_id}
+        self.movie2name = json.load(
+            open(os.path.join(self.data_path, 'movie2name.json'), 'r', encoding='utf-8'))  # {entity: entity_id}
+        self.load_data()
+    def load_data(self):
+        crsid2title = dict()
+        self.return_data = []
+        for key, value in self.movie2name.items():
+            crsid2title[key] = value[1]
+        for data in self.content_data:
+            crs_id = data['crs_id']
+            if crs_id in crsid2title.keys():
+                title = crsid2title[crs_id]
+                reviews = data['review']
+                for idx in range(min(len(reviews), self.args.num_reviews)):
+                    self.return_data.append({'context_tokens': reviews[idx],'item': title})

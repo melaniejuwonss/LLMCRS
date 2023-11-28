@@ -36,7 +36,7 @@ def parse_args():
     parser.add_argument('--isNew', type=bool, default=False)
     parser.add_argument('--oversample_ratio', type=int, default=1)
     parser.add_argument('--train_response', type=bool, default=False)
-
+    parser.add_argument('--num_reviews', type=int, default=1)
 
 
     # ChatGPT
