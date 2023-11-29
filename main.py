@@ -83,7 +83,9 @@ if __name__ == '__main__':
                 target_item_list[idx] = target_item_list[idx].replace('.', '')
                 data['OUTPUT'] = data['OUTPUT'].replace(target_item_list[idx], '[BLANK]')
                 title = target_item_list[idx].split('(')[0].strip()
-                year = target_item_list[idx].split('(')[1][:-1].strip()
+                year = target_item_list[idx].split('(')[-1][:-1].strip()
+                if not year.isdigit():
+                    year = ''
                 data['OUTPUT'] = data['OUTPUT'].replace(f"\"{title}\" ({year})", '[BLANK]')
                 data['OUTPUT'] = data['OUTPUT'].replace(title, '[BLANK]')
                 data['OUTPUT'] = data['OUTPUT'].replace(f"\"{title.lower()}\" ({year})", '[BLANK]')
