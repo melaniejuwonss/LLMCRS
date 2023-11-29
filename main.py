@@ -82,6 +82,14 @@ if __name__ == '__main__':
             for idx, data in enumerate(train_data):
                 target_item_list[idx] = target_item_list[idx].replace('.', '')
                 data['OUTPUT'] = data['OUTPUT'].replace(target_item_list[idx], '[BLANK]')
+                title = target_item_list[idx].split('(')[0].strip()
+                year = target_item_list[idx].split('(')[1][:-1].strip()
+                data['OUTPUT'] = data['OUTPUT'].replace(f"\"{title}\" ({year})", '[BLANK]')
+                data['OUTPUT'] = data['OUTPUT'].replace(title, '[BLANK]')
+                data['OUTPUT'] = data['OUTPUT'].replace(f"\"{title.lower()}\" ({year})", '[BLANK]')
+                data['OUTPUT'] = data['OUTPUT'].replace(title.lower(), '[BLANK]')
+                data['OUTPUT'] = data['OUTPUT'].replace(f"({year})", '')
+
                 data['OUTPUT'] = f"{data['OUTPUT']}\n\n Based on the conversation, guess the item for [BLANK]."
             train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx]} for idx, data in
                           enumerate(train_data)]
