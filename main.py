@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
             with open(os.path.join(syn_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
-            train_data = [{'context_tokens': data['INPUT'], 'item': data['OUTPUT']} for data in train_data]
+            train_data = [{'context_tokens': data['OUTPUT'], 'item': ''} for data in train_data]
 
         if "cot" in args.data_type:
             cot_data_path = os.path.join(DATASET_PATH, 'cot')
