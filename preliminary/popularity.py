@@ -23,7 +23,7 @@ def popularity_crs():
                             mention_cnt[text[1:]] = 1
 
     crsid2name = dict()
-    content_data = json.load((open('../data/content_data.json', 'r', encoding='utf-8')))[0]
+    content_data = json.load((open('../data/redial/content_data.json', 'r', encoding='utf-8')))[0]
     for data in content_data:
         crs_id = data['crs_id']
         title = data['title']

@@ -4,7 +4,7 @@ import random
 from copy import deepcopy
 from tqdm import tqdm
 
-content_data = json.load((open('../data/content_data.json', 'r', encoding='utf-8')))[0]
+content_data = json.load((open('../data/redial/content_data.json', 'r', encoding='utf-8')))[0]
 
 genre_example_question = " Which movie shares genre with Soul (2020)? \n Choices: a) Inside Out (2015) b) The Pianist (2002)  c) Kiss the Girls (1997) d) Harry Brown (2009) e) Meet Joe Black (1998) \n"
 genre_example_interpret = " Answer form: \n" \
