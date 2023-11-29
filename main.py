@@ -35,11 +35,12 @@ if __name__ == '__main__':
     score_path = os.path.join(args.home, args.score_dir, args.base_model.replace('/', '-'), mdhm[:4])
     if not os.path.exists(result_path): os.mkdir(result_path)
     if not os.path.exists(score_path): os.mkdir(score_path)
+    args.log_name = mdhm + '_' + args.base_model.replace('/', '-') + '_' + args.log_name
     if 'gpt' in args.base_model.lower() or args.lora_weights[-1].isdigit() is True:
         log_file = open(os.path.join(args.home, result_path, f'{args.log_name}.json'), 'a', buffering=1,
                         encoding='UTF-8')
         args.log_file = log_file
-    args.log_name = mdhm + '_' + args.base_model.replace('/', '-') + '_' + args.log_name
+
     args.result_path = os.path.join(args.home, result_path)
     score_file = open(os.path.join(args.home, score_path, f'{args.log_name}.json'), 'a', buffering=1, encoding='UTF-8')
     score_file.write('Overall\tMentioned\tNot-mentioned\tGen-mentioned\tGen-Not-mentioned\n')
@@ -70,7 +71,7 @@ if __name__ == '__main__':
                 train_data = json.load(f)
             train_data = [{'context_tokens': data['OUTPUT'], 'item': ''} for data in train_data]
 
-        if "cot" in args.data_type:
+        elif "cot" in args.data_type:
             cot_data_path = os.path.join(DATASET_PATH, 'cot')
             if 'train' in args.mode:
                 with open(os.path.join(cot_data_path, f'train_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
