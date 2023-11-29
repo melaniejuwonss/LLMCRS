@@ -261,6 +261,12 @@ def llama_finetune(
         device_map=device_map,
         # quantization_config=quantization_config,
     )
+    if args.lora_weights != '':
+        model = PeftModel.from_pretrained(
+            model,
+            args.lora_weights,
+            torch_dtype=torch.float16,
+        )
 
     tokenizer.pad_token_id = (
         0  # unk. we want this to be different from the eos token
