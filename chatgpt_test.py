@@ -143,9 +143,9 @@ def execute(args,
             #     check_response = response[response.lower().find("answer:"):].lower()
             # else:
             #     check_response = response
-            if movie_name in check_response.lower():
-                hit += 1.0
-            cnt += 1.0
+            # if movie_name in check_response.lower():
+            #     hit += 1.0
+            # cnt += 1.0
             hit_ratio = hit / cnt
 
             args.log_file.write(
