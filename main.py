@@ -87,8 +87,8 @@ if __name__ == '__main__':
                 if not year.isdigit():
                     year = ''
                 data['OUTPUT'] = data['OUTPUT'].replace(f"\"{title}\" ({year})", '[BLANK]')
-                data['OUTPUT'] = data['OUTPUT'].replace(title, '[BLANK]')
                 data['OUTPUT'] = data['OUTPUT'].replace(f"\"{title.lower()}\" ({year})", '[BLANK]')
+                data['OUTPUT'] = data['OUTPUT'].replace(title, '[BLANK]')
                 data['OUTPUT'] = data['OUTPUT'].replace(title.lower(), '[BLANK]')
                 data['OUTPUT'] = data['OUTPUT'].replace(f"({year})", '')
 
