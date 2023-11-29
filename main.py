@@ -67,7 +67,7 @@ if __name__ == '__main__':
             syn_data_path = os.path.join(DATASET_PATH, 'synthetic')
             if not os.path.exists(syn_data_path): os.mkdir(syn_data_path)
 
-            with open(os.path.join(syn_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
+            with open(os.path.join(syn_data_path, f'{args.data_type}_train.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
             train_data = [{'context_tokens': data['OUTPUT'], 'item': ''} for data in train_data]
 
