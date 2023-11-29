@@ -145,19 +145,20 @@ def execute(args,
             #     check_response = response
             # if movie_name in check_response.lower():
             #     hit += 1.0
-            # cnt += 1.0
-            hit_ratio = hit / cnt
+            cnt += 1.0
+            # hit_ratio = hit / cnt
 
             args.log_file.write(
                 json.dumps({'INPUT': template_dialog_generation % (label, instruction, label), 'OUTPUT': response}, ensure_ascii=False,
                            indent=4) + '\n')
 
-            if cnt % 100 == 0 and cnt != 0:
-                print("%.2f" % (hit / cnt))
+            # if cnt % 100 == 0 and cnt != 0:
+            #     print("%.2f" % (hit / cnt))
         except:
-            print("ERROR hit: %d, cnt: %d" % (hit, cnt))
+            # print("ERROR hit: %d, cnt: %d" % (hit, cnt))
+            print("ERROR cnt: %d" % (cnt))
             print(args.log_file)
-            args.chatgpt_hit = hit
+            # args.chatgpt_hit = hit
             args.chatgpt_cnt = int(cnt)
             time.sleep(5)
             break
