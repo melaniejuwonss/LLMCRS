@@ -71,6 +71,10 @@ if __name__ == '__main__':
                 train_data = json.load(f)
             train_data = [{'context_tokens': data['OUTPUT'], 'item': ''} for data in train_data]
 
+            with open(os.path.join(syn_data_path, f'{args.data_type}_test.json'), 'r', encoding='utf-8') as f:
+                test_data = json.load(f)
+            test_data = [{'context_tokens': data['INPUT'], 'item': data['OUTPUT']} for data in test_data]
+
         elif "cot" in args.data_type:
             cot_data_path = os.path.join(DATASET_PATH, 'cot')
             if 'train' in args.mode:

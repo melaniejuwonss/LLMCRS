@@ -261,7 +261,7 @@ def llama_finetune(
         device_map=device_map,
         # quantization_config=quantization_config,
     )
-    if args.lora_weights != '':
+    if args.lora_weights[args.lora_weights.rfind('/') + 1:] != "lora-alpaca":
         model = PeftModel.from_pretrained(
             model,
             args.lora_weights,
