@@ -64,6 +64,8 @@ if __name__ == '__main__':
         test_data = crs_dataset.test_data
         if 'synthetic' in args.data_type:
             syn_data_path = os.path.join(DATASET_PATH, 'synthetic')
+            if not os.path.exists(syn_data_path): os.mkdir(syn_data_path)
+
             with open(os.path.join(syn_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
             train_data = [{'context_tokens': data['INPUT'], 'item': data['OUTPUT']} for data in train_data]
