@@ -63,6 +63,14 @@ if __name__ == '__main__':
         train_data = crs_dataset.train_data
         valid_data = crs_dataset.valid_data
         test_data = crs_dataset.test_data
+
+        for data in train_data:
+            data['context_tokens'] = f"{data['context_tokens']}\n\nBased on the conversation, guess which movie should be recommended to the user."
+        for data in valid_data:
+            data['context_tokens'] = f"{data['context_tokens']}\n\nBased on the conversation, guess which movie should be recommended to the user."
+        for data in test_data:
+            data['context_tokens'] = f"{data['context_tokens']}\n\nBased on the conversation, guess which movie should be recommended to the user."
+
         if 'synthetic' in args.data_type:
             syn_data_path = os.path.join(DATASET_PATH, 'synthetic')
             if not os.path.exists(syn_data_path): os.mkdir(syn_data_path)
@@ -74,7 +82,7 @@ if __name__ == '__main__':
             for idx, data in enumerate(train_data):
                 target_item_list[idx] = target_item_list[idx].replace('.', '')
                 data['OUTPUT'] = data['OUTPUT'].replace(target_item_list[idx], '[BLANK]')
-                data['OUTPUT'] = f"{data['OUTPUT']}\nGuess the item for [BLANK]."
+                data['OUTPUT'] = f"{data['OUTPUT']}\n\n Based on the conversation, guess the item for [BLANK]."
             train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx]} for idx, data in
                           enumerate(train_data)]
             test_data = train_data[:20]
@@ -109,9 +117,7 @@ if __name__ == '__main__':
                       idx, data in enumerate(train_data)]
 
         # if 'train' in args.mode:
-        train_instructions = [
-            i['context_tokens'] + '\n Based on the conversation, guess which movie should be recommended to the user.'
-            for i in train_data]
+        train_instructions = [i['context_tokens'] for i in train_data]
         if args.data_type == "augment":
             train_labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
         else:
@@ -119,9 +125,7 @@ if __name__ == '__main__':
         train_new = [i['isNew'] for i in train_data]
 
         # if 'test' in args.mode:
-        test_instructions = [
-            i['context_tokens'] + '\n Based on the conversation, guess which movie should be recommended to the user.'
-            for i in test_data]
+        test_instructions = [i['context_tokens'] for i in test_data]
         if args.data_type == "augment":
             test_labels = [crs_dataset.entityid2name[i['item']] for i in test_data]
         else:
