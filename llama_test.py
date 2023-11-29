@@ -191,7 +191,7 @@ class LLaMaEvaluator:
                 #     check_response = output[output.lower().find("answer:"):].lower()
                 topk_results = []
                 for j, k in enumerate([1, 3, 5]):
-                    output = ', '.join(response[:k])
+                    output = '| '.join(response[:k])
                     if label.lower() in output.lower():
                         # if title == gen_title and year == gen_year:
                         hits[j] += 1.0
