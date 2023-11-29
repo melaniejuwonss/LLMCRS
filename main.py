@@ -69,12 +69,14 @@ if __name__ == '__main__':
 
             with open(os.path.join(syn_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
-            target_item_list = [data['INPUT'].split('I will give you a review of movie')[1].split('\n')[0].strip() for data in train_data]
+            target_item_list = [data['INPUT'].split('I will give you a review of movie')[1].split('\n')[0].strip() for
+                                data in train_data]
             for idx, data in enumerate(train_data):
                 target_item_list[idx] = target_item_list[idx].replace('.', '')
                 data['OUTPUT'] = data['OUTPUT'].replace(target_item_list[idx], '[BLANK]')
                 data['OUTPUT'] = f"{data['OUTPUT']}\nGuess the item for [BLANK]."
-            train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx]} for idx, data in enumerate(train_data)]
+            train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx]} for idx, data in
+                          enumerate(train_data)]
             test_data = train_data[:20]
             # with open(os.path.join(syn_data_path, f'{args.data_type}_test.json'), 'r', encoding='utf-8') as f:
             #     test_data = json.load(f)
@@ -107,7 +109,9 @@ if __name__ == '__main__':
                       idx, data in enumerate(train_data)]
 
         # if 'train' in args.mode:
-        train_instructions = [i['context_tokens'] for i in train_data]
+        train_instructions = [
+            i['context_tokens'] + '\n Based on the conversation, guess which movie should be recommended to the user.'
+            for i in train_data]
         if args.data_type == "augment":
             train_labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
         else:
@@ -115,7 +119,9 @@ if __name__ == '__main__':
         train_new = [i['isNew'] for i in train_data]
 
         # if 'test' in args.mode:
-        test_instructions = [i['context_tokens'] for i in test_data]
+        test_instructions = [
+            i['context_tokens'] + '\n Based on the conversation, guess which movie should be recommended to the user.'
+            for i in test_data]
         if args.data_type == "augment":
             test_labels = [crs_dataset.entityid2name[i['item']] for i in test_data]
         else:

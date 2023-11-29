@@ -23,7 +23,7 @@ def popularity_crs():
                             mention_cnt[text[1:]] = 1
 
     crsid2name = dict()
-    content_data = json.load((open('../data/redial/content_data.json', 'r', encoding='utf-8')))[0]
+    content_data = json.load((open('../data/content_data.json', 'r', encoding='utf-8')))[0]
     for data in content_data:
         crs_id = data['crs_id']
         title = data['title']
@@ -314,40 +314,43 @@ def rq2_traintest_split():
 
 
 def evaluate():
-    new_idx = json.load(open('../data/redial/test_new_idx.json', 'r'))
-    # for i in range(5):
-    llamadatas = jsonlines.open(
-        f'../result/meta-llama-Llama-2-7b-chat-hf/231126/1126181050_meta-llama-Llama-2-7b-chat-hf_DT2I_real_E2.json')
-    # gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/lastUtt.json', 'r', encoding='utf-8'))
-    test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r'))
-    hit, cnt, mentioned_cnt, not_mentioned_cnt, mentioned_hit, not_mentioned_hit = 0, 0, 0, 0, 0, 0
-    for idx, (test_data, data) in enumerate(zip(test_datas, llamadatas)):
-        context = test_data['context_tokens']
-        # data['GEN'][data['GEN'].rfind('\n') + 1:].lower()
-        gen = data['GEN'][data['GEN'].rfind('\n') + 1:].lower()
-        gen_title = gen.split('(')[0].strip()
-        gen_year = gen.split('(')[-1].replace(')','').replace('</s>','').replace('<unk>','').strip()
-        title = data['ANSWER'].split('(')[0].strip().lower()
-        year = data['ANSWER'].split('(')[-1].replace(')','').strip()
-        if year.isdigit() is False:
-            year=''
-            gen_year = ''
-        # if idx in new_idx:
-        #     if title in gen:
-        #         not_mentioned_hit += 1
-        #     not_mentioned_cnt += 1
-        if gen_title == title and year == gen_year:
-            hit += 1
-            if idx in new_idx:
-                not_mentioned_hit += 1
-            else:
-                mentioned_hit += 1
-        if idx in new_idx:
-            not_mentioned_cnt += 1
-        else:
-            mentioned_cnt += 1
-        cnt += 1
-    print(f"{round(hit / cnt * 100,2)}\t{round(mentioned_hit / mentioned_cnt * 100,2)}\t{round(not_mentioned_hit / not_mentioned_cnt * 100, 2)}")  # 55
+    # new_idx = json.load(open('../data/redial/test_new_idx.json', 'r'))
+    # # for i in range(5):
+    # llamadatas = jsonlines.open(
+    #     f'../result/meta-llama-Llama-2-7b-chat-hf/imp/noTrain.json')
+    # # gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/lastUtt.json', 'r', encoding='utf-8'))
+    # test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r'))
+    # hit, cnt, mentioned_cnt, not_mentioned_cnt, mentioned_hit, not_mentioned_hit = 0, 0, 0, 0, 0, 0
+    #
+    # for idx, (test_data, data) in enumerate(zip(test_datas, llamadatas)):
+    #     context = test_data['context_tokens']
+    #     gen = data['GEN'][data['GEN'].rfind('\n') + 1:].lower()
+    #     gen_title = gen.split('(')[0].strip()
+    #     gen_year = gen.split('(')[-1].replace(')','').replace('</s>','').replace('<unk>','').strip()
+    #     title = data['ANSWER'].split('(')[0].strip().lower()
+    #     year = data['ANSWER'].split('(')[-1].replace(')','').strip()
+    #     # answer = data['ANSWER'].lower().strip()
+    #     if year.isdigit() is False:
+    #         year=''
+    #         gen_year = ''
+    #     if idx in new_idx:
+    #         if title in gen:
+    #             not_mentioned_hit += 1
+    #         not_mentioned_cnt += 1
+    #
+    #     if title in gen_title and year in gen_year:
+    #         hit += 1
+    #         if idx in new_idx:
+    #             not_mentioned_hit += 1
+    #         else:
+    #             mentioned_hit += 1
+    #     if idx in new_idx:
+    #         not_mentioned_cnt += 1
+    #     else:
+    #         mentioned_cnt += 1
+    #     cnt += 1
+    #
+    # print(f"{round(hit/ cnt * 100,2)}\t{round(mentioned_hit / mentioned_cnt * 100,2)}\t{round(not_mentioned_hit / not_mentioned_cnt * 100, 2)}")  # 55
     ############################################
     # test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r'))
     # # for i in range(5):
@@ -403,7 +406,7 @@ def evaluate():
     #########################################################
     # for i in range(5):
     #     llamadatas = jsonlines.open(
-    #         f'../result/meta-llama-Llama-2-7b-chat-hf/231125/1125172950_meta-llama-Llama-2-7b-chat-hf_DINT2I_E4.json')
+    #         f'../result/meta-llama-Llama-2-7b-chat-hf/imp/1117091756_meta-llama-Llama-2-7b-chat-hf_D2I_E2.json')
     #     gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/lastUtt.json', 'r', encoding='utf-8'))
     #     new_idx = json.load(open('../data/redial/test_new_idx.json', 'r'))
     #     test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r', encoding='utf-8'))
@@ -432,23 +435,59 @@ def evaluate():
     #
     #     print(round(mentioned_hit / mentioned_cnt * 100, 2) ,round(not_mentioned_hit / not_mentioned_cnt * 100, 2))
     ###################################
-    # dt2is = json.load(open('../data/redial/cot/train_data_cot_dt2i.json', 'r'))
-    # din2is = json.load(open('../data/redial/cot/train_data_cot_intention_input.json', 'r'))
-    # prev_context = ""
+    # din2i_trains = json.load(open('../data/redial/cot/train_data_cot_din2i.json', 'r'))
+    # train_datas = json.load(open('../data/redial/augmented/train_data_augment.json', 'r'))
     # new_train_list = []
-    # for dt2i, din2i in zip(dt2is, din2is):
-    #     dt_context = dt2i['context_tokens']
-    #     din_context = din2i['context_tokens']
-    #     if "Recommend the item (Do not recommend the items already mentioned in a given dialog)." in dt_context:
-    #         din_context += "\n Recommend the item (Do not recommend the items already mentioned in a given dialog)."
-    #     else:
-    #         din_context += "\n Chat about the item mentioned in a given dialog."
-    #
-    #     item = dt2i['item']
-    #     new_train_list.append({'context_tokens': din_context, 'item': item})
-    # with open('../data/redial/cot/train_data_cot_dint2i.json','w',encoding='utf-8') as f:
+    # for din2i_train, train_data in zip(din2i_trains, train_datas):
+    #     item = train_data['item']
+    #     context_tokens = train_data['context_tokens']
+    #     intention = "\n" + din2i_train['context_tokens'][din2i_train['context_tokens'].rfind("The user's intention in"):]
+    #     new_train_list.append({'context_tokens': context_tokens + intention, 'item': item})
+    # with open('../data/redial/cot/train_data_cot_din2i.json','w', encoding='utf-8') as f:
     #     f.write(json.dumps(new_train_list, indent=2))
+    ######################################
+    # movie2name = json.load(open('../data/redial/movie2name.json', 'r'))
+    # test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r'))
+    # all_movies = dict()
+    # save_list = []
+    # for key, value in movie2name.items():
+    #     all_movies[value[1]] = 0
+    # # llamadatas = jsonlines.open(
+    # #     f'../result/meta-llama-Llama-2-7b-chat-hf/231127/1127150017_meta-llama-Llama-2-7b-chat-hf_D2I_neweval_E2.json')
+    # # for llamadata in llamadatas:
+    # #     gens = llamadata['GEN'].split(',')
+    # #     for gen in gens:
+    # #         if gen in all_movies.keys():
+    # #             all_movies[gen] += 1
+    # for test_data in test_datas:
+    #     response = test_data['response']
+    #     context = test_data['context_tokens']
+    #     save_list.append({'context': context, 'response': response})
+    # print(all_movies)
+    # with open('dialog_response.json','w',encoding='utf-8') as f:
+    #     f.write(json.dumps(save_list, indent=2))
+    # # 전체 test data 상 1,570 개의 item 이 answer 였음
+    # # DIN2I 803 만 gen
+    # # D2I 664 으로 gen
+    ######################################
+    syn_datas = json.load(open('../data/redial/synthetic/synthetic_dialog_review.json', 'r', encoding='utf-8'))
+    cnt = 0
+    save_data = []
+    for syn_data in syn_datas:
+        cnt += 1
+        prev_output = syn_data['OUTPUT']
+        all_responses = prev_output.split("\n")
+        input = ""
+        for idx, response in enumerate(all_responses):
+             if "System:" in response:
+                 output = response.replace("System: ","")
+                 save_data.append({'INPUT': input + "System: ", 'OUTPUT': output})
+             input += (response + "\n")
 
+        # output = prev_output[prev_output.rfind("System:"):]
+        # input = prev_output[:prev_output.rfind("System:")]
+    with open('../data/redial/synthetic/synthetic_dialog_review_train.json','w',encoding='utf-8') as f:
+        f.write(json.dumps(save_data, indent=2))
 
 if __name__ == "__main__":
     # popularity_crs()
