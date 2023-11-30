@@ -106,6 +106,7 @@ def llama_finetune(
     train_on_inputs = args.train_on_inputs
     gradient_accumulation_steps = args.num_device  # update the model's weights once every gradient_accumulation_steps batches instead of updating the weights after every batch.
     per_device_train_batch_size = batch_size // args.num_device
+    resume_from_checkpoint = args.lora_weights
 
     if int(os.environ.get("LOCAL_RANK", 0)) == 0:
         print(
@@ -278,16 +279,17 @@ def llama_finetune(
         bias="none",
         task_type="CAUSAL_LM",
     )
-    if args.lora_weights[args.lora_weights.rfind('/') + 1:] != "lora-alpaca":
-        model = PeftModel.from_pretrained(
-            model,
-            args.lora_weights,
-            torch_dtype=torch.float16,
-        )
-    else:
-        model = get_peft_model(model, config)
+    # if args.lora_weights[args.lora_weights.rfind('/') + 1:] != "lora-alpaca":
+    #     model = PeftModel.from_pretrained(
+    #         model,
+    #         args.lora_weights,
+    #         torch_dtype=torch.float16,
+    #     )
+    # else:
+    #     model = get_peft_model(model, config)
+    model = get_peft_model(model, config)
 
-    if resume_from_checkpoint:
+    if resume_from_checkpoint[resume_from_checkpoint.rfind('/') + 1:] != "lora-alpaca":
         # Check the available weights and load them
         checkpoint_name = os.path.join(
             resume_from_checkpoint, "pytorch_model.bin"
