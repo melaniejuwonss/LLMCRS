@@ -81,45 +81,45 @@ if __name__ == '__main__':
                 train_data = json.load(f)
             target_item_list = [data['INPUT'].split('I will give you a review of movie')[1].split('\n')[0].strip() for
                                 data in train_data]
-            # for idx, data in enumerate(train_data):
-            #     target_item_list[idx] = target_item_list[idx].replace('.', '')
-            #     data['OUTPUT'] = data['OUTPUT'].replace(target_item_list[idx], '[BLANK]')
-            #     title = target_item_list[idx].split('(')[0].strip()
-            #     year = target_item_list[idx].split('(')[-1][:-1].strip()
-            #     if not year.isdigit():
-            #         year = ''
-            #     data['OUTPUT'] = data['OUTPUT'].replace(f"\"{title}\" ({year})", '[BLANK]')
-            #     data['OUTPUT'] = data['OUTPUT'].replace(f"\"{title.lower()}\" ({year})", '[BLANK]')
-            #     data['OUTPUT'] = data['OUTPUT'].replace(title, '[BLANK]')
-            #     data['OUTPUT'] = data['OUTPUT'].replace(title.lower(), '[BLANK]')
-            #     data['OUTPUT'] = data['OUTPUT'].replace(f"({year})", '')
-            #
-            #     data['OUTPUT'] = f"{data['OUTPUT']}\n\n Based on the conversation, guess the item for [BLANK]."
-            # train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx]} for idx, data in
-            #               enumerate(train_data)]
-            # test_data = train_data[:20]
-            with open(os.path.join(syn_data_path, f'{args.data_type}_test.json'), 'r', encoding='utf-8') as f:
-                test_data = json.load(f)
-            test_data = [{'context_tokens': data['INPUT'], 'item': data['OUTPUT']} for data in test_data]
-
             for idx, data in enumerate(train_data):
                 target_item_list[idx] = target_item_list[idx].replace('.', '')
-                data['INPUT'] = data['INPUT'][:data['INPUT'].find("\n\nI will give you a review of an item.")]
-                data['INPUT'] = data['INPUT'].replace(target_item_list[idx], '[BLANK]')
+                data['OUTPUT'] = data['OUTPUT'].replace(target_item_list[idx], '[BLANK]')
                 title = target_item_list[idx].split('(')[0].strip()
                 year = target_item_list[idx].split('(')[-1][:-1].strip()
                 if not year.isdigit():
                     year = ''
-                data['INPUT'] = data['INPUT'].replace(f"\"{title}\" ({year})", '[BLANK]')
-                data['INPUT'] = data['INPUT'].replace(f"\"{title.lower()}\" ({year})", '[BLANK]')
-                data['INPUT'] = data['INPUT'].replace(title, '[BLANK]')
-                data['INPUT'] = data['INPUT'].replace(title.lower(), '[BLANK]')
-                data['INPUT'] = data['INPUT'].replace(f"({year})", '')
+                data['OUTPUT'] = data['OUTPUT'].replace(f"\"{title}\" ({year})", '[BLANK]')
+                data['OUTPUT'] = data['OUTPUT'].replace(f"\"{title.lower()}\" ({year})", '[BLANK]')
+                data['OUTPUT'] = data['OUTPUT'].replace(title, '[BLANK]')
+                data['OUTPUT'] = data['OUTPUT'].replace(title.lower(), '[BLANK]')
+                data['OUTPUT'] = data['OUTPUT'].replace(f"({year})", '')
 
-                data['INPUT'] = f"{data['INPUT']}\n\n Based on the review, guess the item for [BLANK]."
-            train_data = [{'context_tokens': data['INPUT'], 'item': target_item_list[idx]} for idx, data in
+                data['OUTPUT'] = f"{data['OUTPUT']}\n\n Based on the conversation, guess the item for [BLANK]."
+            train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx]} for idx, data in
                           enumerate(train_data)]
             test_data = train_data[:20]
+            with open(os.path.join(syn_data_path, f'{args.data_type}_test.json'), 'r', encoding='utf-8') as f:
+                test_data = json.load(f)
+            test_data = [{'context_tokens': data['INPUT'], 'item': data['OUTPUT']} for data in test_data]
+
+            # for idx, data in enumerate(train_data):
+            #     target_item_list[idx] = target_item_list[idx].replace('.', '')
+            #     data['INPUT'] = data['INPUT'][:data['INPUT'].find("\n\nI will give you a review of an item.")]
+            #     data['INPUT'] = data['INPUT'].replace(target_item_list[idx], '[BLANK]')
+            #     title = target_item_list[idx].split('(')[0].strip()
+            #     year = target_item_list[idx].split('(')[-1][:-1].strip()
+            #     if not year.isdigit():
+            #         year = ''
+            #     data['INPUT'] = data['INPUT'].replace(f"\"{title}\" ({year})", '[BLANK]')
+            #     data['INPUT'] = data['INPUT'].replace(f"\"{title.lower()}\" ({year})", '[BLANK]')
+            #     data['INPUT'] = data['INPUT'].replace(title, '[BLANK]')
+            #     data['INPUT'] = data['INPUT'].replace(title.lower(), '[BLANK]')
+            #     data['INPUT'] = data['INPUT'].replace(f"({year})", '')
+            #
+            #     data['INPUT'] = f"{data['INPUT']}\n\n Based on the review, guess the item for [BLANK]."
+            # train_data = [{'context_tokens': data['INPUT'], 'item': target_item_list[idx]} for idx, data in
+            #               enumerate(train_data)]
+            # test_data = train_data[:20]
 
 
         elif "cot" in args.data_type:
