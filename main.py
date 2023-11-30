@@ -65,13 +65,13 @@ if __name__ == '__main__':
 
         for data in train_data:
             data[
-                'context_tokens'] = f"{data['context_tokens']}\n\nBased on the conversation, guess which movie should be recommended to the user."
+                'context_tokens'] = f"{data['context_tokens']}\nSystem: You should watch [BLANK].\n\nBased on the conversation, guess the item for [BLANK]."
         for data in valid_data:
             data[
-                'context_tokens'] = f"{data['context_tokens']}\n\nBased on the conversation, guess which movie should be recommended to the user."
+                'context_tokens'] = f"{data['context_tokens']}\nSystem: You should watch [BLANK].\n\nBased on the conversation, guess the item for [BLANK]."
         for data in test_data:
             data[
-                'context_tokens'] = f"{data['context_tokens']}\n\nBased on the conversation, guess which movie should be recommended to the user."
+                'context_tokens'] = f"{data['context_tokens']}\nSystem: You should watch [BLANK].\n\nBased on the conversation, guess the item for [BLANK]."
 
         if 'synthetic' in args.data_type:
             syn_data_path = os.path.join(DATASET_PATH, 'synthetic')
