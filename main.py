@@ -98,9 +98,9 @@ if __name__ == '__main__':
             train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx]} for idx, data in
                           enumerate(train_data)]
             test_data = train_data[:20]
-            with open(os.path.join(syn_data_path, f'{args.data_type}_test.json'), 'r', encoding='utf-8') as f:
-                test_data = json.load(f)
-            test_data = [{'context_tokens': data['INPUT'], 'item': data['OUTPUT']} for data in test_data]
+            # with open(os.path.join(syn_data_path, f'{args.data_type}_test.json'), 'r', encoding='utf-8') as f:
+            #     test_data = json.load(f)
+            # test_data = [{'context_tokens': data['INPUT'], 'item': data['OUTPUT']} for data in test_data]
 
             # for idx, data in enumerate(train_data):
             #     target_item_list[idx] = target_item_list[idx].replace('.', '')
