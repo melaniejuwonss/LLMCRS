@@ -87,7 +87,7 @@ if __name__ == '__main__':
             train_labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
         else:
             train_labels = [i['item'] for i in train_data]
-        # train_new = [i['isNew'] for i in train_data]
+        train_new = [i['isNew'] for i in train_data]
 
         if 'synthetic' in args.data_type:
             syn_data_path = os.path.join(DATASET_PATH, 'synthetic')
