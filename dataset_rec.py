@@ -248,3 +248,5 @@ class ReviewDataset:
                 reviews = data['review']
                 for idx in range(min(len(reviews), self.args.num_reviews)):
                     self.return_data.append({'context_tokens': reviews[idx],'item': title})
+        with open(os.path.join(self.data_path,'review', f'review_{self.args.num_reviews}.json'), 'w', encoding='utf-8') as f:
+            f.write(json.dumps(self.return_data, indent=2))

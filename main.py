@@ -98,28 +98,30 @@ if __name__ == '__main__':
             train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx]} for idx, data in
                           enumerate(train_data)]
             test_data = train_data[:20]
-            # with open(os.path.join(syn_data_path, f'{args.data_type}_test.json'), 'r', encoding='utf-8') as f:
-            #     test_data = json.load(f)
-            # test_data = [{'context_tokens': data['INPUT'], 'item': data['OUTPUT']} for data in test_data]
+        elif 'onlyReview' in args.data_type:
+            review_data_path = os.path.join(DATASET_PATH, 'review')
+            if not os.path.exists(review_data_path): os.mkdir(review_data_path)
 
-            # for idx, data in enumerate(train_data):
-            #     target_item_list[idx] = target_item_list[idx].replace('.', '')
-            #     data['INPUT'] = data['INPUT'][:data['INPUT'].find("\n\nI will give you a example dialog.")]
-            #     data['INPUT'] = data['INPUT'].replace(target_item_list[idx], '[BLANK]')
-            #     title = target_item_list[idx].split('(')[0].strip()
-            #     year = target_item_list[idx].split('(')[-1][:-1].strip()
-            #     if not year.isdigit():
-            #         year = ''
-            #     data['INPUT'] = data['INPUT'].replace(f"\"{title}\" ({year})", '[BLANK]')
-            #     data['INPUT'] = data['INPUT'].replace(f"\"{title.lower()}\" ({year})", '[BLANK]')
-            #     data['INPUT'] = data['INPUT'].replace(title, '[BLANK]')
-            #     data['INPUT'] = data['INPUT'].replace(title.lower(), '[BLANK]')
-            #     data['INPUT'] = data['INPUT'].replace(f"({year})", '')
-            #
-            #     data['INPUT'] = f"{data['INPUT']}\n\n Based on the review, guess the item for [BLANK]."
-            # train_data = [{'context_tokens': data['INPUT'], 'item': target_item_list[idx]} for idx, data in
-            #               enumerate(train_data)]
-            # test_data = train_data[:20]
+            with open(os.path.join(review_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
+                train_data = json.load(f)
+            target_item_list = [data['item'] for data in train_data]
+
+            for idx, data in enumerate(train_data):
+                data['context_tokens'] = data['context_tokens'].replace(target_item_list[idx], '[BLANK]')
+                title = target_item_list[idx].split('(')[0].strip()
+                year = target_item_list[idx].split('(')[-1][:-1].strip()
+                if not year.isdigit():
+                    year = ''
+                data['context_tokens'] = data['context_tokens'].replace(f"\"{title}\" ({year})", '[BLANK]')
+                data['context_tokens'] = data['context_tokens'].replace(f"\"{title.lower()}\" ({year})", '[BLANK]')
+                data['context_tokens'] = data['context_tokens'].replace(title, '[BLANK]')
+                data['context_tokens'] = data['context_tokens'].replace(title.lower(), '[BLANK]')
+                data['context_tokens'] = data['context_tokens'].replace(f"({year})", '')
+
+                data['context_tokens'] = f"{data['context_tokens']}\n\n Based on the review, guess the movie for [BLANK]."
+            train_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list[idx]} for idx, data in
+                          enumerate(train_data)]
+            test_data = train_data[:50]
 
 
         elif "cot" in args.data_type:
