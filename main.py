@@ -103,7 +103,7 @@ if __name__ == '__main__':
                 data['OUTPUT'] = data['OUTPUT'].replace(f"({year})", '')
 
                 data['OUTPUT'] = f"{data['OUTPUT']}\n\n Based on the conversation, guess the item for [BLANK]."
-            syn_train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx]} for idx, data in
+            syn_train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx], 'isNew': True} for idx, data in
                               enumerate(syn_train_data)]
             # train_data.extend(syn_train_data)
             # test_data.extend(syn_train_data[:20])
