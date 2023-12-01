@@ -98,6 +98,7 @@ if __name__ == '__main__':
             train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx]} for idx, data in
                           enumerate(train_data)]
             test_data = train_data[:20]
+
         elif 'onlyReview' in args.data_type:
             review_data_path = os.path.join(DATASET_PATH, 'review')
             if not os.path.exists(review_data_path): os.mkdir(review_data_path)
@@ -118,7 +119,8 @@ if __name__ == '__main__':
                 data['context_tokens'] = data['context_tokens'].replace(title.lower(), '[BLANK]')
                 data['context_tokens'] = data['context_tokens'].replace(f"({year})", '')
 
-                data['context_tokens'] = f"{data['context_tokens']}\n\n Based on the review, guess the movie for [BLANK]."
+                data[
+                    'context_tokens'] = f"{data['context_tokens']}\n\n Based on the review, guess the movie for [BLANK]."
             train_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list[idx]} for idx, data in
                           enumerate(train_data)]
             test_data = train_data[:50]
