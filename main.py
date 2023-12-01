@@ -121,7 +121,8 @@ if __name__ == '__main__':
         elif 'onlyReview' in args.data_type:
             review_data_path = os.path.join(DATASET_PATH, 'review')
             if not os.path.exists(review_data_path): os.mkdir(review_data_path)
-
+            if args.merge is True:
+                crs_train_data = train_data
             with open(os.path.join(review_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
             target_item_list = [data['item'] for data in train_data]
@@ -142,6 +143,8 @@ if __name__ == '__main__':
                     'context_tokens'] = f"{data['context_tokens']}\n\n Based on the review, guess the movie for [BLANK]."
             train_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list[idx]} for idx, data in
                           enumerate(train_data)]
+            if args.merge is True:
+                train_data.extend(crs_train_data)
             test_data = train_data[:50]
             logger.info('[Finish loading onlyReview datasets]')
             logger.info(f'[onlyReview Train Dataset Size: {len(train_data)}]')
