@@ -308,7 +308,8 @@ def llama_finetune(
             set_peft_model_state_dict(model, adapters_weights)
         else:
             print(f"Checkpoint {checkpoint_name} not found")
-
+    else:
+        resume_from_checkpoint = None
     model.print_trainable_parameters()  # Be more transparent about the % of trainable params.
 
     if not ddp and torch.cuda.device_count() > 1:
