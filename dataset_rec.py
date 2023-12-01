@@ -84,11 +84,11 @@ class CRSDatasetRec:
             #     self.train_data = [data for data in self.train_data if data['exist'] == False]
             if self.args.data_type == "lastutt":
                 self.train_data = [
-                    {'role': data['role'], 'context_tokens': data['context_tokens'][data['context_tokens'].rfind('User:'):],
+                    {'role': data['role'],
+                     'context_tokens': data['context_tokens'][data['context_tokens'].rfind('User:'):],
                      'response': data['response'], 'context_entities': data['context_entities'],
                      'context_items': data['context_items'], 'items': data['items'], 'item': data['item'],
                      'exist': data['exist']} for data in self.train_data]
-            logger.debug(f"[Finish train data process] LEN: {len(self.train_data)}")
 
             test_data = self._raw_data_process(test_data_raw)
             self.test_data = self.rec_process_fn(test_data)
@@ -97,18 +97,17 @@ class CRSDatasetRec:
             #     f.write(json.dumps(self.test_data, indent=4))
             if self.args.data_type == "lastutt":
                 self.test_data = [
-                    {'role': data['role'], 'context_tokens': data['context_tokens'][data['context_tokens'].rfind('User:'):],
+                    {'role': data['role'],
+                     'context_tokens': data['context_tokens'][data['context_tokens'].rfind('User:'):],
                      'response': data['response'], 'context_entities': data['context_entities'],
                      'context_items': data['context_items'], 'items': data['items'], 'item': data['item'],
                      'exist': data['exist']} for data in self.test_data]
-            logger.debug(f"[Finish test data process] LEN: {len(self.test_data)}")
 
             valid_data = self._raw_data_process(valid_data_raw)
             self.valid_data = self.rec_process_fn(valid_data)
             # self.mergeWithNegatives(self.valid_data)
             # with open('valid_data_augment.json', 'w', encoding='utf-8') as f:
             #     f.write(json.dumps(self.valid_data, indent=4))
-            logger.debug(f"[Finish valid data process] LEN: {len(self.valid_data)}")
 
     def mergeWithNegatives(self, dataset):
         for data in tqdm(dataset, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
@@ -226,6 +225,7 @@ class CRSDatasetRec:
 
         return augmented_conv_dicts
 
+
 class ReviewDataset:
     def __init__(self, args):
         super(ReviewDataset, self).__init__()
@@ -236,6 +236,7 @@ class ReviewDataset:
         self.movie2name = json.load(
             open(os.path.join(self.data_path, 'movie2name.json'), 'r', encoding='utf-8'))  # {entity: entity_id}
         self.load_data()
+
     def load_data(self):
         crsid2title = dict()
         self.return_data = []
@@ -247,4 +248,4 @@ class ReviewDataset:
                 title = crsid2title[crs_id]
                 reviews = data['review']
                 for idx in range(min(len(reviews), self.args.num_reviews)):
-                    self.return_data.append({'context_tokens': reviews[idx],'item': title})
+                    self.return_data.append({'context_tokens': reviews[idx], 'item': title})
