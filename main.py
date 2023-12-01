@@ -81,14 +81,6 @@ if __name__ == '__main__':
         train_data = [{'context_tokens': data['context_tokens'], 'item': data[target], 'isNew': idx in new_idx} for
                       idx, data in enumerate(train_data)]
 
-        # if 'train' in args.mode:
-        train_instructions = [i['context_tokens'] for i in train_data]
-        if args.data_type == "augment":
-            train_labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
-        else:
-            train_labels = [i['item'] for i in train_data]
-        train_new = [i['isNew'] for i in train_data]
-
         if 'synthetic' in args.data_type:
             syn_data_path = os.path.join(DATASET_PATH, 'synthetic')
             if not os.path.exists(syn_data_path): os.mkdir(syn_data_path)
@@ -112,7 +104,7 @@ if __name__ == '__main__':
 
                 data['OUTPUT'] = f"{data['OUTPUT']}\n\n Based on the conversation, guess the item for [BLANK]."
             syn_train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx]} for idx, data in
-                          enumerate(syn_train_data)]
+                              enumerate(syn_train_data)]
             train_data.extend(syn_train_data)
             # test_data.extend(syn_train_data[:20])
             # train_data = syn_train_data
@@ -171,6 +163,14 @@ if __name__ == '__main__':
                 # oversample_ratio = int(len(rec_train_data) / len(chat_train_data))
                 chat_train_data = chat_train_data * args.oversample_ratio
                 train_data = rec_train_data + chat_train_data
+
+        # if 'train' in args.mode:
+        train_instructions = [i['context_tokens'] for i in train_data]
+        if args.data_type == "augment":
+            train_labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
+        else:
+            train_labels = [i['item'] for i in train_data]
+        train_new = [i['isNew'] for i in train_data]
 
         # if 'test' in args.mode:
         test_instructions = [i['context_tokens'] for i in test_data]
