@@ -1,5 +1,5 @@
 import os
-
+from loguru import logger
 import wandb
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaTokenizer, T5Tokenizer
@@ -124,6 +124,9 @@ if __name__ == '__main__':
             train_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list[idx]} for idx, data in
                           enumerate(train_data)]
             test_data = train_data[:50]
+            logger.info('[Finish loading onlyReview datasets]')
+            logger.info(f'[onlyReview Train Dataset Size: {len(train_data)}]')
+            logger.info(f'[onlyReview Test Dataset Size: {len(test_data)}]')
 
 
         elif "cot" in args.data_type:
