@@ -125,6 +125,7 @@ if __name__ == '__main__':
                 crs_train_data = train_data
             with open(os.path.join(review_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
+                crs_test_data = test_data
             target_item_list = [data['item'] for data in train_data]
 
             for idx, data in enumerate(train_data):
@@ -143,9 +144,11 @@ if __name__ == '__main__':
                     'context_tokens'] = f"{data['context_tokens']}\n\n Based on the review, guess the movie for [BLANK]."
             train_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list[idx]} for idx, data in
                           enumerate(train_data)]
+
+            test_data = train_data[:50]
             if args.merge is True:
                 train_data.extend(crs_train_data)
-            test_data = train_data[:50]
+                test_data = crs_test_data
             logger.info('[Finish loading onlyReview datasets]')
             logger.info(f'[onlyReview Train Dataset Size: {len(train_data)}]')
             logger.info(f'[onlyReview Test Dataset Size: {len(test_data)}]')
