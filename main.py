@@ -73,15 +73,31 @@ if __name__ == '__main__':
             data[
                 'context_tokens'] = f"{data['context_tokens']}\nSystem: You should watch [BLANK].\n\nBased on the conversation, guess the item for [BLANK]."
 
+        new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
+
+        target = 'item'
+        if args.train_response:  # 구분하기 위한 코드 (item으로 학습할 지? response?)
+            target = 'response'
+        train_data = [{'context_tokens': data['context_tokens'], 'item': data[target], 'isNew': idx in new_idx} for
+                      idx, data in enumerate(train_data)]
+
+        # if 'train' in args.mode:
+        train_instructions = [i['context_tokens'] for i in train_data]
+        if args.data_type == "augment":
+            train_labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
+        else:
+            train_labels = [i['item'] for i in train_data]
+        # train_new = [i['isNew'] for i in train_data]
+
         if 'synthetic' in args.data_type:
             syn_data_path = os.path.join(DATASET_PATH, 'synthetic')
             if not os.path.exists(syn_data_path): os.mkdir(syn_data_path)
 
             with open(os.path.join(syn_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
-                train_data = json.load(f)
+                syn_train_data = json.load(f)
             target_item_list = [data['INPUT'].split('I will give you a review of movie')[1].split('\n')[0].strip() for
-                                data in train_data]
-            for idx, data in enumerate(train_data):
+                                data in syn_train_data]
+            for idx, data in enumerate(syn_train_data):
                 target_item_list[idx] = target_item_list[idx].replace('.', '')
                 data['OUTPUT'] = data['OUTPUT'].replace(target_item_list[idx], '[BLANK]')
                 title = target_item_list[idx].split('(')[0].strip()
@@ -95,9 +111,12 @@ if __name__ == '__main__':
                 data['OUTPUT'] = data['OUTPUT'].replace(f"({year})", '')
 
                 data['OUTPUT'] = f"{data['OUTPUT']}\n\n Based on the conversation, guess the item for [BLANK]."
-            train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx]} for idx, data in
-                          enumerate(train_data)]
-            test_data = train_data[:20]
+            syn_train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx]} for idx, data in
+                          enumerate(syn_train_data)]
+            # train_data.extend(syn_train_data)
+            # test_data.extend(syn_train_data[:20])
+            train_data = syn_train_data
+            test_data = syn_train_data[:20]
 
         elif 'onlyReview' in args.data_type:
             review_data_path = os.path.join(DATASET_PATH, 'review')
@@ -146,22 +165,6 @@ if __name__ == '__main__':
                 # oversample_ratio = int(len(rec_train_data) / len(chat_train_data))
                 chat_train_data = chat_train_data * args.oversample_ratio
                 train_data = rec_train_data + chat_train_data
-
-        new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
-
-        target = 'item'
-        if args.train_response:  # 구분하기 위한 코드 (item으로 학습할 지? response?)
-            target = 'response'
-        train_data = [{'context_tokens': data['context_tokens'], 'item': data[target], 'isNew': idx in new_idx} for
-                      idx, data in enumerate(train_data)]
-
-        # if 'train' in args.mode:
-        train_instructions = [i['context_tokens'] for i in train_data]
-        if args.data_type == "augment":
-            train_labels = [crs_dataset.entityid2name[i['item']] for i in train_data]
-        else:
-            train_labels = [i['item'] for i in train_data]
-        train_new = [i['isNew'] for i in train_data]
 
         # if 'test' in args.mode:
         test_instructions = [i['context_tokens'] for i in test_data]
