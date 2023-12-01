@@ -103,7 +103,8 @@ if __name__ == '__main__':
                 data['OUTPUT'] = data['OUTPUT'].replace(f"({year})", '')
 
                 data['OUTPUT'] = f"{data['OUTPUT']}\n\n Based on the conversation, guess the item for [BLANK]."
-            syn_train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx], 'isNew': True} for idx, data in
+            syn_train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx], 'isNew': True} for
+                              idx, data in
                               enumerate(syn_train_data)]
             train_data.extend(syn_train_data)
             # test_data.extend(syn_train_data[:20])
@@ -115,6 +116,11 @@ if __name__ == '__main__':
             if not os.path.exists(review_data_path): os.mkdir(review_data_path)
             if args.merge is True:
                 crs_train_data = train_data
+                for crs_train in crs_train_data:
+                    context_tokens = "Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system). \n\nHere is the dialogue: \n" + \
+                                     crs_train['context_tokens']
+                    crs_train['context_tokens'] = context_tokens
+
             with open(os.path.join(review_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
                 crs_test_data = test_data
@@ -133,8 +139,9 @@ if __name__ == '__main__':
                 data['context_tokens'] = data['context_tokens'].replace(f"({year})", '')
 
                 data[
-                    'context_tokens'] = f"{data['context_tokens']}\n\n Based on the review, guess the movie for [BLANK]."
-            train_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list[idx]} for idx, data in
+                    'context_tokens'] = f"I will give you a review of movie [BLANK].\n{data['context_tokens']}\n\n Based on the review, guess the movie for [BLANK]."
+            train_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list[idx], 'isNew': True} for
+                          idx, data in
                           enumerate(train_data)]
 
             test_data = train_data[:50]
