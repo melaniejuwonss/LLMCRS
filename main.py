@@ -105,10 +105,13 @@ if __name__ == '__main__':
                 data['OUTPUT'] = f"{data['OUTPUT']}\n\n Based on the conversation, guess the item for [BLANK]."
             syn_train_data = [{'context_tokens': data['OUTPUT'], 'item': target_item_list[idx], 'isNew': True} for idx, data in
                               enumerate(syn_train_data)]
-            train_data.extend(syn_train_data)
+
             # test_data.extend(syn_train_data[:20])
-            # train_data = syn_train_data
-            # test_data = syn_train_data[:20]
+            if args.merge:
+                train_data.extend(syn_train_data)
+            else:
+                train_data = syn_train_data
+                test_data = syn_train_data[:50]
 
         elif 'onlyReview' in args.data_type:
             review_data_path = os.path.join(DATASET_PATH, 'review')
