@@ -115,15 +115,20 @@ if __name__ == '__main__':
             review_data_path = os.path.join(DATASET_PATH, 'review')
             if not os.path.exists(review_data_path): os.mkdir(review_data_path)
             if args.merge is True:
+                crs_test_data = test_data
                 crs_train_data = train_data
                 for crs_train in crs_train_data:
                     context_tokens = "Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system). \n\nHere is the dialogue: \n" + \
                                      crs_train['context_tokens']
                     crs_train['context_tokens'] = context_tokens
+                for crs_test in crs_test_data:
+                    context_tokens = "Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system). \n\nHere is the dialogue: \n" + \
+                                     crs_test['context_tokens']
+                    crs_test['context_tokens'] = context_tokens
 
             with open(os.path.join(review_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
-                crs_test_data = test_data
+
             target_item_list = [data['item'] for data in train_data]
 
             for idx, data in enumerate(train_data):
