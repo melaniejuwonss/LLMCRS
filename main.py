@@ -65,13 +65,13 @@ if __name__ == '__main__':
 
         for data in train_data:
             data[
-                'context_tokens'] = f"{data['context_tokens']}\nSystem: You should watch [BLANK].\n\nGuess which movie should be recommended to the user."  # Based on the conversation, guess the item for [BLANK]."
+                'context_tokens'] = f"{data['context_tokens']}\n\nGuess which movie should be recommended to the user."  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
         for data in valid_data:
             data[
-                'context_tokens'] = f"{data['context_tokens']}\nSystem: You should watch [BLANK].\n\nGuess which movie should be recommended to the user."  # Based on the conversation, guess the item for [BLANK]."
+                'context_tokens'] = f"{data['context_tokens']}\n\nGuess which movie should be recommended to the user."  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
         for data in test_data:
             data[
-                'context_tokens'] = f"{data['context_tokens']}\nSystem: You should watch [BLANK].\n\nGuess which movie should be recommended to the user."  # Based on the conversation, guess the item for [BLANK]."
+                'context_tokens'] = f"{data['context_tokens']}\n\nGuess which movie should be recommended to the user."  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
 
         new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
 
