@@ -81,7 +81,7 @@ if __name__ == '__main__':
         train_data = [{'context_tokens': data['context_tokens'], 'item': data[target], 'isNew': idx in new_idx} for
                       idx, data in enumerate(train_data)]
 
-        if 'synthetic' in args.data_type:
+        if True: #'synthetic' in args.data_type:
             syn_data_path = os.path.join(DATASET_PATH, 'synthetic')
             if not os.path.exists(syn_data_path): os.mkdir(syn_data_path)
 
