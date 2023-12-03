@@ -87,7 +87,7 @@ if __name__ == '__main__':
 
             temp = args.data_type
             if args.all_merge:
-                args.data_type='synthetic_dialog_review.json'
+                args.data_type='synthetic_dialog_review'
             with open(os.path.join(syn_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 syn_train_data = json.load(f)
             args.data_type = temp
