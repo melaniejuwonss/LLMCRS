@@ -81,12 +81,17 @@ if __name__ == '__main__':
         train_data = [{'context_tokens': data['context_tokens'], 'item': data[target], 'isNew': idx in new_idx} for
                       idx, data in enumerate(train_data)]
 
-        if 'synthetic' in args.data_type:
+        if 'synthetic' in args.data_type or args.all_merge:
             syn_data_path = os.path.join(DATASET_PATH, 'synthetic')
             if not os.path.exists(syn_data_path): os.mkdir(syn_data_path)
 
+            temp = args.data_type
+            if args.all_merge:
+                args.data_type='synthetic_dialog_review.json'
             with open(os.path.join(syn_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 syn_train_data = json.load(f)
+            args.data_type = temp
+
             target_item_list = [data['INPUT'].split('I will give you a review of movie')[1].split('\n')[0].strip() for
                                 data in syn_train_data]
             for idx, data in enumerate(syn_train_data):
