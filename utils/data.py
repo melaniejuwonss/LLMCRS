@@ -17,4 +17,6 @@ def read_data(args, mode):
     #     self.args.device_id)
     for t_input, t_output in zip(question, answer):
         data_samples.append((t_input, t_output))
+    if mode == "test":
+        data_samples = data_samples[:100]
     return data_samples
