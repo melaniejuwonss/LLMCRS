@@ -152,7 +152,7 @@ if __name__ == '__main__':
                 data['context_tokens'] = data['context_tokens'].replace(f"({year})", '')
 
                 data[
-                    'context_tokens'] = f"I will give you a review of a movie [BLANK].\n{data['context_tokens']}\n\n Guess which movie is described by the review above."
+                    'context_tokens'] = f"I will give you a review of a movie [BLANK].\n{data['context_tokens']}\n\n Based on the review, guess the movie for [BLANK]."
             train_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list[idx], 'isNew': True} for
                           idx, data in
                           enumerate(train_data)]
@@ -209,9 +209,13 @@ if __name__ == '__main__':
         train_labels = [i['item'] for i in review_dataset.return_data]
 
     elif args.stage.lower() == "quiz":
-        question_data = read_data(args)
-        instructions = [i[0] for i in question_data]
-        labels = [i[1] for i in question_data]
+        train_data = read_data(args, 'train')
+        test_data = read_data(args, 'test')
+        train_instructions = [i[0] for i in train_data]
+        train_labels = [i[1] for i in train_data]
+        test_instructions = [i[0] for i in test_data]
+        test_labels = [i[1] for i in test_data]
+
 
     if 'gpt' in args.base_model.lower():
         if args.mode == "train":

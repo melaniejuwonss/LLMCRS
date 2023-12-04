@@ -2,14 +2,14 @@ import json
 import os
 
 
-def read_data(args):
-    data_path = os.path.join(args.home, 'data')
-    RQ_data = json.load((open(data_path + '/rq' + str(args.rq_num) + '.json', 'r', encoding='utf-8')))
+def read_data(args, mode):
+    data_path = os.path.join(args.home, 'data', 'quiz')
+    RQ_data = json.load((open(f"{data_path}/rq{str(args.rq_num)}_{mode}.json", 'r', encoding='utf-8')))
     question, answer = [], []
     data_samples = []
     for data in RQ_data:
-        question.append(data['Question'])
-        answer.append(data['Answer'])
+        question.append(data['context_tokens'])
+        answer.append(data['item'])
 
     # tokenized_input = self.tokenizer(question, return_tensors="pt", padding=True, return_token_type_ids=False).to(
     #     self.args.device_id)

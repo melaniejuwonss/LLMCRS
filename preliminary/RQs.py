@@ -5,6 +5,7 @@ from copy import deepcopy
 from tqdm import tqdm
 
 content_data = json.load((open('../data/redial/content_data.json', 'r', encoding='utf-8')))[0]
+movie2name = json.load((open('../data/redial/movie2name.json', 'r', encoding='utf-8')))
 
 genre_example_question = " Which movie shares genre with Soul (2020)? \n Choices: a) Inside Out (2015) b) The Pianist (2002)  c) Kiss the Girls (1997) d) Harry Brown (2009) e) Meet Joe Black (1998) \n"
 genre_example_interpret = " Answer form: \n" \
@@ -89,11 +90,13 @@ choice_alphabet = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e'}
 def createSources():
     itemFeatures, writer2item, actor2item, genre2item, director2item, item2feature, feature2item = dict(), dict(), dict(), dict(), dict(), dict(), dict()
     all_titles = set()
+    crsid2name = dict()
+    for key, value in movie2name.items():
+        if key not in crsid2name.keys():
+            crsid2name[key] = value[1]
     for data in content_data:
-        title = data['title']
-        year = data['year']
-        if year is not None or title == str(year) or str(year) in title:
-            title = title + " (" + str(year) + ")"
+        crs_id = data['crs_id']
+        title = crsid2name[crs_id]
         genres = data['meta']['genre']
         directors = data['meta']['director']
         actors = data['meta']['stars']
@@ -214,17 +217,17 @@ def create_rq1(item2feature, itemFeatures, choice):
                     choice_template = postfix_template % (tuple(choices))
                     whole_template = prefix_template + feature_template + choice_template
                     alpha = choice_alphabet[choices.index(title)]
-                    answer = alpha + ')' + ' ' + title
+                    answer = title
                     cnt += 1
                     if title not in title_quiz_num.keys():
                         title_quiz_num[title] = 1
                     else:
                         title_quiz_num[title] += 1
-                    result_list.append({'Question': whole_template, 'Answer': answer})
+                    result_list.append({'context_tokens': whole_template, 'item': answer})
     print("RQ1 AVG: " + str(cnt / len(title_quiz_num)))  # 41.2, #TOTAL: 278,665
     # with open('../data/rq1_num.json', 'w', encoding='utf-8') as result_f:
     #     result_f.write(json.dumps(title_quiz_num, indent=4))
-    with open(f'../data/rq1_{choice}choice_test.json', 'w', encoding='utf-8') as result_f:
+    with open(f'../data/quiz/rq1_{choice}choice_test.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(result_list, indent=4))
 
 
@@ -496,7 +499,7 @@ def create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item,
 
 if __name__ == "__main__":
     all_titles, itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature = createSources()
-    # create_rq1(item2feature, itemFeatures, choice=3)
+    create_rq1(item2feature, itemFeatures, choice=5)
     # create_rq2(item2feature, itemFeatures, choice=5)
-    create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature, choice=5, example=True,
-               model='llama', type="train")
+    # create_rq3(itemFeatures, genre2item, writer2item, actor2item, director2item, item2feature, choice=5, example=True,
+    #            model='llama', type="train")
