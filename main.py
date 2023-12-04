@@ -215,6 +215,7 @@ if __name__ == '__main__':
         train_labels = [i[1] for i in train_data]
         test_instructions = [i[0] for i in test_data]
         test_labels = [i[1] for i in test_data]
+        train_new = None
 
 
     if 'gpt' in args.base_model.lower():

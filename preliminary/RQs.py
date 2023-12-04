@@ -48,7 +48,7 @@ actor_example_interpret = " Answer form: \n " \
                           " 2.Answer: c) Ouija (2014). \n"
 
 question_prompt = "Here is our question. "
-prefix_template = "The following multiple-choice quiz has 3 choices (a,b,c). Select the best answer from the given choices. \n"
+prefix_template = "The following multiple-choice quiz has 3 choices (a,b,c).\n"
 obj_templates = [
     ["Which is %s movie?", "Which movie belongs to the %s genre?", "Which movie is classified as %s genre?",
      "Which movie falls under the %s genre category?", "Which movie is a part of the %s genre category?"],
@@ -83,7 +83,8 @@ item_template = [
      "What other film features work from the writer of %s?",
      "Do you know of another movie scripted by the writer who also wrote %s?"]
 ]
-postfix_template = "\n Choices: a) %s b) %s c) %s"
+postfix_template = "\nChoices: a) %s b) %s c) %s"
+instruction_template = "\nSelect the best answer from the given choices."
 choice_alphabet = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e'}
 
 
@@ -215,7 +216,7 @@ def create_rq1(item2feature, itemFeatures, choice):
                     random.shuffle(choices)
                     feature_template = template % (target_feature)
                     choice_template = postfix_template % (tuple(choices))
-                    whole_template = prefix_template + feature_template + choice_template
+                    whole_template = prefix_template + feature_template + choice_template + instruction_template
                     alpha = choice_alphabet[choices.index(title)]
                     answer = title
                     cnt += 1
@@ -224,10 +225,10 @@ def create_rq1(item2feature, itemFeatures, choice):
                     else:
                         title_quiz_num[title] += 1
                     result_list.append({'context_tokens': whole_template, 'item': answer})
-    print("RQ1 AVG: " + str(cnt / len(title_quiz_num)))  # 41.2, #TOTAL: 278,665
+    # print("RQ1 AVG: " + str(cnt / len(title_quiz_num)))  # 41.2, #TOTAL: 278,665
     # with open('../data/rq1_num.json', 'w', encoding='utf-8') as result_f:
     #     result_f.write(json.dumps(title_quiz_num, indent=4))
-    with open(f'../data/quiz/rq1_{choice}choice_test.json', 'w', encoding='utf-8') as result_f:
+    with open(f'../data/quiz/rq1_{choice}choice_train.json', 'w', encoding='utf-8') as result_f:
         result_f.write(json.dumps(result_list, indent=4))
 
 
