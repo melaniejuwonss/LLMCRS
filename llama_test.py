@@ -217,8 +217,8 @@ class LLaMaEvaluator:
                      'AVG_HIT': ', '.join(topk_results), 'NEW_ITEM': idx in self.new_idx})
                 idx += 1
 
-            mentioned_hit_ratio = mentioned_hit / mentioned_cnt
-            not_mentioned_hit_ratio = not_mentioned_hit / not_mentioned_cnt
+            # mentioned_hit_ratio = mentioned_hit / mentioned_cnt
+            # not_mentioned_hit_ratio = not_mentioned_hit / not_mentioned_cnt
 
             if self.args.write:
                 for i in generated_results:
@@ -228,8 +228,8 @@ class LLaMaEvaluator:
                 wandb.log({"hit_ratio": (hit / cnt)})
                 print("%.4f" % (hit / cnt))
 
-        self.args.score_file.write('%.4f\t%.4f\t%.4f\t%d\t%d\n' % (
-            hit_ratio, mentioned_hit_ratio, not_mentioned_hit_ratio, gen_mentioned_cnt, gen_not_mentioned_cnt))
+        self.args.score_file.write('%.4f\n' % (
+            hit_ratio))
     # return generated_results
 
 # if __name__ == "__main__":
