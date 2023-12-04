@@ -14,6 +14,7 @@ def parse_args():
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--eval_batch_size', type=int, default=8)
     parser.add_argument('--epoch', type=int, default=5)
+    parser.add_argument('--learning_rate', type=float, default=3e-4)
     parser.add_argument('--max_new_tokens', type=int, default=100)
     parser.add_argument('--num_beams', type=int, default=5)
     parser.add_argument('--device_id', type=str, default='0')
@@ -39,7 +40,7 @@ def parse_args():
     parser.add_argument('--num_reviews', type=int, default=1)
     parser.add_argument('--train_on_inputs', type=bool, default=True)
     parser.add_argument('--merge', type=bool, default=False)
-
+    parser.add_argument('--all_merge', type=bool, default=False)
 
     # ChatGPT
     parser.add_argument('--log_file', type=str, default='')
