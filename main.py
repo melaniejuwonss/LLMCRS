@@ -146,19 +146,19 @@ if __name__ == '__main__':
             target_item_list = [data['item'] for data in train_data]
 
             for idx, data in enumerate(train_data):
-                data['context_tokens'] = data['context_tokens'].replace(target_item_list[idx], '[MOVIE]')
+                data['context_tokens'] = data['context_tokens'].replace(target_item_list[idx], '[MOVIENAME]')
                 title = target_item_list[idx].split('(')[0].strip()
                 year = target_item_list[idx].split('(')[-1][:-1].strip()
                 if not year.isdigit():
                     year = ''
-                data['context_tokens'] = data['context_tokens'].replace(f"\"{title}\" ({year})", '[MOVIE]')
-                data['context_tokens'] = data['context_tokens'].replace(f"\"{title.lower()}\" ({year})", '[MOVIE]')
-                data['context_tokens'] = data['context_tokens'].replace(title, '[MOVIE]')
-                data['context_tokens'] = data['context_tokens'].replace(title.lower(), '[MOVIE]')
+                data['context_tokens'] = data['context_tokens'].replace(f"\"{title}\" ({year})", '[MOVIENAME]')
+                data['context_tokens'] = data['context_tokens'].replace(f"\"{title.lower()}\" ({year})", '[MOVIENAME]')
+                data['context_tokens'] = data['context_tokens'].replace(title, '[MOVIENAME]')
+                data['context_tokens'] = data['context_tokens'].replace(title.lower(), '[MOVIENAME]')
                 data['context_tokens'] = data['context_tokens'].replace(f"({year})", '')
 
                 data[
-                    'context_tokens'] = f"I will give you a review of a movie.\nIn the review, the movie name is masked with [MOVIE].\nHere is the review:\n{data['context_tokens']}\n\n Based on the review, guess the movie name for [MOVIE] without extra explanations."
+                    'context_tokens'] = f"I will give you a review of a movie.\nIn the review, the movie name is masked with [MOVIENAME].\nHere is the review:\n{data['context_tokens']}\n\n Based on the review, guess the movie name for [MOVIENAME] without extra explanations."
             train_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list[idx], 'isNew': True} for
                           idx, data in
                           enumerate(train_data)]
