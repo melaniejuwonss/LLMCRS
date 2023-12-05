@@ -163,7 +163,7 @@ if __name__ == '__main__':
                           idx, data in
                           enumerate(train_data)]
 
-            test_data = train_data[:100]
+            test_data = train_data[:300]
             if args.merge is True:
                 train_data.extend(crs_train_data)
                 test_data = crs_test_data
