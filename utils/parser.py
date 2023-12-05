@@ -19,7 +19,7 @@ def parse_args():
     parser.add_argument('--num_beams', type=int, default=5)
     parser.add_argument('--device_id', type=str, default='0')
     parser.add_argument('--max_dialog_len', type=int, default=128)
-    parser.add_argument('--rq_num', type=str, default='1')
+    parser.add_argument('--rq_num', type=str, default='1_5choice')
     parser.add_argument('--base_model', type=str, default='meta-llama/Llama-2-7b-chat-hf',
                         choices=['meta-llama/Llama-2-7b-hf', 'meta-llama/Llama-2-13b-hf',
                                  'meta-llama/Llama-2-7b-chat-hf', 'gpt-3.5-turbo', 'google/flan-t5-large', 't5-small',
