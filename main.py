@@ -59,6 +59,9 @@ if __name__ == '__main__':
     DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
     args.dataset_path = DATASET_PATH
 
+    quiz_train_data = read_data(args, 'train')
+    quiz_test_data = read_data(args, 'test')
+
     if args.stage.lower() == "crs":
         crs_dataset = CRSDatasetRec(args)
         # if "cot" not in args.data_type:
@@ -90,7 +93,7 @@ if __name__ == '__main__':
 
             temp = args.data_type
             if args.all_merge:
-                args.data_type='synthetic_dialog_review'
+                args.data_type = 'synthetic_dialog_review'
             with open(os.path.join(syn_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 syn_train_data = json.load(f)
             args.data_type = temp
@@ -164,6 +167,9 @@ if __name__ == '__main__':
             if args.merge is True:
                 train_data.extend(crs_train_data)
                 test_data = crs_test_data
+            if args.quiz_merge:
+                train_data.extend(quiz_train_data)
+
             logger.info('[Finish loading onlyReview datasets]')
             logger.info(f'[onlyReview Train Dataset Size: {len(train_data)}]')
             logger.info(f'[onlyReview Test Dataset Size: {len(test_data)}]')
@@ -212,14 +218,11 @@ if __name__ == '__main__':
         train_labels = [i['item'] for i in review_dataset.return_data]
 
     elif args.stage.lower() == "quiz":
-        train_data = read_data(args, 'train')
-        test_data = read_data(args, 'test')
-        train_instructions = [i[0] for i in train_data]
-        train_labels = [i[1] for i in train_data]
-        test_instructions = [i[0] for i in test_data]
-        test_labels = [i[1] for i in test_data]
-        train_new = [True for i in train_data]
-
+        train_instructions = [i[0] for i in quiz_train_data]
+        train_labels = [i[1] for i in quiz_train_data]
+        test_instructions = [i[0] for i in quiz_test_data]
+        test_labels = [i[1] for i in quiz_test_data]
+        train_new = [True for i in quiz_train_data]
 
     if 'gpt' in args.base_model.lower():
         if args.mode == "train":
