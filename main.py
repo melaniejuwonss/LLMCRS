@@ -168,7 +168,7 @@ if __name__ == '__main__':
                 train_data.extend(crs_train_data)
                 test_data = crs_test_data
             if args.quiz_merge:
-                train_data.extend(quiz_train_data)
+                train_data.extend([{'context_tokens': data[0], 'item': data[1], 'isNew': True} for data in quiz_train_data])
 
             logger.info('[Finish loading onlyReview datasets]')
             logger.info(f'[onlyReview Train Dataset Size: {len(train_data)}]')
