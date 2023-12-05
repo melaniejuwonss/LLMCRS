@@ -41,7 +41,7 @@ def parse_args():
     parser.add_argument('--train_on_inputs', type=bool, default=True)
     parser.add_argument('--merge', type=bool, default=False)
     parser.add_argument('--quiz_merge', type=bool, default=False)
-
+    parser.add_argument('--origin_augment', type=bool, default=False)
     parser.add_argument('--all_merge', type=bool, default=False)
 
     # ChatGPT

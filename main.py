@@ -142,7 +142,7 @@ if __name__ == '__main__':
 
             with open(os.path.join(review_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
-
+            origin_train_data = [{'context_tokens': data['context_tokens'], 'item': ''} for data in train_data]
             target_item_list = [data['item'] for data in train_data]
 
             for idx, data in enumerate(train_data):
@@ -169,6 +169,8 @@ if __name__ == '__main__':
                 test_data = crs_test_data
             if args.quiz_merge:
                 train_data.extend([{'context_tokens': data[0], 'item': data[1], 'isNew': True} for data in quiz_train_data])
+            if args.origin_augment:
+                train_data.extend(origin_train_data)
 
             logger.info('[Finish loading onlyReview datasets]')
             logger.info(f'[onlyReview Train Dataset Size: {len(train_data)}]')
