@@ -158,7 +158,7 @@ if __name__ == '__main__':
                 data['context_tokens'] = data['context_tokens'].replace(f"({year})", '')
 
                 data[
-                    'context_tokens'] = f"I will give you a review of a movie [BLANK].\n{data['context_tokens']}\n\n Based on the review, guess the movie for [BLANK]."
+                    'context_tokens'] = f"I will give you a review of a movie.\nIn the review, the movie name is masked with [BLANK].\nHere is the review:\n{data['context_tokens']}\n\n Based on the review, guess the movie for [BLANK]."
             train_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list[idx], 'isNew': True} for
                           idx, data in
                           enumerate(train_data)]
