@@ -142,7 +142,7 @@ if __name__ == '__main__':
 
             with open(os.path.join(review_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
-            origin_train_data = [{'context_tokens': data['context_tokens'], 'item': ''} for data in train_data]
+            origin_train_data = [{'context_tokens': data['context_tokens'], 'item': '', 'isNew': True} for data in train_data]
             target_item_list = [data['item'] for data in train_data]
 
             for idx, data in enumerate(train_data):
