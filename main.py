@@ -144,6 +144,8 @@ if __name__ == '__main__':
                 train_data = json.load(f)
 
             review_template = """I will give you a review of a movie.\nIn the review, the movie title is masked with %s.\nHere is the review:\n%s\n\nBased on the review, guess the movie title for [TITLE] without extra explanations."""
+            if args.TH:
+                review_template = """I will give you a review of a movie.\nIn the review, the movie title is masked with %s.\nHere is the review:\n%s\n\nBased on the review, guess the movie title that the above review is discussing"""
             origin_train_data = [{'context_tokens': review_template % (data['item'], data['context_tokens']), 'item': data['item'], 'isNew': True} for data in train_data]
             target_item_list = [data['item'] for data in train_data]
 
