@@ -142,7 +142,9 @@ if __name__ == '__main__':
 
             with open(os.path.join(review_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
-            origin_train_data = [{'context_tokens': data['context_tokens'], 'item': '', 'isNew': True} for data in train_data]
+
+            review_template = """I will give you a review of a movie.\nIn the review, the movie title is masked with %s.\nHere is the review:\n%s\n\nBased on the review, guess the movie title for [TITLE] without extra explanations."""
+            origin_train_data = [{'context_tokens': review_template % (data['item'], data['context_tokens']), 'item': data['item'], 'isNew': True} for data in train_data]
             target_item_list = [data['item'] for data in train_data]
 
             for idx, data in enumerate(train_data):
@@ -157,11 +159,9 @@ if __name__ == '__main__':
                 data['context_tokens'] = data['context_tokens'].replace(title.lower(), '[TITLE]')
                 data['context_tokens'] = data['context_tokens'].replace(f"({year})", '')
 
-                data[
-                    'context_tokens'] = f"I will give you a review of a movie.\nIn the review, the movie title is masked with [TITLE].\nHere is the review:\n{data['context_tokens']}\n\n Based on the review, guess the movie title for [TITLE] without extra explanations."
+                data['context_tokens'] = review_template % ('[TITLE]', data['context_tokens'])
             train_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list[idx], 'isNew': True} for
-                          idx, data in
-                          enumerate(train_data)]
+                          idx, data in enumerate(train_data)]
 
             test_data = train_data[:300]
             if args.merge is True:
