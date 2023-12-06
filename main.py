@@ -171,7 +171,25 @@ if __name__ == '__main__':
 
             with open(os.path.join(review_data_path, f'onlyReview_1.json'), 'r', encoding='utf-8') as f:
                 test_data = json.load(f)
-                test_data = test_data[:300]
+            target_item_list_test = [data['item'] for data in test_data]
+
+            for idx, data in enumerate(test_data):
+                data['context_tokens'] = data['context_tokens'].replace(target_item_list[idx], '[TITLE]')
+                title = target_item_list[idx].split('(')[0].strip()
+                year = target_item_list[idx].split('(')[-1][:-1].strip()
+                if not year.isdigit():
+                    year = ''
+                data['context_tokens'] = data['context_tokens'].replace(f"\"{title}\" ({year})", '[TITLE]')
+                data['context_tokens'] = data['context_tokens'].replace(f"\"{title.lower()}\" ({year})", '[TITLE]')
+                data['context_tokens'] = data['context_tokens'].replace(title, '[TITLE]')
+                data['context_tokens'] = data['context_tokens'].replace(title.lower(), '[TITLE]')
+                data['context_tokens'] = data['context_tokens'].replace(f"({year})", '')
+
+                data['context_tokens'] = review_template % ('[TITLE]', data['context_tokens'])
+            test_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list_test[idx], 'isNew': True} for
+                          idx, data in enumerate(test_data)]
+            test_data = test_data[:300]
+
             if args.merge is True:
                 train_data.extend(crs_train_data)
                 test_data = crs_test_data
