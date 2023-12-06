@@ -169,7 +169,9 @@ if __name__ == '__main__':
             train_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list[idx], 'isNew': True} for
                           idx, data in enumerate(train_data)]
 
-            test_data = train_data[:300]
+            with open(os.path.join(review_data_path, f'onlyReview_1.json'), 'r', encoding='utf-8') as f:
+                test_data = json.load(f)
+                test_data = test_data[:300]
             if args.merge is True:
                 train_data.extend(crs_train_data)
                 test_data = crs_test_data
