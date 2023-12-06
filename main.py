@@ -175,7 +175,7 @@ if __name__ == '__main__':
                 test_data = crs_test_data
             if args.quiz_merge:
                 train_data.extend([{'context_tokens': data[0], 'item': data[1], 'isNew': True} for data in quiz_train_data])
-            if args.origin_augment:
+            if args.plot_merge:
                 # train_data.extend(origin_train_data)
                 plot_template = """I will give you a plot of a movie\nHere is the plot:\n%s\n\nGuess the movie title that the above plot is describing"""
                 train_data.extend([{'context_tokens': plot_template % data['context_tokens'], 'item': data['item'], 'isNew': True} for data in plot_train_data])
