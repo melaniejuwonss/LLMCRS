@@ -147,7 +147,7 @@ if __name__ == '__main__':
             if args.TH:
                 review_template = """I will give you a review of a movie.\nIn the review, the movie title is masked with %s.\nHere is the review:\n%s\n\nBased on the review, guess the movie title that the above review is discussing"""
             elif args.JW:
-                review_template = """I will give you a review of a movie\nIn this review, the movie title is maksed with %s.\nHere is the review:\n%s\n\nGuess the movie title for [TITLE] considering actor, genre, plot, director, and writer discussed in the review above."""
+                review_template = """I will give you a review of a movie\nIn this review, the movie title is maksed with %s.\nAfter reading the review, guess the movie title for [TITLE] by considering actor, genre, director, writer, and plot discussed in the review.\nHere is the review:\n%s"""
             origin_train_data = [{'context_tokens': review_template % (data['item'], data['context_tokens']), 'item': data['item'], 'isNew': True} for data in train_data]
             target_item_list = [data['item'] for data in train_data]
 
