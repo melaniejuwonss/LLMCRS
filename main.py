@@ -176,8 +176,8 @@ if __name__ == '__main__':
                 train_data.extend(crs_train_data)
                 test_data = crs_test_data
             if args.quiz_merge:
-                train_data.extend([{'context_tokens': data['context_tokens'], 'item': data['item'], 'isNew': True} for data in quiz_train_data])
-            if args.origin_augment:
+                train_data.extend([{'context_tokens': data[0], 'item': data[1], 'isNew': True} for data in quiz_train_data])
+            if args.plot_merge:
                 # train_data.extend(origin_train_data)
                 plot_template = """I will give you a plot of a movie\nHere is the plot:\n%s\n\nGuess the movie title that the above plot is describing"""
                 train_data.extend([{'context_tokens': plot_template % data['context_tokens'], 'item': data['item'], 'isNew': True} for data in plot_train_data])
@@ -224,6 +224,15 @@ if __name__ == '__main__':
         if 'valid' == args.mode:
             valid_instructions = [i['context_tokens'] for i in valid_data]
             valid_labels = [crs_dataset.entityid2name[i['item']] for i in valid_data]
+
+    elif args.stage.lower() == 'plot':
+        plot_template = """I will give you a plot of a movie\nHere is the plot:\n%s\n\nGuess the movie title that the above plot is describing"""
+        plot_train_data = [{'context_tokens': plot_template % data['context_tokens'], 'item': data['item'], 'isNew': True} for data in plot_train_data]
+        train_instructions = [i['context_tokens'] for i in plot_train_data]
+        train_labels = [i['item'] for i in plot_train_data]
+        test_instructions = train_instructions[:100]
+        test_labels = train_labels[:100]
+        train_new = [True for i in plot_train_data]
 
     elif args.stage.lower() == "review_dialog":
         review_dataset = ReviewDataset(args)
