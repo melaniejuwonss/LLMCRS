@@ -18,7 +18,7 @@ from llama_finetune import llama_finetune
 from llama_test import LLaMaEvaluator
 from t5_finetune import t5_finetune
 from t5_test import T5Evaluator
-from utils.data import quiz_read_data
+from utils.data import quiz_read_data, plot_read_data
 from utils.parser import parse_args, dir_init
 from os.path import dirname, realpath
 
@@ -61,6 +61,8 @@ if __name__ == '__main__':
 
     quiz_train_data = quiz_read_data(args, 'train')
     quiz_test_data = quiz_read_data(args, 'test')
+
+    plot_train_data = plot_read_data(args, 'train')
 
     if args.stage.lower() == "crs":
         crs_dataset = CRSDatasetRec(args)
@@ -175,7 +177,9 @@ if __name__ == '__main__':
                 train_data.extend([{'context_tokens': data[0], 'item': data[1], 'isNew': True} for data in quiz_train_data])
             if args.origin_augment:
                 # train_data.extend(origin_train_data)
-                train_data = origin_train_data
+                plot_template = """I will give you a plot of a movie\nHere is the plot:\n%s\n\nGuess the movie title that the above plot is describing"""
+                train_data.extend([{'context_tokens': plot_template % data['context_tokens'], 'item': data[1], 'isNew': True} for data in plot_train_data])
+                # train_data = origin_train_data
 
             logger.info('[Finish loading onlyReview datasets]')
             logger.info(f'[onlyReview Train Dataset Size: {len(train_data)}]')
