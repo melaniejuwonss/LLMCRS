@@ -18,7 +18,7 @@ from llama_finetune import llama_finetune
 from llama_test import LLaMaEvaluator
 from t5_finetune import t5_finetune
 from t5_test import T5Evaluator
-from utils.data import read_data
+from utils.data import quiz_read_data
 from utils.parser import parse_args, dir_init
 from os.path import dirname, realpath
 
@@ -59,8 +59,8 @@ if __name__ == '__main__':
     DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
     args.dataset_path = DATASET_PATH
 
-    quiz_train_data = read_data(args, 'train')
-    quiz_test_data = read_data(args, 'test')
+    quiz_train_data = quiz_read_data(args, 'train')
+    quiz_test_data = quiz_read_data(args, 'test')
 
     if args.stage.lower() == "crs":
         crs_dataset = CRSDatasetRec(args)
@@ -174,7 +174,8 @@ if __name__ == '__main__':
             if args.quiz_merge:
                 train_data.extend([{'context_tokens': data[0], 'item': data[1], 'isNew': True} for data in quiz_train_data])
             if args.origin_augment:
-                train_data.extend(origin_train_data)
+                # train_data.extend(origin_train_data)
+                train_data = origin_train_data
 
             logger.info('[Finish loading onlyReview datasets]')
             logger.info(f'[onlyReview Train Dataset Size: {len(train_data)}]')

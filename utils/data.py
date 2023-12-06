@@ -2,7 +2,7 @@ import json
 import os
 
 
-def read_data(args, mode):
+def quiz_read_data(args, mode):
     data_path = os.path.join(args.home, 'data', 'quiz')
     RQ_data = json.load((open(f"{data_path}/rq{str(args.rq_num)}_{mode}.json", 'r', encoding='utf-8')))
     question, answer = [], []
