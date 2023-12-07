@@ -18,7 +18,7 @@ from llama_finetune import llama_finetune
 from llama_test import LLaMaEvaluator
 from t5_finetune import t5_finetune
 from t5_test import T5Evaluator
-from utils.data import quiz_read_data, plot_read_data, plot_review_read_data
+from utils.data import quiz_read_data, plot_read_data, meta_plot_review_read_data
 from utils.parser import parse_args, dir_init
 from os.path import dirname, realpath
 
@@ -63,22 +63,23 @@ if __name__ == '__main__':
     quiz_test_data = quiz_read_data(args, 'test')
 
     plot_train_data = plot_read_data(args, 'train')
-    plot_review_data = plot_review_read_data(args, 'train')
+    meta_plot_review_data = meta_plot_review_read_data(args, 'train')
 
     if args.stage.lower() == 'pretrain':
         train_data = []
-        for data in plot_review_data:
+        for data in meta_plot_review_data:
+            meta = data['meta']
             plot = data['plot']
             review = data['review']
             title = data['item']
             if review == '' and plot == '':
                 continue
             if review != '' and plot != '':
-                context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you a plot of the movie {title}:\n{plot}\n\nI will give you a review of the movie {title}:\n{review}"""
+                context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a plot of the movie {title}:\n{plot}\n\nI will give you a review of the movie {title}:\n{review}"""
             elif review != '':
-                context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you a review of the movie {title}:\n{review}"""
+                context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a review of the movie {title}:\n{review}"""
             else:
-                context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you a plot of the movie {title}:\n{plot}"""
+                context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a plot of the movie {title}:\n{plot}"""
             train_data.append({'context_tokens': context_tokens, 'item': '', 'isNew': True})
         # test_data = train_data[:100]
 
