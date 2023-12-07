@@ -100,7 +100,7 @@ if __name__ == '__main__':
             train_data.append({'context_tokens': context_tokens, 'item': '', 'isNew': True})
         # test_data = train_data[:100]
         for data in tqdm(train_data):
-            data['context_tokens'] = tokenizer.decode(tokenizer(data['context_tokens']).input_ids)[1:][-args.cutoff:]
+            data['context_tokens'] = tokenizer.decode(tokenizer(data['context_tokens']).input_ids)[1:][:args.cutoff]
 
         train_instructions = [i['context_tokens'] for i in train_data]
         train_labels = [i['item'] for i in train_data]
