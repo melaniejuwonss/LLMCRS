@@ -259,8 +259,13 @@ if __name__ == '__main__':
             valid_labels = [crs_dataset.entityid2name[i['item']] for i in valid_data]
 
     elif args.stage.lower() == 'plot':
-        plot_template = """I will give you a plot of a movie\nHere is the plot:\n%s\n\nGuess the movie title that the above plot is describing"""
-        plot_train_data = [{'context_tokens': plot_template % data['context_tokens'], 'item': data['item'], 'isNew': True} for data in plot_train_data]
+        if args.pretrain:
+            plot_template = "I will give you a plot of a movie %s\n%s"
+            plot_train_data = [{'context_tokens': (data['item'], data['context_tokens']), 'item': '', 'isNew': True} for data in plot_train_data]
+        else:
+            plot_template = """I will give you a plot of a movie\nHere is the plot:\n%s\n\nGuess the movie title that the above plot is describing"""
+            plot_train_data = [{'context_tokens': plot_template % data['context_tokens'], 'item': data['item'], 'isNew': True} for data in plot_train_data]
+
         train_instructions = [i['context_tokens'] for i in plot_train_data]
         train_labels = [i['item'] for i in plot_train_data]
         test_instructions = train_instructions[:100]
