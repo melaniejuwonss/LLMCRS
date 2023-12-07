@@ -84,6 +84,8 @@ if __name__ == '__main__':
                 context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a plot of the movie {title}:\n{plot}"""
             train_data.append({'context_tokens': context_tokens, 'item': '', 'isNew': True})
         # test_data = train_data[:100]
+        for data in tqdm(train_data):
+            data['context_tokens'] = context_tokens
 
         train_instructions = [i['context_tokens'] for i in train_data]
         train_labels = [i['item'] for i in train_data]
