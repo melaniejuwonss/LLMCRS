@@ -107,6 +107,17 @@ System: You're welcome! I hope you find a deep connection with the movie. It's k
 
 Can you make a dialogue (within 3-turns) for talking about the movie %s by considering a review and sample dialogue?
 """
+review_template = """
+I will give you a review of a movie.
+In the review, the movie title is masked with [TITLE].
+Here is the review:
+[TITLE] is a creative movie featuring beautiful and vibrant animation. However, the story feels a little underdeveloped. While there are some magical and emotional moments, it seems as if they didn't know how to end the movie. The lack of a strong villain also makes this movie a little less compelling. Nevertheless, the music is fun, and we enjoyed watching Encanto together as a family.
+
+Based on the review, guess the movie title for [TITLE] without extra explanations.
+Encanto (2021)
+
+%s
+"""
 
 
 # - Therefore, Blair Witch (2016) should be recommended.
@@ -126,7 +137,7 @@ def execute(args,
                 model=MODEL,
                 messages=[
                     {"role": "user",
-                     "content": template_dialog_generation % (label, instruction, label)}
+                     "content": review_template % instruction}
                 ],
                 temperature=0,
             )
@@ -137,19 +148,14 @@ def execute(args,
                 movie_name = label.replace('(', ')').split(')')[1].strip().lower()
             elif 'crs' in args.stage:
                 check_response = response.lower()
-                movie_name = label.split('(')[0].strip().lower()
-
-            # if 'example' in args.rq_num:
-            #     check_response = response[response.lower().find("answer:"):].lower()
-            # else:
-            #     check_response = response
-            # if movie_name in check_response.lower():
-            #     hit += 1.0
+                movie_name = label.lower()
+            if movie_name in check_response:
+                hit += 1.0
             cnt += 1.0
-            # hit_ratio = hit / cnt
 
             args.log_file.write(
-                json.dumps({'INPUT': template_dialog_generation % (label, instruction, label), 'OUTPUT': response}, ensure_ascii=False,
+                json.dumps({'INPUT': instruction, 'OUTPUT': response, 'LABEL': label, 'AVG_HIT': hit / cnt * 100},
+                           ensure_ascii=False,
                            indent=4) + '\n')
 
             # if cnt % 100 == 0 and cnt != 0:
