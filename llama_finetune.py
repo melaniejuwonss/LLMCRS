@@ -187,13 +187,13 @@ def llama_finetune(
         result = tokenizer(
             prompt,
             truncation=True,
-            # max_length=cutoff_len,
+            # max_length=cutoff_len + 100,
             padding=False,
             return_tensors=None,
         )
         if (
                 result["input_ids"][-1] != tokenizer.eos_token_id
-                and len(result["input_ids"]) < cutoff_len
+                # and len(result["input_ids"]) < cutoff_len
                 and add_eos_token
         ):
             result["input_ids"].append(tokenizer.eos_token_id)

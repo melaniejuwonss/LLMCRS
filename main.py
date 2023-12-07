@@ -98,18 +98,15 @@ if __name__ == '__main__':
         train_data = crs_dataset.train_data
         valid_data = crs_dataset.valid_data
         test_data = crs_dataset.test_data
-
-        for data in train_data:
-            tokenized_context = tokenizer(data['context_tokens'])
-
-            data[
-                'context_tokens'] = f"{data['context_tokens']}\n\nGuess which movie should be recommended to the user."  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
+        cnt = 0
+        for data in tqdm(train_data):
+            context_tokens = data['context_tokens']  # tokenizer.decode((tokenizer(data['context_tokens']).input_ids)[1:][-args.cutoff:])
+            data['context_tokens'] = f"{context_tokens}\n\nGuess which movie should be recommended to the user."  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
         for data in valid_data:
-            data[
-                'context_tokens'] = f"{data['context_tokens']}\n\nGuess which movie should be recommended to the user."  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
-        for data in test_data:
-            data[
-                'context_tokens'] = f"{data['context_tokens']}\n\nGuess which movie should be recommended to the user."  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
+            data['context_tokens'] = f"{context_tokens}\n\nGuess which movie should be recommended to the user."  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
+        for data in tqdm(test_data):
+            context_tokens = data['context_tokens']  # tokenizer.decode((tokenizer(data['context_tokens']).input_ids)[1:][-args.cutoff:])
+            data['context_tokens'] = f"{context_tokens}\n\nGuess which movie should be recommended to the user."  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
 
         new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
 
@@ -175,11 +172,11 @@ if __name__ == '__main__':
             with open(os.path.join(review_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
                 train_data = json.load(f)
 
-            review_template = """I will give you a review of a movie.\nIn the review, the movie title is masked with %s.\nHere is the review:\n%s\n\nBased on the review, guess the movie title for [TITLE] without extra explanations."""
+            review_template = """I will give you a review of a movie.\nIn the review, the movie title is masked with %s.\nHere is the review:\n%s\n\nBased on the review, guess the movie title for [title] without extra explanations."""
             if args.TH:
                 review_template = """I will give you a review of a movie.\nIn the review, the movie title is masked with %s.\nHere is the review:\n%s\n\nBased on the review, guess the movie title that the above review is discussing"""
             elif args.JW:
-                review_template = """I will give you a review of a movie\nIn this review, the movie title is maksed with %s.\nAfter reading the review, guess the movie title for [TITLE] by considering actor, genre, director, writer, and plot discussed in the review.\nHere is the review:\n%s"""
+                review_template = """I will give you a review of a movie\nIn this review, the movie title is maksed with %s.\nAfter reading the review, guess the movie title for [title] by considering actor, genre, director, writer, and plot discussed in the review.\nHere is the review:\n%s"""
             origin_train_data = [
                 {'context_tokens': review_template % (data['item'], data['context_tokens']), 'item': data['item'],
                  'isNew': True} for data in train_data]
@@ -193,42 +190,45 @@ if __name__ == '__main__':
             target_item_list = [data['item'] for data in train_data]
 
             for idx, data in enumerate(train_data):
-                data['context_tokens'] = data['context_tokens'].replace(target_item_list[idx], '[TITLE]')
+                data['context_tokens'] = data['context_tokens'].replace(target_item_list[idx], '[title]')
                 title = target_item_list[idx].split('(')[0].strip()
                 year = target_item_list[idx].split('(')[-1][:-1].strip()
                 if not year.isdigit():
                     year = ''
-                data['context_tokens'] = data['context_tokens'].replace(f"\"{title}\" ({year})", '[TITLE]')
-                data['context_tokens'] = data['context_tokens'].replace(f"\"{title.lower()}\" ({year})", '[TITLE]')
-                data['context_tokens'] = data['context_tokens'].replace(title, '[TITLE]')
-                data['context_tokens'] = data['context_tokens'].replace(title.lower(), '[TITLE]')
+                data['context_tokens'] = data['context_tokens'].replace(f"\"{title}\" ({year})", '[title]')
+                data['context_tokens'] = data['context_tokens'].replace(f"\"{title.lower()}\" ({year})", '[title]')
+                data['context_tokens'] = data['context_tokens'].replace(title, '[title]')
+                data['context_tokens'] = data['context_tokens'].replace(title.lower(), '[title]')
                 data['context_tokens'] = data['context_tokens'].replace(f"({year})", '')
 
-                data['context_tokens'] = review_template % ('[TITLE]', data['context_tokens'])
+                data['context_tokens'] = review_template % ('[title]', data['context_tokens'])
             train_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list[idx], 'isNew': True} for
                           idx, data in enumerate(train_data)]
+            for data in tqdm(train_data):
+                data['context_tokens'] = tokenizer.decode(tokenizer(data['context_tokens']).input_ids[1:][:args.cutoff])
 
             with open(os.path.join(review_data_path, f'onlyReview_1.json'), 'r', encoding='utf-8') as f:
                 test_data = json.load(f)
             target_item_list_test = [data['item'] for data in test_data]
 
             for idx, data in enumerate(test_data):
-                data['context_tokens'] = data['context_tokens'].replace(target_item_list[idx], '[TITLE]')
+                data['context_tokens'] = data['context_tokens'].replace(target_item_list[idx], '[title]')
                 title = target_item_list[idx].split('(')[0].strip()
                 year = target_item_list[idx].split('(')[-1][:-1].strip()
                 if not year.isdigit():
                     year = ''
-                data['context_tokens'] = data['context_tokens'].replace(f"\"{title}\" ({year})", '[TITLE]')
-                data['context_tokens'] = data['context_tokens'].replace(f"\"{title.lower()}\" ({year})", '[TITLE]')
-                data['context_tokens'] = data['context_tokens'].replace(title, '[TITLE]')
-                data['context_tokens'] = data['context_tokens'].replace(title.lower(), '[TITLE]')
+                data['context_tokens'] = data['context_tokens'].replace(f"\"{title}\" ({year})", '[title]')
+                data['context_tokens'] = data['context_tokens'].replace(f"\"{title.lower()}\" ({year})", '[title]')
+                data['context_tokens'] = data['context_tokens'].replace(title, '[title]')
+                data['context_tokens'] = data['context_tokens'].replace(title.lower(), '[title]')
                 data['context_tokens'] = data['context_tokens'].replace(f"({year})", '')
 
-                data['context_tokens'] = review_template % ('[TITLE]', data['context_tokens'])
+                data['context_tokens'] = review_template % ('[title]', data['context_tokens'])
             test_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list_test[idx], 'isNew': True}
-                         for
-                         idx, data in enumerate(test_data)]
+                         for idx, data in enumerate(test_data)]
             test_data = test_data[:300]
+            for data in tqdm(test_data):
+                data['context_tokens'] = tokenizer.decode(tokenizer(data['context_tokens']).input_ids[1:][:args.cutoff])
 
             if args.pretrain:
                 train_data = origin_train_data
