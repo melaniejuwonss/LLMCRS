@@ -25,7 +25,7 @@ def quiz_read_data(args, mode):
 def plot_read_data(args, mode):
     data_path = os.path.join(args.home, 'data', 'redial', 'plot')
     if not os.path.exists(data_path): os.mkdir(data_path)
-    with open(os.path.join(data_path, f'plot.json'), 'r', encoding='utf-8') as f:
+    with open(os.path.join(data_path, f'plot_1.json'), 'r', encoding='utf-8') as f:
         dataset = json.load(f)
     return dataset
 
