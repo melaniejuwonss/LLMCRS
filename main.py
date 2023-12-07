@@ -76,11 +76,11 @@ if __name__ == '__main__':
             title = data['item']
             if review == '' and plot == '':
                 continue
-            if review != '' and plot != '':
-                context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a plot of the movie {title}:\n{plot}\n\nI will give you a review of the movie {title}:\n{review}"""
-            elif review != '':
-                context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a review of the movie {title}:\n{review}"""
-            else:
+            # if review != '' and plot != '':
+            #     context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a plot of the movie {title}:\n{plot}\n\nI will give you a review of the movie {title}:\n{review}"""
+            # elif review != '':
+            #     context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a review of the movie {title}:\n{review}"""
+            elif plot != '':
                 context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a plot of the movie {title}:\n{plot}"""
             train_data.append({'context_tokens': context_tokens, 'item': '', 'isNew': True})
         # test_data = train_data[:100]
