@@ -44,6 +44,7 @@ def parse_args():
     parser.add_argument('--origin_augment', type=bool, default=False)
     parser.add_argument('--all_merge', type=bool, default=False)
     parser.add_argument('--plot_merge', type=bool, default=False)
+    parser.add_argument('--pretrain', type=bool, default=False)
 
     parser.add_argument('--TH', type=bool, default=False)
     parser.add_argument('--JW', type=bool, default=False)
