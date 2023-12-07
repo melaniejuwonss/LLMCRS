@@ -100,12 +100,12 @@ if __name__ == '__main__':
         test_data = crs_dataset.test_data
         cnt = 0
         for data in tqdm(train_data):
-            context_tokens = data['context_tokens']  # tokenizer.decode((tokenizer(data['context_tokens']).input_ids)[1:][-args.cutoff:])
+            context_tokens = tokenizer.decode((tokenizer(data['context_tokens']).input_ids)[1:][-args.cutoff:])
             data['context_tokens'] = f"{context_tokens}\n\nGuess which movie should be recommended to the user."  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
         for data in valid_data:
             data['context_tokens'] = f"{context_tokens}\n\nGuess which movie should be recommended to the user."  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
         for data in tqdm(test_data):
-            context_tokens = data['context_tokens']  # tokenizer.decode((tokenizer(data['context_tokens']).input_ids)[1:][-args.cutoff:])
+            context_tokens = tokenizer.decode((tokenizer(data['context_tokens']).input_ids)[1:][-args.cutoff:])
             data['context_tokens'] = f"{context_tokens}\n\nGuess which movie should be recommended to the user."  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
 
         new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
