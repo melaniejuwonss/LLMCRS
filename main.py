@@ -153,7 +153,8 @@ if __name__ == '__main__':
             origin_train_data = [{'context_tokens': review_template % (data['item'], data['context_tokens']), 'item': data['item'], 'isNew': True} for data in train_data]
 
             if args.pretrain:
-                origin_train_data = [{'context_tokens': data['context_tokens'], 'item': '', 'isNew': True} for data in train_data]
+                review_template = """I will give you a review of a movie %s\n%s"""
+                origin_train_data = [{'context_tokens': (data['item'], data['context_tokens']), 'item': '', 'isNew': True} for data in train_data]
 
             target_item_list = [data['item'] for data in train_data]
 
@@ -210,7 +211,8 @@ if __name__ == '__main__':
                     plot_template = "I will give you a plot of a movie\nHere is the plot:\n%s\n\nGuess the movie title that the above plot is describing"
                     train_data.extend([{'context_tokens': plot_template % data['context_tokens'], 'item': data['item'], 'isNew': True} for data in plot_train_data])
                 else:
-                    train_data.extend([{'context_tokens': data['context_tokens'], 'item': '', 'isNew': True} for data in plot_train_data])
+                    plot_template = "I will give you a plot of a movie %s\n%s"
+                    train_data.extend([{'context_tokens': (data['item'], data['context_tokens']), 'item': '', 'isNew': True} for data in plot_train_data])
 
                 # train_data = origin_train_data
 
