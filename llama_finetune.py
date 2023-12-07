@@ -108,6 +108,7 @@ def llama_finetune(
     gradient_accumulation_steps = args.num_device  # update the model's weights once every gradient_accumulation_steps batches instead of updating the weights after every batch.
     per_device_train_batch_size = batch_size // args.num_device
     resume_from_checkpoint = args.lora_weights
+    cutoff_len = args.cutoff
 
     if int(os.environ.get("LOCAL_RANK", 0)) == 0:
         print(
