@@ -187,7 +187,7 @@ def llama_finetune(
         result = tokenizer(
             prompt,
             truncation=True,
-            max_length=cutoff_len,
+            # max_length=cutoff_len,
             padding=False,
             return_tensors=None,
         )

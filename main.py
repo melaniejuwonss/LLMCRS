@@ -59,6 +59,8 @@ if __name__ == '__main__':
     DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
     args.dataset_path = DATASET_PATH
 
+    tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
+
     quiz_train_data = quiz_read_data(args, 'train')
     quiz_test_data = quiz_read_data(args, 'test')
 
@@ -98,6 +100,8 @@ if __name__ == '__main__':
         test_data = crs_dataset.test_data
 
         for data in train_data:
+            tokenized_context = tokenizer(data['context_tokens'])
+
             data[
                 'context_tokens'] = f"{data['context_tokens']}\n\nGuess which movie should be recommended to the user."  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
         for data in valid_data:
@@ -305,8 +309,8 @@ if __name__ == '__main__':
 
         train_instructions = [i['context_tokens'] for i in plot_train_data]
         train_labels = [i['item'] for i in plot_train_data]
-        test_instructions = train_instructions[:100]
-        test_labels = train_labels[:100]
+        test_instructions = train_instructions
+        test_labels = train_labels
         train_new = [True for i in plot_train_data]
 
     elif args.stage.lower() == "review_dialog":

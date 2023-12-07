@@ -118,16 +118,17 @@ Encanto (2021)
 
 %s
 """
-plot_template = """
-I will give you a plot of a movie.
+
+plot_template = """I will give you a plot of a movie.
 [TITLE] tells the tale of an extraordinary family, the Madrigals, who live hidden in the mountains of Colombia, in a magical house, in a vibrant town, in a wondrous, charmed place called an [TITLE]. The magic of the [TITLE] has blessed every child in the family with a unique gift from super strength to the power to heal-every child except one, Mirabel. But when she discovers that the magic surrounding the [TITLE] is in danger, Mirabel decides that she, the only ordinary Madrigal, might just be her exceptional family's last hope.
-Guess the movie title that the plot is describing.
+Guess the movie title that the plot is describing without any explanation.
 Encanto (2021)
 
 I will give you a plot of a movie.
 %s
-Guess the movie title that the plot is describing.
+Guess the movie title that the plot is describing without any explanation.
 """
+
 
 # - Therefore, Blair Witch (2016) should be recommended.
 # - Therefore, Major League (1989) should be recommended.
@@ -146,7 +147,7 @@ def execute(args,
                 model=MODEL,
                 messages=[
                     {"role": "user",
-                     "content": review_template % instruction}
+                     "content": plot_template % instruction}
                 ],
                 temperature=0,
             )
@@ -155,7 +156,7 @@ def execute(args,
             # response += "\n -Therefore, %s should be recommended." % (label)
             if 'quiz' in args.stage:
                 movie_name = label.replace('(', ')').split(')')[1].strip().lower()
-            elif 'crs' in args.stage:
+            elif 'crs' or 'plot' in args.stage:
                 check_response = response.lower()
                 movie_name = label.lower()
             if movie_name in check_response:
