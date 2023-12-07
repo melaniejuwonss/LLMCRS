@@ -80,7 +80,13 @@ if __name__ == '__main__':
             else:
                 context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you a plot of the movie {title}:\n{plot}"""
             train_data.append({'context_tokens': context_tokens, 'item': '', 'isNew': True})
-        test_data = train_data[:100]
+        # test_data = train_data[:100]
+
+        train_instructions = [i['context_tokens'] for i in train_data]
+        train_labels = [i['item'] for i in train_data]
+        test_instructions = train_instructions[:100]
+        test_labels = train_labels[:100]
+        train_new = [True for i in train_data]
 
 
     elif args.stage.lower() == "crs":
