@@ -83,6 +83,18 @@ if __name__ == '__main__':
             # elif plot != '':
             #     context_tokens = f"""I will give you information about a moive {title}.\nMeta information of the movie {title}:\n{meta}\nPlot of the movie {title}:\n{plot}"""
             # context_tokens = plot
+
+            review = review.replace(title, '[title]')
+            name = title.split('(')[0].strip()
+            year = title.split('(')[-1][:-1].strip()
+            if not year.isdigit():
+                year = ''
+            review = review.replace(f"\"{name}\" ({year})", '[title]')
+            review = review.replace(f"\"{name.lower()}\" ({year})", '[title]')
+            review = review.replace(name, '[title]')
+            review = review.replace(name.lower(), '[title]')
+            review = review.replace(f"({year})", '')
+
             context_tokens = f"""A review of the movie {title}:\n{review}"""
 
             train_data.append({'context_tokens': context_tokens, 'item': '', 'isNew': True})
