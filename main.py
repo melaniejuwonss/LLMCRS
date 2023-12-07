@@ -176,11 +176,15 @@ if __name__ == '__main__':
                 review_template = """I will give you a review of a movie.\nIn the review, the movie title is masked with %s.\nHere is the review:\n%s\n\nBased on the review, guess the movie title that the above review is discussing"""
             elif args.JW:
                 review_template = """I will give you a review of a movie\nIn this review, the movie title is maksed with %s.\nAfter reading the review, guess the movie title for [TITLE] by considering actor, genre, director, writer, and plot discussed in the review.\nHere is the review:\n%s"""
-            origin_train_data = [{'context_tokens': review_template % (data['item'], data['context_tokens']), 'item': data['item'], 'isNew': True} for data in train_data]
+            origin_train_data = [
+                {'context_tokens': review_template % (data['item'], data['context_tokens']), 'item': data['item'],
+                 'isNew': True} for data in train_data]
 
             if args.pretrain:
                 review_template = """I will give you a review of a movie %s\n%s"""
-                origin_train_data = [{'context_tokens': (data['item'], data['context_tokens']), 'item': '', 'isNew': True} for data in train_data]
+                origin_train_data = [
+                    {'context_tokens': (data['item'], data['context_tokens']), 'item': '', 'isNew': True} for data in
+                    train_data]
 
             target_item_list = [data['item'] for data in train_data]
 
@@ -217,7 +221,8 @@ if __name__ == '__main__':
                 data['context_tokens'] = data['context_tokens'].replace(f"({year})", '')
 
                 data['context_tokens'] = review_template % ('[TITLE]', data['context_tokens'])
-            test_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list_test[idx], 'isNew': True} for
+            test_data = [{'context_tokens': data['context_tokens'], 'item': target_item_list_test[idx], 'isNew': True}
+                         for
                          idx, data in enumerate(test_data)]
             test_data = test_data[:300]
 
@@ -229,16 +234,21 @@ if __name__ == '__main__':
                 test_data = crs_test_data
 
             if args.quiz_merge:
-                train_data.extend([{'context_tokens': data[0], 'item': data[1], 'isNew': True} for data in quiz_train_data])
+                train_data.extend(
+                    [{'context_tokens': data[0], 'item': data[1], 'isNew': True} for data in quiz_train_data])
 
             if args.plot_merge:
                 # train_data.extend(origin_train_data)
                 if not args.pretrain:
                     plot_template = "I will give you a plot of a movie\nHere is the plot:\n%s\n\nGuess the movie title that the above plot is describing"
-                    train_data.extend([{'context_tokens': plot_template % data['context_tokens'], 'item': data['item'], 'isNew': True} for data in plot_train_data])
+                    train_data.extend(
+                        [{'context_tokens': plot_template % data['context_tokens'], 'item': data['item'], 'isNew': True}
+                         for data in plot_train_data])
                 else:
                     plot_template = "I will give you a plot of a movie %s\n%s"
-                    train_data.extend([{'context_tokens': (data['item'], data['context_tokens']), 'item': '', 'isNew': True} for data in plot_train_data])
+                    train_data.extend(
+                        [{'context_tokens': (data['item'], data['context_tokens']), 'item': '', 'isNew': True} for data
+                         in plot_train_data])
 
                 # train_data = origin_train_data
 
@@ -287,10 +297,11 @@ if __name__ == '__main__':
     elif args.stage.lower() == 'plot':
         if args.pretrain:
             plot_template = "I will give you a plot of a movie %s\n%s"
-            plot_train_data = [{'context_tokens': (data['item'], data['context_tokens']), 'item': '', 'isNew': True} for data in plot_train_data]
+            plot_train_data = [{'context_tokens': (data['item'], data['context_tokens']), 'item': '', 'isNew': True} for
+                               data in plot_train_data]
         else:
-            plot_template = """I will give you a plot of a movie\nHere is the plot:\n%s\n\nGuess the movie title that the above plot is describing"""
-            plot_train_data = [{'context_tokens': plot_template % data['context_tokens'], 'item': data['item'], 'isNew': True} for data in plot_train_data]
+            plot_train_data = [{'context_tokens': data['context_tokens'], 'item': data['item'], 'isNew': True} for data
+                               in plot_train_data]
 
         train_instructions = [i['context_tokens'] for i in plot_train_data]
         train_labels = [i['item'] for i in plot_train_data]
