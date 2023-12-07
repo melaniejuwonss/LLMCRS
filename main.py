@@ -74,18 +74,19 @@ if __name__ == '__main__':
             plot = data['plot']
             review = data['review']
             title = data['item']
-            if review == '' and plot == '':
+            if plot == '':
                 continue
             # if review != '' and plot != '':
             #     context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a plot of the movie {title}:\n{plot}\n\nI will give you a review of the movie {title}:\n{review}"""
             # elif review != '':
             #     context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a review of the movie {title}:\n{review}"""
             elif plot != '':
-                context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a plot of the movie {title}:\n{plot}"""
+                context_tokens = f"""I will give you information about a moive {title}.\nMeta information of the movie {title}:\n{meta}\nPlot of the movie {title}:\n{plot}"""
+            # context_tokens = plot
             train_data.append({'context_tokens': context_tokens, 'item': '', 'isNew': True})
         # test_data = train_data[:100]
-        for data in tqdm(train_data):
-            data['context_tokens'] = context_tokens
+        # for data in tqdm(train_data):
+        #     data['context_tokens'] = context_tokens
 
         train_instructions = [i['context_tokens'] for i in train_data]
         train_labels = [i['item'] for i in train_data]
