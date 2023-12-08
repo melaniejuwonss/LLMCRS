@@ -36,3 +36,11 @@ def meta_plot_review_read_data(args, mode):
     with open(os.path.join(data_path, f'meta_plot_review.json'), 'r', encoding='utf-8') as f:
         dataset = json.load(f)
     return dataset
+
+
+def synthetic_dialog_read_data(args, mode):
+    data_path = os.path.join(args.home, 'data', 'redial', 'synthetic')
+    if not os.path.exists(data_path): os.mkdir(data_path)
+    with open(os.path.join(data_path, f'synthetic_dialog_review.json'), 'r', encoding='utf-8') as f:
+        dataset = json.load(f)
+    return dataset

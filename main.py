@@ -18,7 +18,7 @@ from llama_finetune import llama_finetune
 from llama_test import LLaMaEvaluator
 from t5_finetune import t5_finetune
 from t5_test import T5Evaluator
-from utils.data import quiz_read_data, plot_read_data, meta_plot_review_read_data
+from utils.data import quiz_read_data, plot_read_data, meta_plot_review_read_data, synthetic_dialog_read_data
 from utils.parser import parse_args, dir_init
 from os.path import dirname, realpath
 
@@ -69,39 +69,50 @@ if __name__ == '__main__':
 
     if args.stage.lower() == 'pretrain':
         train_data = []
-        for data in meta_plot_review_data:
-            meta = data['meta']
-            plot = data['plot']
-            review = data['review']
-            title = data['item']
-            if review == '':
-                continue
-            # if review != '' and plot != '':
-            #     context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a plot of the movie {title}:\n{plot}\n\nI will give you a review of the movie {title}:\n{review}"""
-            # elif review != '':
-            #     context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a review of the movie {title}:\n{review}"""
-            # elif plot != '':
-            #     context_tokens = f"""I will give you information about a moive {title}.\nMeta information of the movie {title}:\n{meta}\nPlot of the movie {title}:\n{plot}"""
-            # context_tokens = plot
-            if args.TH:
-                review = review.replace(title, '[title]')
-                name = title.split('(')[0].strip()
-                year = title.split('(')[-1][:-1].strip()
-                if not year.isdigit():
-                    year = ''
-                review = review.replace(f"\"{name}\" ({year})", '[title]')
-                review = review.replace(f"\"{name.lower()}\" ({year})", '[title]')
-                review = review.replace(name, '[title]')
-                review = review.replace(name.lower(), '[title]')
-                review = review.replace(f"({year})", '')
-                context_tokens = f"""A review of the movie [title]:\n{review}"""
-            else:
-                context_tokens = f"""A review of the movie {title}:\n{review}"""
+        synthetic_dialog = synthetic_dialog_read_data(args, 'train')
+        tokenized_synthetic_dialog = [tokenizer(data['OUTPUT']).input_ids[1:] for data in tqdm(synthetic_dialog)]
 
-            train_data.append({'context_tokens': context_tokens, 'item': '', 'isNew': True})
-        # test_data = train_data[:100]
-        for data in tqdm(train_data):
-            data['context_tokens'] = tokenizer.decode(tokenizer(data['context_tokens']).input_ids)[1:][:args.cutoff]
+        for data in tqdm(tokenized_synthetic_dialog):
+            if len(data) < args.cutoff:
+                train_data.append(tokenizer.decode(data))
+            else:
+                remain_len = len(data) - args.cutoff
+                for i in range(0, remain_len + 1, 10):
+                    train_data.append(tokenizer.decode(data[i:i + args.cutoff]))
+
+        # for data in meta_plot_review_data:
+        #     meta = data['meta']
+        #     plot = data['plot']
+        #     review = data['review']
+        #     title = data['item']
+        #     if review == '':
+        #         continue
+        #     # if review != '' and plot != '':
+        #     #     context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a plot of the movie {title}:\n{plot}\n\nI will give you a review of the movie {title}:\n{review}"""
+        #     # elif review != '':
+        #     #     context_tokens = f"""I will give you information about a moive {title}.\nPlease read carefully and memorize all information.\n\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a review of the movie {title}:\n{review}"""
+        #     # elif plot != '':
+        #     #     context_tokens = f"""I will give you information about a moive {title}.\nMeta information of the movie {title}:\n{meta}\nPlot of the movie {title}:\n{plot}"""
+        #     # context_tokens = plot
+        #     if args.TH:
+        #         review = review.replace(title, '[title]')
+        #         name = title.split('(')[0].strip()
+        #         year = title.split('(')[-1][:-1].strip()
+        #         if not year.isdigit():
+        #             year = ''
+        #         review = review.replace(f"\"{name}\" ({year})", '[title]')
+        #         review = review.replace(f"\"{name.lower()}\" ({year})", '[title]')
+        #         review = review.replace(name, '[title]')
+        #         review = review.replace(name.lower(), '[title]')
+        #         review = review.replace(f"({year})", '')
+        #         context_tokens = f"""A review of the movie [title]:\n{review}"""
+        #     else:
+        #         context_tokens = f"""A review of the movie {title}:\n{review}"""
+        #
+        #     train_data.append({'context_tokens': context_tokens, 'item': '', 'isNew': True})
+        # # test_data = train_data[:100]
+        # for data in tqdm(train_data):
+        #     data['context_tokens'] = tokenizer.decode(tokenizer(data['context_tokens']).input_ids)[1:][:args.cutoff]
 
         train_instructions = [i['context_tokens'] for i in train_data]
         train_labels = [i['item'] for i in train_data]
