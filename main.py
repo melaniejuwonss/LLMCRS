@@ -94,8 +94,9 @@ if __name__ == '__main__':
                 review = review.replace(name, '[title]')
                 review = review.replace(name.lower(), '[title]')
                 review = review.replace(f"({year})", '')
-
-            context_tokens = f"""A review of the movie {title}:\n{review}"""
+                context_tokens = f"""A review of the movie [title]:\n{review}"""
+            else:
+                context_tokens = f"""A review of the movie {title}:\n{review}"""
 
             train_data.append({'context_tokens': context_tokens, 'item': '', 'isNew': True})
         # test_data = train_data[:100]
