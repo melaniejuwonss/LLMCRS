@@ -70,16 +70,18 @@ if __name__ == '__main__':
     if args.stage.lower() == 'pretrain':
         train_data = []
         synthetic_dialog = synthetic_dialog_read_data(args, 'train')
-        tokenized_synthetic_dialog = [tokenizer(data['OUTPUT']).input_ids[1:] for data in tqdm(synthetic_dialog)]
-
-        for data in tqdm(tokenized_synthetic_dialog):
-            if len(data) < args.cutoff:
-                train_data.append(tokenizer.decode(data))
-            else:
-                remain_len = len(data) - args.cutoff
-                for i in range(0, remain_len + 1, 10):
-                    train_data.append(tokenizer.decode(data[i:i + args.cutoff]))
-
+        # tokenized_synthetic_dialog = [tokenizer(data['OUTPUT']).input_ids[1:] for data in tqdm(synthetic_dialog)]
+        #
+        # for data in tqdm(tokenized_synthetic_dialog):
+        #     if len(data) < args.cutoff:
+        #         train_data.append(tokenizer.decode(data))
+        #     else:
+        #         remain_len = len(data) - args.cutoff
+        #         for i in range(0, remain_len + 1, 10):
+        #             train_data.append(tokenizer.decode(data[i:i + args.cutoff]))
+        # with open('data/redial/synthetic/synthetic_review_dialog_augment.json', 'w', encoding='utf-8') as fp:
+        #     fp.write(json.dumps(train_data, indent=4))
+        # print('donedone')
         # for data in meta_plot_review_data:
         #     meta = data['meta']
         #     plot = data['plot']
@@ -114,11 +116,11 @@ if __name__ == '__main__':
         # for data in tqdm(train_data):
         #     data['context_tokens'] = tokenizer.decode(tokenizer(data['context_tokens']).input_ids)[1:][:args.cutoff]
 
-        train_instructions = [i['context_tokens'] for i in train_data]
-        train_labels = [i['item'] for i in train_data]
+        train_instructions = synthetic_dialog # [i['context_tokens'] for i in train_data]
+        train_labels = ['' for i in synthetic_dialog]
         test_instructions = train_instructions[:100]
         test_labels = train_labels[:100]
-        train_new = [True for i in train_data]
+        train_new = [True for i in synthetic_dialog]
 
 
     elif args.stage.lower() == "crs":
