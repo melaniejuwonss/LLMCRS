@@ -80,7 +80,9 @@ if __name__ == '__main__':
     DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
     args.dataset_path = DATASET_PATH
 
-    # tokenizer = LlamaTokenizer.from_pretrained(args.base_model) # 이거 없어도 될 듯
+    if 'gpt' not in args.base_model.lower():
+        tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
+
     logger.info(f'[STAGE: {args.stage.lower()}]')
     if args.stage.lower() == "quiz" or args.quiz_merge is True:  # quiz -> onlyinstruction
         quiz_train_instructions, quiz_train_labels, quiz_train_new = quiz_read_data(args, 'train')
@@ -179,7 +181,6 @@ if __name__ == '__main__':
         train_instructions.extend(pretrain_train_instructions)
         train_labels.extend(pretrain_train_labels)
         train_new.extend(pretrain_train_new)
-
 
     if 'gpt' in args.base_model.lower():
         if args.mode == "train":
