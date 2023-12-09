@@ -226,7 +226,7 @@ def meta_read_pretrain_data(args):
     with open(os.path.join(data_path, f'objective.json'), 'r', encoding='utf-8') as f:
         dataset = json.load(f)
 
-    instructions = dataset
+    instructions = [data['context_tokens'] for data in dataset]
     labels = ['' for i in dataset]
     train_new = [True for i in dataset]
 
