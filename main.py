@@ -169,10 +169,6 @@ if __name__ == '__main__':
     test_instructions = eval(f"{args.stage}_test_instructions")
     test_labels = eval(f"{args.stage}_test_labels")
 
-    logger.info('[Finish loading datasets]')
-    logger.info(f'[Train Dataset Size: {len(train_instructions)}]')
-    logger.info(f'[Test Dataset Size: {len(test_instructions)}]')
-
     if args.review_merge is True:
         train_instructions.extend(review_train_instructions)
         train_labels.extend(review_train_labels)
@@ -193,6 +189,10 @@ if __name__ == '__main__':
         train_instructions.extend(pretrain_train_instructions)
         train_labels.extend(pretrain_train_labels)
         train_new.extend(pretrain_train_new)
+
+    logger.info('[Finish loading datasets]')
+    logger.info(f'[Train Dataset Size: {len(train_instructions)}]')
+    logger.info(f'[Test Dataset Size: {len(test_instructions)}]')
 
     if 'gpt' in args.base_model.lower():
         if args.mode == "train":
