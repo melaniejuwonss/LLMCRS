@@ -65,12 +65,14 @@ def cutoffInstruction(instructions, length, reverse=False):
 if __name__ == '__main__':
     args = parse_args()
     args = dir_init(args)
-    # Create result and score files
-    args = createLogFile(args)
+
+    args = createLogFile(args) # Create result and score files
+
     # Wandb initialize
     args.wandb_project = "LLMCRS"
     args.wandb_run_name = args.log_name
     wandb.init(project=args.wandb_project, name=args.wandb_run_name)
+
     # data path setting
     ROOT_PATH = dirname(realpath(__file__))
     DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
