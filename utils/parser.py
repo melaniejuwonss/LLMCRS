@@ -25,7 +25,7 @@ def parse_args():
                                  'meta-llama/Llama-2-7b-chat-hf', 'gpt-3.5-turbo', 'google/flan-t5-large', 't5-small',
                                  't5-large'])
     parser.add_argument('--dataset_path', type=str, default='data/redial')
-    parser.add_argument('--stage', type=str, default='crs')  # crs or quiz
+    parser.add_argument('--stage', type=str, default='quiz')  # crs or quiz
     parser.add_argument('--model_name', type=str, default='llama')
     parser.add_argument('--num_device', type=int, default=1)
     parser.add_argument("--write", action='store_true', help="Whether to write of results.")
@@ -39,11 +39,12 @@ def parse_args():
     parser.add_argument('--train_response', type=bool, default=False)
     parser.add_argument('--num_reviews', type=int, default=1)
     parser.add_argument('--train_on_inputs', type=bool, default=True)
-    parser.add_argument('--merge', type=bool, default=False)
+    parser.add_argument('--crs_merge', type=bool, default=False)
     parser.add_argument('--quiz_merge', type=bool, default=False)
     parser.add_argument('--origin_augment', type=bool, default=False)
     parser.add_argument('--all_merge', type=bool, default=False)
     parser.add_argument('--plot_merge', type=bool, default=False)
+    parser.add_argument('--review_merge', type=bool, default=False)
     parser.add_argument('--pretrain', type=bool, default=False)
     parser.add_argument('--cutoff', type=int, default=1024)
 
