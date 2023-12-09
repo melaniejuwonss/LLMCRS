@@ -18,7 +18,8 @@ from llama_finetune import llama_finetune
 from llama_test import LLaMaEvaluator
 from t5_finetune import t5_finetune
 from t5_test import T5Evaluator
-from utils.data import quiz_read_data, plot_read_data, meta_plot_review_read_data, review_read_data, crs_read_data, synthetic_dialog_read_pretrain_data, review_read_pretrain_data
+from utils.data import quiz_read_data, plot_read_data, meta_plot_review_read_data, review_read_data, crs_read_data, \
+    synthetic_dialog_read_pretrain_data, review_read_pretrain_data
 from utils.parser import parse_args, dir_init
 from os.path import dirname, realpath
 
@@ -86,18 +87,15 @@ if __name__ == '__main__':
         plot_test_instructions, plot_test_labels, _ = plot_read_data(args, 'test')
 
     if args.stage.lower() == 'pretrain':
-        train_data = []
-
+        args.prompt = 'pretrain'
         if args.TH:
-            pretrain_data = synthetic_dialog_read_pretrain_data(args, 'train')
+            pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = synthetic_dialog_read_pretrain_data(
+                args)
         else:
-            pretrain_data = review_read_pretrain_data(args, 'train')
+            pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_read_pretrain_data(args)
 
-        train_instructions = pretrain_data  # [i['context_tokens'] for i in train_data]
-        train_labels = ['' for i in pretrain_data]
-        test_instructions = train_instructions[:100]
-        test_labels = train_labels[:100]
-        train_new = [True for i in pretrain_data]
+        pretrain_test_instructions = pretrain_train_instructions[:100]
+        pretrain_test_labels = pretrain_train_labels[:100]
 
     if args.stage.lower() == "review" or args.review_merge is True:
         review_train_instructions, review_train_labels, review_train_new = review_read_data(args, 'train')
@@ -180,8 +178,8 @@ if __name__ == '__main__':
                            prompt_template_name=args.prompt)
         if 'test' in args.mode:
             # 특정 weight 지정 없이, 모든 epoch 에 해당하는 weights test
-            if args.lora_weights[args.lora_weights.rfind('/') + 1:] != "lora-alpaca" and args.lora_weights[
-                -1].isdigit() is False:
+            if args.lora_weights[args.lora_weights.rfind('/') + 1:] != "lora-alpaca" \
+                    and args.lora_weights[-1].isdigit() is False:
                 origin_lora_weights = args.lora_weights
                 for e in range(args.epoch):
                     args.lora_weights = origin_lora_weights + '_E' + str(int(e + 1))
@@ -191,8 +189,8 @@ if __name__ == '__main__':
                     args.lora_weights = os.path.join("./lora-alpaca", args.log_name + '_E' + str(int(e + 1)))
                     evaluator.test(epoch=e + 1)
             else:
-                if args.lora_weights[args.lora_weights.rfind(
-                        '/') + 1:] == "lora-alpaca":  # default lora_weights (i.e., not-trained LLaMa)
+                # default lora_weights (i.e., not-trained LLaMa)
+                if args.lora_weights[args.lora_weights.rfind('/') + 1:] == "lora-alpaca":
                     evaluator.test()
                 else:
                     evaluator.test()

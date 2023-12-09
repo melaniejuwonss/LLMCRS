@@ -11,10 +11,6 @@ def quiz_read_data(args, mode):
         question.append(data['context_tokens'])
         answer.append(data['item'])
 
-    # tokenized_input = self.tokenizer(question, return_tensors="pt", padding=True, return_token_type_ids=False).to(
-    #     self.args.device_id)
-    # tokenized_output = self.tokenizer(answer, return_tensors="pt", padding=True, return_token_type_ids=False).to(
-    #     self.args.device_id)
     for t_input, t_output in zip(question, answer):
         data_samples.append((t_input, t_output))
     if mode == "test":
@@ -183,23 +179,31 @@ def crs_read_data(datas, mode, args):
     for idx, data in enumerate(datas):
         instructions.append(data['context_tokens'])
         labels.append(data[target])
-        new_idx.append(idx in new_idx)
+        train_new.append(idx in new_idx)
 
-    return instructions, labels, new_idx
+    return instructions, labels, train_new
 
 
-def review_read_pretrain_data(args, mode):
+def review_read_pretrain_data(args):
     data_path = os.path.join(args.home, 'data', 'redial', 'review')
     if not os.path.exists(data_path): os.mkdir(data_path)
     with open(os.path.join(data_path, f'onlyReview_5_augment.json'), 'r', encoding='utf-8') as f:
         dataset = json.load(f)
+    instructions = dataset
+    labels = ['' for i in dataset]
+    train_new = [True for i in dataset]
 
-    return dataset  # [data['context_tokens'] for data in dataset]
+    return instructions, labels, train_new  # [data['context_tokens'] for data in dataset]
 
 
-def synthetic_dialog_read_pretrain_data(args, mode):
+def synthetic_dialog_read_pretrain_data(args):
     data_path = os.path.join(args.home, 'data', 'redial', 'synthetic')
     if not os.path.exists(data_path): os.mkdir(data_path)
     with open(os.path.join(data_path, f'synthetic_dialog_review_augment.json'), 'r', encoding='utf-8') as f:
         dataset = json.load(f)
-    return dataset
+
+    instructions = dataset
+    labels = ['' for i in dataset]
+    train_new = [True for i in dataset]
+
+    return instructions, labels, train_new
