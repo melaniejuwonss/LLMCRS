@@ -136,6 +136,8 @@ if __name__ == '__main__':
         crs_valid_instructions = crs_valid_instructions_addprompt
         crs_test_instructions = crs_test_instructions_addprompt
 
+
+    # Stage 에 따른 train, test 데이터셋 설정
     train_instructions = eval(f"{args.stage}_train_instructions")
     train_labels = eval(f"{args.stage}_train_labels")
     train_new = eval(f"{args.stage}_train_new")
