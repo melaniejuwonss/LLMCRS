@@ -84,6 +84,7 @@ for idx, dialog in enumerate(synthetic_dialogs):
             explain = explain.replace(f"Definitely!", "")
             new_explain.append(explain)
     filtered_explain.append("".join(new_explain))
-save_dict = [{'context_tokens': f"The following passages consist of reviews for the film {movie} provided by users.\n{explain}", 'item': ''} for explain, movie in zip(filtered_explain, movies)]
-with open(f'../data/redial/review/review_passages.json', 'w', encoding='utf-8') as f:
+save_dict = [{'context_tokens': f"{explain}", 'item': movie} for
+             explain, movie in zip(filtered_explain, movies)]
+with open(f'../data/redial/review/review_passages_v2.json', 'w', encoding='utf-8') as f:
     f.write(json.dumps(save_dict, indent=2))
