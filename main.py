@@ -19,7 +19,7 @@ from llama_test import LLaMaEvaluator
 from t5_finetune import t5_finetune
 from t5_test import T5Evaluator
 from utils.data import quiz_read_data, plot_read_data, meta_plot_review_read_data, review_read_data, crs_read_data, \
-    synthetic_dialog_read_pretrain_data, review_read_pretrain_data
+    synthetic_dialog_read_pretrain_data, review_read_pretrain_data, review_passage_read_pretrain_data
 from utils.parser import parse_args, dir_init
 from os.path import dirname, realpath
 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     args = parse_args()
     args = dir_init(args)
 
-    args = createLogFile(args) # Create result and score files
+    args = createLogFile(args)  # Create result and score files
 
     # Wandb initialize
     args.wandb_project = "LLMCRS"
@@ -93,6 +93,10 @@ if __name__ == '__main__':
         if args.TH:
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = synthetic_dialog_read_pretrain_data(
                 args)
+        elif args.JW:
+            pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_passage_read_pretrain_data(
+                args)
+            pretrain_train_instructions = cutoffInstruction(pretrain_train_instructions, args.cutoff) # max: 412
         else:
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_read_pretrain_data(args)
 
@@ -138,7 +142,6 @@ if __name__ == '__main__':
         crs_valid_instructions = crs_valid_instructions_addprompt
         crs_test_instructions = crs_test_instructions_addprompt
 
-
     # Stage 에 따른 train, test 데이터셋 설정
     train_instructions = eval(f"{args.stage}_train_instructions")
     train_labels = eval(f"{args.stage}_train_labels")
@@ -146,7 +149,6 @@ if __name__ == '__main__':
 
     test_instructions = eval(f"{args.stage}_test_instructions")
     test_labels = eval(f"{args.stage}_test_labels")
-    test_new = eval(f"{args.stage}_test_new")
 
     if args.review_merge is True:
         train_instructions.extend(review_train_instructions)

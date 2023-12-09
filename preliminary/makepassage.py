@@ -53,4 +53,37 @@ def plot(content_data, plot_num):
 
 
 # objective(content_data)
-plot(content_data, 1)
+# plot(content_data, 1)
+
+
+synthetic_dialogs = json.load((open('../data/redial/synthetic/synthetic_dialog_review.json', 'r', encoding='utf-8')))
+cnt = 0
+filtered_explain, movies = [], []
+for idx, dialog in enumerate(synthetic_dialogs):
+    if idx == 2099:
+        print()
+    input = dialog['INPUT']
+    first_sentence = input[:input.find('\n')]
+    movie = first_sentence.replace("I will give you a review of movie ", "")[:-1]
+    movies.append(movie)
+    output = dialog['OUTPUT']
+    first_system = output[output.find('System:'):]
+    all_explain = first_system[first_system.lower().find("?") + 1:].strip()
+    all_explains = all_explain.split('\n')
+    new_explain = []
+    for explain in all_explains:
+        if "User:" in explain:
+            continue
+        else:
+            explain = explain.replace("System: ", "")
+
+            # explain = explain.replace(f"Have you seen {movie}?", "")
+            # explain = explain.replace(f'Have you seen "{movie}"?', "")
+            # explain = explain.replace(f"How about {movie}?", "")
+            explain = explain.replace(f"Absolutely!", "")
+            explain = explain.replace(f"Definitely!", "")
+            new_explain.append(explain)
+    filtered_explain.append("".join(new_explain))
+save_dict = [{'context_tokens': f"The following passages consist of reviews for the film {movie} provided by users.\n{explain}", 'item': ''} for explain, movie in zip(filtered_explain, movies)]
+with open(f'../data/redial/review/review_passages.json', 'w', encoding='utf-8') as f:
+    f.write(json.dumps(save_dict, indent=2))
