@@ -18,7 +18,7 @@ from llama_finetune import llama_finetune
 from llama_test import LLaMaEvaluator
 from t5_finetune import t5_finetune
 from t5_test import T5Evaluator
-from utils.data import quiz_read_data, plot_read_data, meta_plot_review_read_data, review_read_data, crs_read_data
+from utils.data import quiz_read_data, plot_read_data, meta_plot_review_read_data, review_read_data, crs_read_data, synthetic_dialog_read_pretrain_data, review_read_pretrain_data
 from utils.parser import parse_args, dir_init
 from os.path import dirname, realpath
 
@@ -86,11 +86,18 @@ if __name__ == '__main__':
         plot_test_instructions, plot_test_labels, _ = plot_read_data(args, 'test')
 
     if args.stage.lower() == 'pretrain':
-        plot_train_instructions, plot_train_labels, plot_train_new = meta_plot_review_read_data(args, 'train')
-        plot_train_instructions = cutoffInstruction(plot_train_instructions, args.cutoff)
+        train_data = []
 
-        plot_test_instructions = plot_train_instructions[:100]
-        plot_test_labels = plot_train_labels[:100]
+        if args.TH:
+            pretrain_data = synthetic_dialog_read_pretrain_data(args, 'train')
+        else:
+            pretrain_data = review_read_pretrain_data(args, 'train')
+
+        train_instructions = pretrain_data  # [i['context_tokens'] for i in train_data]
+        train_labels = ['' for i in pretrain_data]
+        test_instructions = train_instructions[:100]
+        test_labels = train_labels[:100]
+        train_new = [True for i in pretrain_data]
 
     if args.stage.lower() == "review" or args.review_merge is True:
         review_train_instructions, review_train_labels, review_train_new = review_read_data(args, 'train')
