@@ -41,7 +41,7 @@ def meta_plot_review_read_data(args, mode):
 def review_read_data(args, mode):
     data_path = os.path.join(args.home, 'data', 'redial', 'review')
     if not os.path.exists(data_path): os.mkdir(data_path)
-    with open(os.path.join(data_path, f'onlyReview_5.json'), 'r', encoding='utf-8') as f:
+    with open(os.path.join(data_path, f'onlyReview_5_augment.json'), 'r', encoding='utf-8') as f:
         dataset = json.load(f)
 
     return [data['context_tokens'] for data in dataset]
