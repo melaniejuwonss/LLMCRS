@@ -207,3 +207,16 @@ def synthetic_dialog_read_pretrain_data(args):
     train_new = [True for i in dataset]
 
     return instructions, labels, train_new
+
+
+def meta_read_pretrain_data(args):
+    data_path = os.path.join(args.home, 'data', 'redial', 'meta')
+    if not os.path.exists(data_path): os.mkdir(data_path)
+    with open(os.path.join(data_path, f'meta.json'), 'r', encoding='utf-8') as f:
+        dataset = json.load(f)
+
+    instructions = dataset
+    labels = ['' for i in dataset]
+    train_new = [True for i in dataset]
+
+    return instructions, labels, train_new

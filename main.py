@@ -19,7 +19,7 @@ from llama_test import LLaMaEvaluator
 from t5_finetune import t5_finetune
 from t5_test import T5Evaluator
 from utils.data import quiz_read_data, plot_read_data, meta_plot_review_read_data, review_read_data, crs_read_data, \
-    synthetic_dialog_read_pretrain_data, review_read_pretrain_data
+    synthetic_dialog_read_pretrain_data, review_read_pretrain_data, meta_read_pretrain_data
 from utils.parser import parse_args, dir_init
 from os.path import dirname, realpath
 
@@ -94,7 +94,8 @@ if __name__ == '__main__':
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = synthetic_dialog_read_pretrain_data(
                 args)
         else:
-            pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_read_pretrain_data(args)
+            # pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_read_pretrain_data(args)
+            pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = meta_read_pretrain_data(args)
 
         pretrain_test_instructions = pretrain_train_instructions[:100]
         pretrain_test_labels = pretrain_train_labels[:100]
