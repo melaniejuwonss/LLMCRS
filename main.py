@@ -53,7 +53,7 @@ def createLogFile(args):
     return args
 
 
-def cutoffInstruction(instructions, length, reverse=False):
+def cutoffInstruction(instructions, length, tokenizer, reverse=False):
     new_instructions = []
     for data in tqdm(instructions):
         if reverse:
@@ -99,7 +99,8 @@ if __name__ == '__main__':
             args.prompt = 'onlyinstruction'
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_passage_read_pretrain_data(
                 args)
-            pretrain_train_instructions = cutoffInstruction(pretrain_train_instructions, args.cutoff)  # max: 412
+            pretrain_train_instructions = cutoffInstruction(pretrain_train_instructions, args.cutoff,
+                                                            tokenizer)  # max: 412
             new_instructions = []
             for instruction in pretrain_train_instructions:
                 new_instructions.append(f"{instruction}\nGuess the movie that is described the reviews above")
@@ -114,9 +115,9 @@ if __name__ == '__main__':
 
     if args.stage.lower() == "review" or args.review_merge is True:
         review_train_instructions, review_train_labels, review_train_new = review_read_data(args, 'train')
-        review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff)
+        review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff, tokenizer)
         review_test_instructions, review_test_labels, _ = review_read_data(args, 'test')
-        review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff)
+        review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff, tokenizer)
 
     if args.stage.lower() == "crs" or args.crs_merge is True:
         crs_dataset = CRSDatasetRec(args)
@@ -128,9 +129,9 @@ if __name__ == '__main__':
         crs_valid_instructions, crs_valid_labels, _ = crs_read_data(valid_data, "valid", args)
         crs_test_instructions, crs_test_labels, _ = crs_read_data(test_data, "test", args)
 
-        crs_train_instructions = cutoffInstruction(crs_train_instructions, args.cutoff, True)
-        crs_valid_instructions = cutoffInstruction(crs_valid_instructions, args.cutoff, True)
-        crs_test_instructions = cutoffInstruction(crs_test_instructions, args.cutoff, True)
+        crs_train_instructions = cutoffInstruction(crs_train_instructions, args.cutoff, tokenizer, True)
+        crs_valid_instructions = cutoffInstruction(crs_valid_instructions, args.cutoff, tokenizer, True)
+        crs_test_instructions = cutoffInstruction(crs_test_instructions, args.cutoff, tokenizer, True)
 
         crs_train_instructions_addprompt, crs_test_instructions_addprompt, crs_valid_instructions_addprompt = [], [], []
         for data in tqdm(crs_train_instructions):
