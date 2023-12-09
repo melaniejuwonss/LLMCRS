@@ -78,8 +78,6 @@ if __name__ == '__main__':
     DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
     args.dataset_path = DATASET_PATH
 
-    tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
-
     if args.stage.lower() == "quiz" or args.quiz_merge is True:  # quiz -> onlyinstruction
         quiz_train_instructions, quiz_train_labels, quiz_train_new = quiz_read_data(args, 'train')
         quiz_test_instructions, quiz_test_labels, _ = quiz_read_data(args, 'test')
@@ -103,9 +101,10 @@ if __name__ == '__main__':
 
     if args.stage.lower() == "review" or args.review_merge is True:
         review_train_instructions, review_train_labels, review_train_new = review_read_data(args, 'train')
-        review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff)
         review_test_instructions, review_test_labels, _ = review_read_data(args, 'test')
-        review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff)
+
+        # review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff) # ChatGPT를 위해서 꺼놓음. 이거 나중에 따로 처리필요할 듯
+        # review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff)
 
         logger.info('[Finish loading onlyReview datasets]')
         logger.info(f'[onlyReview Train Dataset Size: {len(review_train_instructions)}]')

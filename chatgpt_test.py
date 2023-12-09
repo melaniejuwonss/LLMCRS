@@ -129,6 +129,14 @@ I will give you a plot of a movie.
 Guess the movie title that the plot is describing without any explanation.
 """
 
+review_summary_template = """I will give you a review of the movie %s.
+
+%s
+
+Please describe the features of the movie %s within 256 tokens.
+
+"""
+
 
 # - Therefore, Blair Witch (2016) should be recommended.
 # - Therefore, Major League (1989) should be recommended.
@@ -147,7 +155,7 @@ def execute(args,
                 model=MODEL,
                 messages=[
                     {"role": "user",
-                     "content": plot_template % instruction}
+                     "content": review_summary_template % (label, instruction.split('\n')[3], label)}
                 ],
                 temperature=0,
             )
