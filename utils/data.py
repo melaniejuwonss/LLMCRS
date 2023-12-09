@@ -218,3 +218,16 @@ def review_passage_read_pretrain_data(args):
     train_new = [True for i in dataset]
 
     return instructions, labels, train_new  # [data['context_tokens'] for data in dataset]
+
+
+def meta_read_pretrain_data(args):
+    data_path = os.path.join(args.home, 'data', 'redial', 'passage')
+    if not os.path.exists(data_path): os.mkdir(data_path)
+    with open(os.path.join(data_path, f'objective.json'), 'r', encoding='utf-8') as f:
+        dataset = json.load(f)
+
+    instructions = dataset
+    labels = ['' for i in dataset]
+    train_new = [True for i in dataset]
+
+    return instructions, labels, train_new
