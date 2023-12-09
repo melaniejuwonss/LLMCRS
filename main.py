@@ -81,7 +81,7 @@ if __name__ == '__main__':
     args.dataset_path = DATASET_PATH
 
     tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
-
+    logger.info(f'[STAGE: {args.stage.lower()}]')
     if args.stage.lower() == "quiz" or args.quiz_merge is True:  # quiz -> onlyinstruction
         quiz_train_instructions, quiz_train_labels, quiz_train_new = quiz_read_data(args, 'train')
         quiz_test_instructions, quiz_test_labels, _ = quiz_read_data(args, 'test')
@@ -112,10 +112,6 @@ if __name__ == '__main__':
         review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff)
         review_test_instructions, review_test_labels, _ = review_read_data(args, 'test')
         review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff)
-
-        logger.info('[Finish loading onlyReview datasets]')
-        logger.info(f'[onlyReview Train Dataset Size: {len(review_train_instructions)}]')
-        logger.info(f'[onlyReview Test Dataset Size: {len(review_test_instructions)}]')
 
     if args.stage.lower() == "crs" or args.crs_merge is True:
         crs_dataset = CRSDatasetRec(args)
@@ -153,7 +149,10 @@ if __name__ == '__main__':
 
     test_instructions = eval(f"{args.stage}_test_instructions")
     test_labels = eval(f"{args.stage}_test_labels")
-    # test_new = eval(f"{args.stage}_test_new")
+
+    logger.info('[Finish loading datasets]')
+    logger.info(f'[Train Dataset Size: {len(train_instructions)}]')
+    logger.info(f'[Test Dataset Size: {len(test_instructions)}]')
 
     if args.review_merge is True:
         train_instructions.extend(review_train_instructions)
