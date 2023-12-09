@@ -92,7 +92,7 @@ if __name__ == '__main__':
         plot_train_instructions, plot_train_labels, plot_train_new = plot_read_data(args, 'train')
         plot_test_instructions, plot_test_labels, _ = plot_read_data(args, 'test')
 
-    if args.stage.lower() == 'pretrain':
+    if args.stage.lower() == 'pretrain' or args.pretrain_merge is True:
         args.prompt = 'pretrain'
         if args.TH:
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = synthetic_dialog_read_pretrain_data(
