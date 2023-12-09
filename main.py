@@ -80,7 +80,7 @@ if __name__ == '__main__':
     DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
     args.dataset_path = DATASET_PATH
 
-    tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
+    # tokenizer = LlamaTokenizer.from_pretrained(args.base_model) # 이거 없어도 될 듯
     logger.info(f'[STAGE: {args.stage.lower()}]')
     if args.stage.lower() == "quiz" or args.quiz_merge is True:  # quiz -> onlyinstruction
         quiz_train_instructions, quiz_train_labels, quiz_train_new = quiz_read_data(args, 'train')
@@ -114,9 +114,9 @@ if __name__ == '__main__':
 
     if args.stage.lower() == "review" or args.review_merge is True:
         review_train_instructions, review_train_labels, review_train_new = review_read_data(args, 'train')
-        review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff)
         review_test_instructions, review_test_labels, _ = review_read_data(args, 'test')
-        review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff)
+        # review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff)
+        # review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff)
 
     if args.stage.lower() == "crs" or args.crs_merge is True:
         crs_dataset = CRSDatasetRec(args)
