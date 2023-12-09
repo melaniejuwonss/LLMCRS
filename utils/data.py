@@ -210,9 +210,9 @@ def synthetic_dialog_read_pretrain_data(args):
 
 
 def meta_read_pretrain_data(args):
-    data_path = os.path.join(args.home, 'data', 'redial', 'meta')
+    data_path = os.path.join(args.home, 'data', 'redial', 'passage')
     if not os.path.exists(data_path): os.mkdir(data_path)
-    with open(os.path.join(data_path, f'meta.json'), 'r', encoding='utf-8') as f:
+    with open(os.path.join(data_path, f'objective.json'), 'r', encoding='utf-8') as f:
         dataset = json.load(f)
 
     instructions = dataset
