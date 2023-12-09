@@ -38,6 +38,15 @@ def meta_plot_review_read_data(args, mode):
     return dataset
 
 
+def review_read_data(args, mode):
+    data_path = os.path.join(args.home, 'data', 'redial', 'review')
+    if not os.path.exists(data_path): os.mkdir(data_path)
+    with open(os.path.join(data_path, f'onlyReview_5.json'), 'r', encoding='utf-8') as f:
+        dataset = json.load(f)
+
+    return [data['context_tokens'] for data in dataset]
+
+
 def synthetic_dialog_read_data(args, mode):
     data_path = os.path.join(args.home, 'data', 'redial', 'synthetic')
     if not os.path.exists(data_path): os.mkdir(data_path)
