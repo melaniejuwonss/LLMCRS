@@ -70,7 +70,7 @@ if __name__ == '__main__':
     if args.stage.lower() == 'pretrain':
         train_data = []
         # synthetic_dialog = synthetic_dialog_read_data(args, 'train')
-        if args.TH == 'synthetic':
+        if args.TH:
             pretrain_data = synthetic_dialog_read_data(args, 'train')
         else:
             pretrain_data = review_read_data(args, 'train')
