@@ -99,7 +99,7 @@ if __name__ == '__main__':
 
         pretrain_test_instructions = pretrain_train_instructions[:100]
         pretrain_test_labels = pretrain_train_labels[:100]
-        pretrain_test_new = pretrain_train_new[:100]
+        # pretrain_test_new = pretrain_train_new[:100]
 
     if args.stage.lower() == "review" or args.review_merge is True:
         review_train_instructions, review_train_labels, review_train_new = review_read_data(args, 'train')
