@@ -19,7 +19,8 @@ from llama_test import LLaMaEvaluator
 from t5_finetune import t5_finetune
 from t5_test import T5Evaluator
 from utils.data import quiz_read_data, plot_read_data, meta_plot_review_read_data, review_read_data, crs_read_data, \
-    synthetic_dialog_read_pretrain_data, review_read_pretrain_data, review_passage_read_pretrain_data,    synthetic_dialog_read_pretrain_data, meta_read_pretrain_data
+    synthetic_dialog_read_pretrain_data, review_read_pretrain_data, review_passage_read_pretrain_data, \
+    synthetic_dialog_read_pretrain_data, meta_read_pretrain_data
 from utils.parser import parse_args, dir_init
 from os.path import dirname, realpath
 
@@ -59,6 +60,7 @@ def cutoffInstruction(instructions, length, reverse=False):
             new_instructions.append(tokenizer.decode(tokenizer(data).input_ids[1:][-length:]))
         else:
             new_instructions.append(tokenizer.decode(tokenizer(data).input_ids[1:][:length]))
+    logger.info('[Finish Cutting-off the instructions]')
     return new_instructions
 
 
@@ -96,7 +98,7 @@ if __name__ == '__main__':
         elif args.JW:
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_passage_read_pretrain_data(
                 args)
-            pretrain_train_instructions = cutoffInstruction(pretrain_train_instructions, args.cutoff) # max: 412
+            pretrain_train_instructions = cutoffInstruction(pretrain_train_instructions, args.cutoff)  # max: 412
         else:
             # pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_read_pretrain_data(args)
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = meta_read_pretrain_data(args)
