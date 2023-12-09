@@ -19,7 +19,8 @@ from llama_test import LLaMaEvaluator
 from t5_finetune import t5_finetune
 from t5_test import T5Evaluator
 from utils.data import quiz_read_data, plot_read_data, meta_plot_review_read_data, review_read_data, crs_read_data, \
-    synthetic_dialog_read_pretrain_data, review_read_pretrain_data, meta_read_pretrain_data
+    synthetic_dialog_read_pretrain_data, review_read_pretrain_data, review_passage_read_pretrain_data, \
+    synthetic_dialog_read_pretrain_data, meta_read_pretrain_data
 from utils.parser import parse_args, dir_init
 from os.path import dirname, realpath
 
@@ -59,6 +60,7 @@ def cutoffInstruction(instructions, length, reverse=False):
             new_instructions.append(tokenizer.decode(tokenizer(data).input_ids[1:][-length:]))
         else:
             new_instructions.append(tokenizer.decode(tokenizer(data).input_ids[1:][:length]))
+    logger.info('[Finish Cutting-off the instructions]')
     return new_instructions
 
 
@@ -66,7 +68,7 @@ if __name__ == '__main__':
     args = parse_args()
     args = dir_init(args)
 
-    args = createLogFile(args) # Create result and score files
+    args = createLogFile(args)  # Create result and score files
 
     # Wandb initialize
     args.wandb_project = "LLMCRS"
@@ -78,6 +80,8 @@ if __name__ == '__main__':
     DATASET_PATH = os.path.join(ROOT_PATH, args.dataset_path)
     args.dataset_path = DATASET_PATH
 
+    tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
+    logger.info(f'[STAGE: {args.stage.lower()}]')
     if args.stage.lower() == "quiz" or args.quiz_merge is True:  # quiz -> onlyinstruction
         quiz_train_instructions, quiz_train_labels, quiz_train_new = quiz_read_data(args, 'train')
         quiz_test_instructions, quiz_test_labels, _ = quiz_read_data(args, 'test')
@@ -91,6 +95,15 @@ if __name__ == '__main__':
         if args.TH:
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = synthetic_dialog_read_pretrain_data(
                 args)
+        elif args.JW:
+            args.prompt = 'onlyinstruction'
+            pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_passage_read_pretrain_data(
+                args)
+            pretrain_train_instructions = cutoffInstruction(pretrain_train_instructions, args.cutoff)  # max: 412
+            new_instructions = []
+            for instruction in pretrain_train_instructions:
+                new_instructions.append(f"{instruction}\nGuess the movie that is described the reviews above")
+            pretrain_train_instructions = new_instructions
         else:
             # pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_read_pretrain_data(args)
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = meta_read_pretrain_data(args)
@@ -101,14 +114,9 @@ if __name__ == '__main__':
 
     if args.stage.lower() == "review" or args.review_merge is True:
         review_train_instructions, review_train_labels, review_train_new = review_read_data(args, 'train')
+        review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff)
         review_test_instructions, review_test_labels, _ = review_read_data(args, 'test')
-
-        # review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff) # ChatGPT를 위해서 꺼놓음. 이거 나중에 따로 처리필요할 듯
-        # review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff)
-
-        logger.info('[Finish loading onlyReview datasets]')
-        logger.info(f'[onlyReview Train Dataset Size: {len(review_train_instructions)}]')
-        logger.info(f'[onlyReview Test Dataset Size: {len(review_test_instructions)}]')
+        review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff)
 
     if args.stage.lower() == "crs" or args.crs_merge is True:
         crs_dataset = CRSDatasetRec(args)
@@ -139,7 +147,6 @@ if __name__ == '__main__':
         crs_valid_instructions = crs_valid_instructions_addprompt
         crs_test_instructions = crs_test_instructions_addprompt
 
-
     # Stage 에 따른 train, test 데이터셋 설정
     train_instructions = eval(f"{args.stage}_train_instructions")
     train_labels = eval(f"{args.stage}_train_labels")
@@ -147,7 +154,10 @@ if __name__ == '__main__':
 
     test_instructions = eval(f"{args.stage}_test_instructions")
     test_labels = eval(f"{args.stage}_test_labels")
-    # test_new = eval(f"{args.stage}_test_new")
+
+    logger.info('[Finish loading datasets]')
+    logger.info(f'[Train Dataset Size: {len(train_instructions)}]')
+    logger.info(f'[Test Dataset Size: {len(test_instructions)}]')
 
     if args.review_merge is True:
         train_instructions.extend(review_train_instructions)

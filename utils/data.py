@@ -209,6 +209,17 @@ def synthetic_dialog_read_pretrain_data(args):
     return instructions, labels, train_new
 
 
+def review_passage_read_pretrain_data(args):
+    data_path = os.path.join(args.home, 'data', 'redial', 'review')
+    with open(os.path.join(data_path, f'review_passages_v2.json'), 'r', encoding='utf-8') as f:
+        dataset = json.load(f)
+    instructions = [data['context_tokens'] for data in dataset]
+    labels = [data['item'] for data in dataset]
+    train_new = [True for i in dataset]
+
+    return instructions, labels, train_new  # [data['context_tokens'] for data in dataset]
+
+
 def meta_read_pretrain_data(args):
     data_path = os.path.join(args.home, 'data', 'redial', 'passage')
     if not os.path.exists(data_path): os.mkdir(data_path)
