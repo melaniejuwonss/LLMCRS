@@ -175,6 +175,11 @@ if __name__ == '__main__':
         train_instructions.extend(crs_train_instructions)
         train_labels.extend(crs_train_labels)
         train_new.extend(crs_train_new)
+    if args.pretrain_merge is True:
+        train_instructions.extend(pretrain_train_instructions)
+        train_labels.extend(pretrain_train_labels)
+        train_new.extend(pretrain_train_new)
+
 
     if 'gpt' in args.base_model.lower():
         if args.mode == "train":
