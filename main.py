@@ -148,7 +148,7 @@ if __name__ == '__main__':
 
     test_instructions = eval(f"{args.stage}_test_instructions")
     test_labels = eval(f"{args.stage}_test_labels")
-    test_new = eval(f"{args.stage}_test_new")
+    # test_new = eval(f"{args.stage}_test_new")
 
     if args.review_merge is True:
         train_instructions.extend(review_train_instructions)
