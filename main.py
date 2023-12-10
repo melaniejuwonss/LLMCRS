@@ -121,9 +121,10 @@ if __name__ == '__main__':
 
     if args.stage.lower() == "review" or args.review_merge is True:
         review_train_instructions, review_train_labels, review_train_new = review_read_data(args, 'train')
-        review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff)
         review_test_instructions, review_test_labels, _ = review_read_data(args, 'test')
-        review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff)
+        if 'gpt' not in args.base_model.lower():
+            review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff)
+            review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff)
 
     if args.stage.lower() == "crs" or args.crs_merge is True:
         crs_dataset = CRSDatasetRec(args)
