@@ -20,7 +20,7 @@ from t5_finetune import t5_finetune
 from t5_test import T5Evaluator
 from utils.data import quiz_read_data, plot_read_data, meta_plot_review_read_data, review_read_data, crs_read_data, \
     synthetic_dialog_read_pretrain_data, review_read_pretrain_data, review_passage_read_pretrain_data, \
-    synthetic_dialog_read_pretrain_data, meta_read_pretrain_data
+    synthetic_dialog_read_pretrain_data, meta_read_pretrain_data, refined_review_read_pretrain_data
 from utils.parser import parse_args, dir_init
 from os.path import dirname, realpath
 
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     if args.stage.lower() == 'pretrain' or args.pretrain_merge is True:
         args.prompt = 'pretrain'
         if args.TH:
-            pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = synthetic_dialog_read_pretrain_data(
+            pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = refined_review_read_pretrain_data(
                 args)
         elif args.JW:
             args.prompt = 'pretrain'

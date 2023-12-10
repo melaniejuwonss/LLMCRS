@@ -196,6 +196,18 @@ def review_read_pretrain_data(args):
     return instructions, labels, train_new  # [data['context_tokens'] for data in dataset]
 
 
+def refined_review_read_pretrain_data(args):
+    data_path = os.path.join(args.home, 'data', 'redial', 'review')
+    if not os.path.exists(data_path): os.mkdir(data_path)
+    with open(os.path.join(data_path, f'refinedReview_1.json'), 'r', encoding='utf-8') as f:
+        dataset = json.load(f)
+    instructions = [data['context_tokens'] for data in dataset]
+    labels = ['' for i in dataset]
+    train_new = [True for i in dataset]
+
+    return instructions, labels, train_new  # [data['context_tokens'] for data in dataset]
+
+
 def synthetic_dialog_read_pretrain_data(args):
     data_path = os.path.join(args.home, 'data', 'redial', 'synthetic')
     if not os.path.exists(data_path): os.mkdir(data_path)
