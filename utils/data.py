@@ -45,7 +45,7 @@ def plot_read_data(args, mode):
     return instructions, labels, train_new
 
 
-def meta_plot_review_read_data(args, mode):
+def meta_plot_review_read_data(args, mode='train'):
     instructions, labels, train_new = [], [], []
     data_path = os.path.join(args.home, 'data', 'redial', 'passage')
     if not os.path.exists(data_path): os.mkdir(data_path)
