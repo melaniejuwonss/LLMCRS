@@ -109,6 +109,7 @@ if __name__ == '__main__':
         if args.TH:
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = meta_plot_review_read_data(
                 args)
+            pretrain_train_instructions = cutoffInstruction(pretrain_train_instructions, args.cutoff)
             # pretrain_train_instructions2, pretrain_train_labels2, pretrain_train_new2 = meta_read_pretrain_data(args)
             # pretrain_train_instructions.extend(pretrain_train_instructions2)
             # pretrain_train_labels.extend(pretrain_train_labels)
