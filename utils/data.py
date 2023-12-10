@@ -59,11 +59,11 @@ def meta_plot_review_read_data(args, mode='train'):
         # if review == '':
         #     continue
         if review != '' and plot != '':
-            context_tokens = f"""I will give you information about a moive {title}.\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a plot of the movie {title}:\n{plot}\n\nI will give you a review of the movie {title}:\n{review}"""
+            context_tokens = f"""I will give you information about a moive {title}.\nI will give you meta information of the movie {title}:\n{meta}\nI will give you a plot of the movie {title}:\n{plot}\nI will give you a review of the movie {title} provided by a user:\n{review}"""
         elif review != '':
-            context_tokens = f"""I will give you information about a moive {title}.\nI will give you meta information of the movie {title}:\n{meta}\n\nI will give you a review of the movie {title}:\n{review}"""
+            context_tokens = f"""I will give you information about a moive {title}.\nI will give you meta information of the movie {title}:\n{meta}\nI will give you a review of the movie {title} provided by a user:\n{review}"""
         elif plot != '':
-            context_tokens = f"""I will give you information about a moive {title}.\nMeta information of the movie {title}:\n{meta}\nPlot of the movie {title}:\n{plot}"""
+            context_tokens = f"""I will give you information about a moive {title}.\nI will give you meta information of the movie {title}:\n{meta}\nI will give you a plot of the movie {title}:\n{plot}"""
 
         if args.TH:
             # review = review.replace(title, '[title]')
