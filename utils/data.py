@@ -66,17 +66,17 @@ def meta_plot_review_read_data(args, mode='train'):
             context_tokens = f"""I will give you information about a moive {title}.\nMeta information of the movie {title}:\n{meta}\nPlot of the movie {title}:\n{plot}"""
 
         if args.TH:
-            review = review.replace(title, '[title]')
-            name = title.split('(')[0].strip()
-            year = title.split('(')[-1][:-1].strip()
-            if not year.isdigit():
-                year = ''
-            review = review.replace(f"\"{name}\" ({year})", '[title]')
-            review = review.replace(f"\"{name.lower()}\" ({year})", '[title]')
-            review = review.replace(name, '[title]')
-            review = review.replace(name.lower(), '[title]')
-            review = review.replace(f"({year})", '')
-            instructions.append(f"""A review of the movie [title]:\n{review}""")
+            # review = review.replace(title, '[title]')
+            # name = title.split('(')[0].strip()
+            # year = title.split('(')[-1][:-1].strip()
+            # if not year.isdigit():
+            #     year = ''
+            # review = review.replace(f"\"{name}\" ({year})", '[title]')
+            # review = review.replace(f"\"{name.lower()}\" ({year})", '[title]')
+            # review = review.replace(name, '[title]')
+            # review = review.replace(name.lower(), '[title]')
+            # review = review.replace(f"({year})", '')
+            instructions.append(context_tokens)
             labels.append('')
             train_new.append(True)
         else:
