@@ -97,10 +97,10 @@ if __name__ == '__main__':
         if args.TH:
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = refined_review_read_pretrain_data(
                 args)
-            pretrain_train_instructions2, pretrain_train_labels2, pretrain_train_new2 = meta_read_pretrain_data(args)
-            pretrain_train_instructions.extend(pretrain_train_instructions2)
-            pretrain_train_labels.extend(pretrain_train_labels)
-            pretrain_train_new.extend(pretrain_train_new2)
+            # pretrain_train_instructions2, pretrain_train_labels2, pretrain_train_new2 = meta_read_pretrain_data(args)
+            # pretrain_train_instructions.extend(pretrain_train_instructions2)
+            # pretrain_train_labels.extend(pretrain_train_labels)
+            # pretrain_train_new.extend(pretrain_train_new2)
 
         elif args.JW:
             args.prompt = 'pretrain'
