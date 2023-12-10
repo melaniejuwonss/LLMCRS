@@ -64,6 +64,18 @@ def cutoffInstruction(instructions, length, reverse=False):
     return new_instructions
 
 
+# def slidingWindow(instructions, max_length, window_size=10):
+#     new_instructions = []
+#     for data in tqdm(instructions):
+#         input_length = tokenizer(data).input_ids[1:]
+#         if input_length < max_length:
+#             new_instructions.append(data)
+#         for idx in range(0, )
+#         new_instructions.append(tokenizer.decode(tokenizer(data).input_ids[1:][:length]))
+#     logger.info('[Finish Cutting-off the instructions]')
+#     return new_instructions
+
+
 if __name__ == '__main__':
     args = parse_args()
     args = dir_init(args)
@@ -95,7 +107,7 @@ if __name__ == '__main__':
     if args.stage.lower() == 'pretrain' or args.pretrain_merge is True:
         args.prompt = 'pretrain'
         if args.TH:
-            pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = refined_review_read_pretrain_data(
+            pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = meta_plot_review_read_data(
                 args)
             # pretrain_train_instructions2, pretrain_train_labels2, pretrain_train_new2 = meta_read_pretrain_data(args)
             # pretrain_train_instructions.extend(pretrain_train_instructions2)
