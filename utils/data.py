@@ -162,13 +162,13 @@ def review_read_data(args, mode):
 
 
 def crs_read_data(datas, mode, args):
+    instructions, labels, train_new = [], [], []
+    target = "item"
     if "cot" in args.data_type and mode != "valid":
         cot_data_path = os.path.join(args.dataset_path, 'cot')
         with open(os.path.join(cot_data_path, f'{mode}_data_{args.data_type}.json'), 'r', encoding='utf-8') as f:
             datas = json.load(f)
     else:
-        instructions, labels, train_new = [], [], []
-        target = "item"
         if args.train_response:
             target = "response"
 

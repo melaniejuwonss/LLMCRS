@@ -145,13 +145,31 @@ if __name__ == '__main__':
         valid_data = crs_dataset.valid_data
         test_data = crs_dataset.test_data
 
-        crs_train_instructions, crs_train_labels, crs_train_new = crs_read_data(train_data, "train", args)
-        crs_valid_instructions, crs_valid_labels, _ = crs_read_data(valid_data, "valid", args)
-        crs_test_instructions, crs_test_labels, _ = crs_read_data(test_data, "test", args)
+        if "cot" in args.data_type:
+            temp = args.data_type
+            args.data_type = "default"
+            crs_train_instructions, crs_train_labels, crs_train_new = crs_read_data(train_data, "train", args)
+            crs_valid_instructions, crs_valid_labels, _ = crs_read_data(valid_data, "valid", args)
+            crs_test_instructions, crs_test_labels, _ = crs_read_data(test_data, "test", args)
 
-        crs_train_instructions = cutoffInstruction(crs_train_instructions, args.cutoff, True)
-        crs_valid_instructions = cutoffInstruction(crs_valid_instructions, args.cutoff, True)
-        crs_test_instructions = cutoffInstruction(crs_test_instructions, args.cutoff, True)
+            crs_train_instructions = cutoffInstruction(crs_train_instructions, args.cutoff, True)
+            crs_valid_instructions = cutoffInstruction(crs_valid_instructions, args.cutoff, True)
+            crs_test_instructions = cutoffInstruction(crs_test_instructions, args.cutoff, True)
+
+            args.data_type = temp
+            cot_train_instructions, _, _ = crs_read_data(train_data, "train", args)
+            cot_test_instructions, _, _ = crs_read_data(test_data, "test", args)
+
+            crs_train_instructions = [crs + cot for crs, cot in zip(crs_train_instructions, cot_train_instructions)]
+            crs_test_instructions = [crs + cot for crs, cot in zip(crs_test_instructions, cot_test_instructions)]
+        else:
+            crs_train_instructions, crs_train_labels, crs_train_new = crs_read_data(train_data, "train", args)
+            crs_valid_instructions, crs_valid_labels, _ = crs_read_data(valid_data, "valid", args)
+            crs_test_instructions, crs_test_labels, _ = crs_read_data(test_data, "test", args)
+
+            crs_train_instructions = cutoffInstruction(crs_train_instructions, args.cutoff, True)
+            crs_valid_instructions = cutoffInstruction(crs_valid_instructions, args.cutoff, True)
+            crs_test_instructions = cutoffInstruction(crs_test_instructions, args.cutoff, True)
 
         crs_train_instructions_addprompt, crs_test_instructions_addprompt, crs_valid_instructions_addprompt = [], [], []
         if args.JW:
