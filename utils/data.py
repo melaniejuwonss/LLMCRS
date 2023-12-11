@@ -154,7 +154,7 @@ def review_read_data(args, mode):
                 instruction = instruction.replace(title.lower(), '[title]')
                 instruction = instruction.replace(f"({year})", '')
 
-                new_instructions.append(review_template % ('[title]', instruction))
+                new_instructions.append(instruction)
 
             instructions = new_instructions
 
