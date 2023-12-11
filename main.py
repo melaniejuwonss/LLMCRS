@@ -116,13 +116,13 @@ if __name__ == '__main__':
             # pretrain_train_new.extend(pretrain_train_new2)
 
         elif args.JW:
-            args.prompt = 'pretrain'
+            args.prompt = 'onlyinstruction'
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_passage_read_pretrain_data(
                 args)
             pretrain_train_instructions = cutoffInstruction(pretrain_train_instructions, args.cutoff)  # max: 412
             new_instructions = []
             for instruction in pretrain_train_instructions:
-                new_instructions.append(f"{instruction}")  # \nGuess the movie that is described the reviews above
+                new_instructions.append(f"{instruction}\nGuess the movie that is described by the reviews above.")
             pretrain_train_instructions = new_instructions
         else:
             # pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_read_pretrain_data(args)
@@ -155,16 +155,16 @@ if __name__ == '__main__':
 
         crs_train_instructions_addprompt, crs_test_instructions_addprompt, crs_valid_instructions_addprompt = [], [], []
         if args.JW:
-            args.template = "pretrain"
+            args.template = "onlyinstruction"
             for data in tqdm(crs_train_instructions):
                 crs_train_instructions_addprompt.append(
-                    f"Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system).\n\nHere is the dialogue:\n{data}\n\nGuess which movie should be recommended to the user.\n\n ### Response:")  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
+                    f"Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system).\n\nHere is the dialogue:\n{data}\n\nGuess which movie should be recommended to the user.")  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
             for data in crs_valid_instructions:
                 crs_valid_instructions_addprompt.append(
-                    f"Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system).\n\nHere is the dialogue:\n{data}\n\nGuess which movie should be recommended to the user.\n\n ### Response:")  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
+                    f"Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system).\n\nHere is the dialogue:\n{data}\n\nGuess which movie should be recommended to the user.")  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
             for data in tqdm(crs_test_instructions):
                 crs_test_instructions_addprompt.append(
-                    f"Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system).\n\nHere is the dialogue:\n{data}\n\nGuess which movie should be recommended to the user.\n\n ### Response:")
+                    f"Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system).\n\nHere is the dialogue:\n{data}\n\nGuess which movie should be recommended to the user.")
         else:
             for data in tqdm(crs_train_instructions):
                 crs_train_instructions_addprompt.append(
