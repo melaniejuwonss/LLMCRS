@@ -228,7 +228,7 @@ def review_passage_read_pretrain_data(args):
         train_new = [True for i in dataset]
     elif args.JW_type == 3 or args.JW_type == 4:
         data_path = os.path.join(args.home, 'data', 'redial', 'passage')
-        with open(os.path.join(data_path, f'meta_plot_refinedreview_3'), 'r', encoding='utf-8') as f:
+        with open(os.path.join(data_path, f'meta_plot_refinedreview_3.json'), 'r', encoding='utf-8') as f:
             dataset = json.load(f)
 
         labels = ['' for data in dataset]
