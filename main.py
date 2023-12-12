@@ -140,20 +140,17 @@ if __name__ == '__main__':
             # pretrain_train_new.extend(pretrain_train_new2)
 
         elif args.JW:
-            args.prompt = 'onlyinstruction'
+            args.prompt = 'pretrain'
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_passage_read_pretrain_data(
                 args)
             pretrain_train_instructions = cutoffInstruction(pretrain_train_instructions, args.cutoff)  # max: 412
-            new_instructions = []
-            for instruction in pretrain_train_instructions:
-                new_instructions.append(f"{instruction}\nGuess the movie that is described by the reviews above.")
-            pretrain_train_instructions = new_instructions
+
         else:
             # pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_read_pretrain_data(args)
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = meta_read_pretrain_data(args)
 
-        # pretrain_test_instructions = pretrain_train_instructions[:100]
-        # pretrain_test_labels = pretrain_train_labels[:100]
+        pretrain_test_instructions = pretrain_train_instructions[:100]
+        pretrain_test_labels = pretrain_train_labels[:100]
         # pretrain_test_new = pretrain_train_new[:100]
 
     if args.stage.lower() == "review" or args.review_merge is True:
