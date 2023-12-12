@@ -54,6 +54,9 @@ def meta_plot_review_read_data(args, mode='train'):
     for data in dataset:
         meta = data['meta']
         plot = data['plot']
+        if len(data['review_list']) == 0:
+            continue
+
         review = data['review_list'][0]
         title = data['item']
         # if review == '':
@@ -64,9 +67,9 @@ def meta_plot_review_read_data(args, mode='train'):
         #     context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nCan you write a review for the movie {title}:\n{review}"""
         # elif plot != '':
         #     context_tokens = f"""Movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}"""
-        instructions.append(context_tokens)
-        labels.append('')
-        train_new.append(True)
+            instructions.append(context_tokens)
+            labels.append('')
+            train_new.append(True)
 
         # if args.TH:
         #     # review = review.replace(title, '[title]')
