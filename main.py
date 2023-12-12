@@ -108,8 +108,14 @@ if __name__ == '__main__':
         args.prompt = 'pretrain'
         if args.TH:
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = meta_plot_review_read_data(
-                args)
+                args, 'train')
             pretrain_train_instructions = cutoffInstruction(pretrain_train_instructions, args.cutoff)
+
+            pretrain_test_instructions, pretrain_test_labels, pretrain_test_new = meta_plot_review_read_data(
+                args, 'test')
+            pretrain_test_instructions = pretrain_test_instructions[:100]
+            pretrain_test_labels = pretrain_test_labels[:100]
+            pretrain_test_instructions = cutoffInstruction(pretrain_test_instructions, args.cutoff)
             # pretrain_train_instructions2, pretrain_train_labels2, pretrain_train_new2 = meta_read_pretrain_data(args)
             # pretrain_train_instructions.extend(pretrain_train_instructions2)
             # pretrain_train_labels.extend(pretrain_train_labels)
@@ -128,8 +134,8 @@ if __name__ == '__main__':
             # pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_read_pretrain_data(args)
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = meta_read_pretrain_data(args)
 
-        pretrain_test_instructions = pretrain_train_instructions[:100]
-        pretrain_test_labels = pretrain_train_labels[:100]
+        # pretrain_test_instructions = pretrain_train_instructions[:100]
+        # pretrain_test_labels = pretrain_train_labels[:100]
         # pretrain_test_new = pretrain_train_new[:100]
 
     if args.stage.lower() == "review" or args.review_merge is True:
