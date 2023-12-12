@@ -99,6 +99,24 @@ if __name__ == '__main__':
     if args.stage.lower() == "quiz" or args.quiz_merge is True:  # quiz -> onlyinstruction
         quiz_train_instructions, quiz_train_labels, quiz_train_new = quiz_read_data(args, 'train')
         quiz_test_instructions, quiz_test_labels, _ = quiz_read_data(args, 'test')
+        if args.JW:
+            instructions, choices = [], []
+            for instruction in quiz_train_instructions:
+                instructions.append(instruction[:instruction.rfind('\n Choices:')])
+                choices.append(instruction[instruction.find('\n Choices:'):])
+            instructions = cutoffInstruction(instructions, args.cutoff)
+            quiz_train_instructions = []
+            for instruction, choice in zip(instructions, choices):
+                quiz_train_instructions.append(instruction + choice)
+
+            instructions, choices = [], []
+            for instruction in quiz_test_instructions:
+                instructions.append(instruction[:instruction.rfind('\n Choices:')])
+                choices.append(instruction[instruction.find('\n Choices:'):])
+            instructions = cutoffInstruction(instructions, args.cutoff)
+            quiz_test_instructions = []
+            for instruction, choice in zip(instructions, choices):
+                quiz_test_instructions.append(instruction + choice)
 
     if args.stage.lower() == "plot" or args.plot_merge is True:
         plot_train_instructions, plot_train_labels, plot_train_new = plot_read_data(args, 'train')
