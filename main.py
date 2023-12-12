@@ -162,7 +162,10 @@ if __name__ == '__main__':
         if 'gpt' not in args.base_model.lower():
             review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff)
             review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff)
-
+            if args.TH is True:
+                template = "I will give you a review of a movie.\nIn the review, the movie title is masked with [title].\nHere is the review:\n%s\nBased on the review, guess the movie [title] that the above review is discussing\n\n### Response:"
+                review_train_instructions = [template % data for data in review_train_instructions]
+                review_test_instructions = [template % data for data in review_test_instructions]
     if args.stage.lower() == "crs" or args.crs_merge is True:
         crs_dataset = CRSDatasetRec(args)
         train_data = crs_dataset.train_data
