@@ -213,12 +213,32 @@ def synthetic_dialog_read_pretrain_data(args):
 
 
 def review_passage_read_pretrain_data(args):
-    data_path = os.path.join(args.home, 'data', 'redial', 'review')
-    with open(os.path.join(data_path, f'review_passages_v2.json'), 'r', encoding='utf-8') as f:
-        dataset = json.load(f)
-    instructions = [data['context_tokens'] for data in dataset]
-    labels = [data['item'] for data in dataset]
-    train_new = [True for i in dataset]
+    if args.JW_type == 1 or args.JW_type == 2:
+        data_path = os.path.join(args.home, 'data', 'redial', 'review')
+        with open(os.path.join(data_path, f'onlyReview_1.json'), 'r', encoding='utf-8') as f:
+            dataset = json.load(f)
+
+        labels = ['' for data in dataset]
+
+        if args.JW_type == 1:
+            instructions = [data['context_tokens'] for data in dataset]
+        else:
+            instructions = [f"Here is a review of a movie {data['item']}.\n{data['context_tokens']}" for data in dataset]
+
+        train_new = [True for i in dataset]
+    elif args.JW_type == 3 or args.JW_type == 4:
+        data_path = os.path.join(args.home, 'data', 'redial', 'passage')
+        with open(os.path.join(data_path, f'meta_plot_refinedreview_3'), 'r', encoding='utf-8') as f:
+            dataset = json.load(f)
+
+        labels = ['' for data in dataset]
+
+        if args.JW_type == 3:
+            instructions = [data['plot'][0] for data in dataset]
+        else:
+            instructions = [f"Here is a review of a movie {data['item']}.\n{data['plot'][0]}" for data in dataset]
+
+        train_new = [True for i in dataset]
 
     return instructions, labels, train_new  # [data['context_tokens'] for data in dataset]
 

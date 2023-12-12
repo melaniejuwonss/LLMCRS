@@ -52,6 +52,7 @@ def parse_args():
 
     parser.add_argument('--TH', type=bool, default=False)
     parser.add_argument('--JW', type=bool, default=False)
+    parser.add_argument('--JW_type', type=int, default=1)
 
     # ChatGPT
     parser.add_argument('--log_file', type=str, default='')
