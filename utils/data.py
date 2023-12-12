@@ -223,7 +223,8 @@ def review_passage_read_pretrain_data(args):
         if args.JW_type == 1:
             instructions = [data['context_tokens'] for data in dataset]
         else:
-            instructions = [f"Here is a review of a movie {data['item']}.\n{data['context_tokens']}" for data in dataset]
+            instructions = [f"Here is a review of a movie {data['item']}.\n{data['context_tokens']}" for data in
+                            dataset]
 
         train_new = [True for i in dataset]
     elif args.JW_type == 3 or args.JW_type == 4:
@@ -231,14 +232,15 @@ def review_passage_read_pretrain_data(args):
         with open(os.path.join(data_path, f'meta_plot_refinedreview_3.json'), 'r', encoding='utf-8') as f:
             dataset = json.load(f)
 
-        labels = ['' for data in dataset]
+        labels = ['' for data in dataset if len(data['review_list']) > 0]
 
         if args.JW_type == 3:
-            instructions = [data['plot'][0] for data in dataset]
+            instructions = [data['review_list'][0] for data in dataset if len(data['review_list']) > 0]
         else:
-            instructions = [f"Here is a review of a movie {data['item']}.\n{data['plot'][0]}" for data in dataset]
+            instructions = [f"Here is a review of a movie {data['item']}.\n{data['review_list'][0]}" for data in dataset
+                            if len(data['review_list']) > 0]
 
-        train_new = [True for i in dataset]
+        train_new = [True for data in dataset if len(data['review_list']) > 0]
 
     return instructions, labels, train_new  # [data['context_tokens'] for data in dataset]
 
