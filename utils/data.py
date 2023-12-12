@@ -49,12 +49,12 @@ def meta_plot_review_read_data(args, mode='train'):
     instructions, labels, train_new = [], [], []
     data_path = os.path.join(args.home, 'data', 'redial', 'passage')
     if not os.path.exists(data_path): os.mkdir(data_path)
-    with open(os.path.join(data_path, f'meta_plot_refinedreview_2.json'), 'r', encoding='utf-8') as f:
+    with open(os.path.join(data_path, f'meta_plot_refinedreview_3.json'), 'r', encoding='utf-8') as f:
         dataset = json.load(f)
     for data in dataset:
         meta = data['meta']
         plot = data['plot']
-        review = data['review']
+        review = data['review_list'][0]
         title = data['item']
         # if review == '':
         #     continue
