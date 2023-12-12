@@ -59,30 +59,33 @@ def meta_plot_review_read_data(args, mode='train'):
         # if review == '':
         #     continue
         if review != '' and plot != '':
-            context_tokens = f"""Movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}\nOne of reviews for the movie {title}:\n{review}"""
-        elif review != '':
-            context_tokens = f"""Movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nOne of reviews for the movie {title}:\n{review}"""
-        elif plot != '':
-            context_tokens = f"""Movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}"""
+            context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}\nCan you write a review for the movie {title}:\n{review}"""
+        # elif review != '':
+        #     context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nCan you write a review for the movie {title}:\n{review}"""
+        # elif plot != '':
+        #     context_tokens = f"""Movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}"""
+        instructions.append(context_tokens)
+        labels.append('')
+        train_new.append(True)
 
-        if args.TH:
-            # review = review.replace(title, '[title]')
-            # name = title.split('(')[0].strip()
-            # year = title.split('(')[-1][:-1].strip()
-            # if not year.isdigit():
-            #     year = ''
-            # review = review.replace(f"\"{name}\" ({year})", '[title]')
-            # review = review.replace(f"\"{name.lower()}\" ({year})", '[title]')
-            # review = review.replace(name, '[title]')
-            # review = review.replace(name.lower(), '[title]')
-            # review = review.replace(f"({year})", '')
-            instructions.append(context_tokens)
-            labels.append('')
-            train_new.append(True)
-        else:
-            instructions.append(f"""A review of the movie {title}:\n{review}""")
-            labels.append('')
-            train_new.append(True)
+        # if args.TH:
+        #     # review = review.replace(title, '[title]')
+        #     # name = title.split('(')[0].strip()
+        #     # year = title.split('(')[-1][:-1].strip()
+        #     # if not year.isdigit():
+        #     #     year = ''
+        #     # review = review.replace(f"\"{name}\" ({year})", '[title]')
+        #     # review = review.replace(f"\"{name.lower()}\" ({year})", '[title]')
+        #     # review = review.replace(name, '[title]')
+        #     # review = review.replace(name.lower(), '[title]')
+        #     # review = review.replace(f"({year})", '')
+        #     instructions.append(context_tokens)
+        #     labels.append('')
+        #     train_new.append(True)
+        # else:
+        #     instructions.append(f"""A review of the movie {title}:\n{review}""")
+        #     labels.append('')
+        #     train_new.append(True)
 
     return instructions, labels, train_new
 
