@@ -207,9 +207,9 @@ if __name__ == '__main__':
                 crs_test_instructions_addprompt.append(
                     f"{data}\n\nGuess which movie should be recommended to the user.")  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
 
-        crs_train_instructions = crs_train_instructions_addprompt
-        crs_valid_instructions = crs_valid_instructions_addprompt
-        crs_test_instructions = crs_test_instructions_addprompt
+            crs_train_instructions = crs_train_instructions_addprompt
+            crs_valid_instructions = crs_valid_instructions_addprompt
+            crs_test_instructions = crs_test_instructions_addprompt
 
     # Stage 에 따른 train, test 데이터셋 설정
     train_instructions = eval(f"{args.stage}_train_instructions")
