@@ -228,6 +228,7 @@ class LLaMaEvaluator:
                 wandb.log({"hit_ratio": (hit / cnt)})
                 print("%.4f" % (hit / cnt))
 
+        self.args.score_file.write('Overall\n')
         self.args.score_file.write('%.4f\n' % (
             hit_ratio))
     # return generated_results

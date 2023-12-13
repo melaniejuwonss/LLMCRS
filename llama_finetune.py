@@ -203,13 +203,18 @@ def llama_finetune(
 
         return result
 
-    def generate_and_tokenize_prompt(data_point):
+    def generate_and_tokenize_prompt(data_point, writeFlag=None):
         full_prompt = prompter.generate_prompt(
             data_point["instruction"],
             data_point["input"],
             data_point["output"],
             data_point['isNew']
         )
+        if writeFlag:
+            args.score_file.write("==========First Training sample==========\n")
+            args.score_file.write(f"{full_prompt}\n")
+
+
         tokenized_full_prompt = tokenize(full_prompt)
         if not train_on_inputs:
             user_prompt = prompter.generate_prompt(
@@ -240,6 +245,7 @@ def llama_finetune(
     for inst, lab, isNew in zip(instructions, labels, isNews):
         data.append({"instruction": inst, "input": "", "output": lab, "isNew": isNew})
 
+    first_sample = Dataset.from_pandas(pd.DataFrame([data[0]]))
     data = Dataset.from_pandas(pd.DataFrame(data))
 
     if val_set_size > 0:
@@ -253,6 +259,7 @@ def llama_finetune(
             train_val["test"].shuffle().map(generate_and_tokenize_prompt)
         )
     else:
+        generate_and_tokenize_prompt(first_sample[0], True)
         train_data = data.shuffle().map(generate_and_tokenize_prompt)
         val_data = None
 
