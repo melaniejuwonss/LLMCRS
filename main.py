@@ -143,14 +143,17 @@ if __name__ == '__main__':
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_passage_read_pretrain_data(
                 args)
             pretrain_train_instructions = cutoffInstruction(pretrain_train_instructions, args.cutoff)  # max: 412
+            pretrain_test_instructions = pretrain_train_instructions[:100]
+            pretrain_test_labels = pretrain_train_labels[:100]
+            # pretrain_test_new = pretrain_train_new[:100]
 
         else:
             # pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = review_read_pretrain_data(args)
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = meta_read_pretrain_data(args)
 
-        pretrain_test_instructions = pretrain_train_instructions[:100]
-        pretrain_test_labels = pretrain_train_labels[:100]
-        # pretrain_test_new = pretrain_train_new[:100]
+            pretrain_test_instructions = pretrain_train_instructions[:100]
+            pretrain_test_labels = pretrain_train_labels[:100]
+            # pretrain_test_new = pretrain_train_new[:100]
 
     if args.stage.lower() == "review" or args.review_merge is True:
         review_train_instructions, review_train_labels, review_train_new = review_read_data(args, 'train')
@@ -158,7 +161,10 @@ if __name__ == '__main__':
         if 'gpt' not in args.base_model.lower():
             review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff)
             review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff)
-
+            if args.TH is True:
+                template = "I will give you a review of a movie.\nIn the review, the movie title is masked with [title].\nHere is the review:\n%s\nBased on the review, guess the movie [title] that the above review is discussing\n\n### Response:"
+                review_train_instructions = [template % data for data in review_train_instructions]
+                review_test_instructions = [template % data for data in review_test_instructions]
     if args.stage.lower() == "crs" or args.crs_merge is True:
         crs_dataset = CRSDatasetRec(args)
         train_data = crs_dataset.train_data
