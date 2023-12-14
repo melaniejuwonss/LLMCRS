@@ -215,7 +215,7 @@ def synthetic_dialog_read_pretrain_data(args):
 def review_passage_read_pretrain_data(args):
     if args.JW_type == 1 or args.JW_type == 2:
         data_path = os.path.join(args.home, 'data', 'redial', 'review')
-        with open(os.path.join(data_path, f'onlyReview_1.json'), 'r', encoding='utf-8') as f:
+        with open(os.path.join(data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
             dataset = json.load(f)
 
         labels = ['' for data in dataset]

@@ -317,20 +317,19 @@ def evaluate():
     new_idx = json.load(open('../data/redial/test_new_idx.json', 'r'))
     # for i in range(5):
     llamadatas = jsonlines.open(
-        f'../result/meta-llama-Llama-2-7b-chat-hf/231204/1204044111_meta-llama-Llama-2-7b-chat-hf_onlyReview5_D2I_E4.json')
-    # gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/lastUtt.json', 'r', encoding='utf-8'))
+        f'../result/meta-llama-Llama-2-7b-chat-hf/imp/D2I.json')
+    gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/rq1_5choice_0920111906.json', 'r', encoding='utf-8'))
     test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r'))
     hit, cnt, mentioned_cnt, not_mentioned_cnt, mentioned_hit, not_mentioned_hit = 0, 0, 0, 0, 0, 0
 
-    for idx, (test_data, data) in enumerate(zip(test_datas, llamadatas)):
-        context = test_data['context_tokens']
-        gen = data['GEN'].split('|')[0].strip()
-        answer = data['ANSWER'].strip()
-
-        if idx in new_idx:
-            if answer in gen:
-                not_mentioned_hit += 1
-            not_mentioned_cnt += 1
+    for idx, data in enumerate(llamadatas):
+        # context = test_data['context_tokens']
+        gen = data['GEN'].lower().split('|')[0]
+        answer = data['ANSWER'].strip().lower()
+        # if idx in new_idx:
+        #     if answer in gen:
+        #         not_mentioned_hit += 1
+        #     not_mentioned_cnt += 1
 
         if answer in gen:
             hit += 1
@@ -343,7 +342,6 @@ def evaluate():
         else:
             mentioned_cnt += 1
         cnt += 1
-
     print(f"{round(hit/ cnt * 100,2)}\t{round(mentioned_hit / mentioned_cnt * 100,2)}\t{round(not_mentioned_hit / not_mentioned_cnt * 100, 2)}")  # 55
     ############################################
     # test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r'))
@@ -351,15 +349,17 @@ def evaluate():
     # hit, cnt, mentioned_cnt, mentioned_hit, not_mentioned_cnt, not_mentioned_hit = 0, 0, 0, 0, 0, 0,
     # gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/lastUtt.json', 'r',encoding='utf-8'))
     # with jsonlines.open(
-    #         f'../result/meta-llama-Llama-2-7b-chat-hf/231116/1116203131_meta-llama-Llama-2-7b-chat-hf_D2I_new구분_E4.json') as llamadata:  # 1028225629_rqwithoutCoT_title_epoch5 # 1113202228_rqfineTuneCRS_CoT_p2i_E3
+    #         f'../result/meta-llama-Llama-2-7b-chat-hf/imp/D2I.json') as llamadata:  # 1028225629_rqwithoutCoT_title_epoch5 # 1113202228_rqfineTuneCRS_CoT_p2i_E3
     #     for idx, (data, test_data) in enumerate(zip(llamadata, test_datas)):
-    #         gen = data['GEN'].split('\n')[1].strip().split('(')[0].strip().lower()
+    #         gen = data['GEN'].split('|')[0].lower()
+    #         gen_title = gen.split('(')[0].strip()
+    #         gen_year = gen.split('(')[-1].replace(')', '').replace('</s>', '').replace('<unk>', '').strip()
     #         # gen = gen.replace("in this context, the system should recommend the following new item:", "").strip()
     #         # gen = gen.replace("in this context, the system should chat about the following mentioned item:",
     #         #                   "").strip()
     #         # gen = gen.replace("in this context, the system should mention the following item:", "").strip()
     #         context = test_data['context_tokens'].lower()
-    #         if gen in context:
+    #         if gen_title in context and gen_year in context:
     #             mentioned_cnt += 1
     #         else:
     #             not_mentioned_cnt += 1
@@ -400,13 +400,13 @@ def evaluate():
     #########################################################
     # for i in range(5):
     #     llamadatas = jsonlines.open(
-    #         f'../result/meta-llama-Llama-2-7b-chat-hf/imp/1117091756_meta-llama-Llama-2-7b-chat-hf_D2I_E2.json')
+    #         f'../result/meta-llama-Llama-2-7b-chat-hf/imp/D2I3.json')
     #     gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/lastUtt.json', 'r', encoding='utf-8'))
     #     new_idx = json.load(open('../data/redial/test_new_idx.json', 'r'))
     #     test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r', encoding='utf-8'))
     #     hit, cnt, mentioned_cnt, not_mentioned_cnt, mentioned_hit, not_mentioned_hit = 0, 0, 0, 0, 0, 0
     #     for idx, (llama_data, test_data) in enumerate(zip(llamadatas,test_datas)):
-    #         gen = llama_data['GEN'].lower()
+    #         gen = llama_data['GEN'].lower().split('|')[0]
     #         context = test_data['context_tokens'].lower()
     #         gen_title = gen.split('(')[0].strip()
     #         gen_year = gen.split('(')[-1].replace(')', '').replace('</s>','').replace('<unk>','').strip()
@@ -464,24 +464,19 @@ def evaluate():
     # # DIN2I 803 만 gen
     # # D2I 664 으로 gen
     ######################################
-    # syn_datas = json.load(open('../data/redial/synthetic/synthetic_dialog_review.json', 'r', encoding='utf-8'))
-    # cnt = 0
+    # in_datas = json.load(open('../data/redial/cot/train_data_cot_onlyi.json', 'r', encoding='utf-8'))
+    # p_datas = json.load(open('../data/redial/cot/train_data_cot_onlyp.json', 'r', encoding='utf-8'))
     # save_data = []
-    # for syn_data in syn_datas:
+    # cnt = 0
+    # for p_data, in_data in zip(p_datas, in_datas):
     #     cnt += 1
-    #     prev_output = syn_data['OUTPUT']
-    #     all_responses = prev_output.split("\n")
-    #     input = ""
-    #     for idx, response in enumerate(all_responses):
-    #          if "System:" in response:
-    #              output = response.replace("System: ","")
-    #              save_data.append({'INPUT': input + "System: ", 'OUTPUT': output})
-    #          input += (response + "\n")
+    #     p_context = p_data["context_tokens"]
+    #     in_context = in_data["context_tokens"]
+    #     save_data.append({'context_tokens': p_context + '\n' + in_context, 'item': p_data['item']})
     #
-    #     # output = prev_output[prev_output.rfind("System:"):]
-    #     # input = prev_output[:prev_output.rfind("System:")]
-    # with open('../data/redial/synthetic/synthetic_dialog_review_train.json','w',encoding='utf-8') as f:
+    # with open('../data/redial/cot/train_data_cot_onlypi.json', 'w', encoding='utf-8') as f:
     #     f.write(json.dumps(save_data, indent=2))
+
 
 if __name__ == "__main__":
     # popularity_crs()
