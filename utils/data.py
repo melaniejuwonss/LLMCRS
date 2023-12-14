@@ -49,31 +49,47 @@ def meta_plot_review_read_data(args, mode='train'):
     instructions, labels, train_new = [], [], []
     data_path = os.path.join(args.home, 'data', 'redial', 'passage')
     if not os.path.exists(data_path): os.mkdir(data_path)
-    with open(os.path.join(data_path, f'meta_plot_refinedreview_3.json'), 'r', encoding='utf-8') as f:
+    with open(os.path.join(data_path, f'raw2refined.json'), 'r', encoding='utf-8') as f:
         dataset = json.load(f)
     for data in dataset:
-        meta = data['meta']
-        plot = data['plot']
-        if len(data['review_list']) == 0 or plot == '':
-            continue
+        title = data['item']
+        raw_reviews = data['raw_reviews']
+        refined_reviews = data['refined_reviews']
 
-        for review in data['review_list']:
-            # review = data['review_list'][0]
-            title = data['item']
-            # if review == '':
-            #     continue
+        if len(raw_reviews) != len(refined_reviews):
+            print(title + "::: not equal lengths")
+
+        for raw, refined in zip(raw_reviews, refined_reviews):
             if mode == 'train':
-                context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}\nCan you write a review for the movie {title}:\n{review}"""
+                context_tokens = f"""I will give you a raw review of movie {title}.\n{raw}\nPlease rephrase the raw review:\n{refined}"""
             else:
-                context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}\nCan you write a review for the movie {title}:\n"""
-
-            # elif review != '':
-            #     context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nCan you write a review for the movie {title}:\n{review}"""
-            # elif plot != '':
-            #     context_tokens = f"""Movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}"""
-            instructions.append(review)
+                context_tokens = f"""I will give you a raw review of movie {title}.\n{raw}\nPlease rephrase the raw review:\n"""
+            instructions.append(context_tokens)
             labels.append('')
             train_new.append(True)
+
+        # meta = data['meta']
+        # plot = data['plot']
+        # if len(data['review_list']) == 0 or plot == '':
+        #     continue
+        #
+        # for review in data['review_list']:
+        #     # review = data['review_list'][0]
+        #     title = data['item']
+        #     # if review == '':
+        #     #     continue
+        #     if mode == 'train':
+        #         context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}\nCan you write a review for the movie {title}:\n{review}"""
+        #     else:
+        #         context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}\nCan you write a review for the movie {title}:\n"""
+        #
+        #     # elif review != '':
+        #     #     context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nCan you write a review for the movie {title}:\n{review}"""
+        #     # elif plot != '':
+        #     #     context_tokens = f"""Movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}"""
+        #     instructions.append(review)
+        #     labels.append('')
+        #     train_new.append(True)
 
     return instructions, labels, train_new
 
