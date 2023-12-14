@@ -57,22 +57,23 @@ def meta_plot_review_read_data(args, mode='train'):
         if len(data['review_list']) == 0 or plot == '':
             continue
 
-        review = data['review_list'][0]
-        title = data['item']
-        # if review == '':
-        #     continue
-        if mode == 'train':
-            context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}\nCan you write a review for the movie {title}:\n{review}"""
-        else:
-            context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}\nCan you write a review for the movie {title}:\n"""
+        for review in data['review_list']:
+            # review = data['review_list'][0]
+            title = data['item']
+            # if review == '':
+            #     continue
+            if mode == 'train':
+                context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}\nCan you write a review for the movie {title}:\n{review}"""
+            else:
+                context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}\nCan you write a review for the movie {title}:\n"""
 
-        # elif review != '':
-        #     context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nCan you write a review for the movie {title}:\n{review}"""
-        # elif plot != '':
-        #     context_tokens = f"""Movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}"""
-        instructions.append(context_tokens)
-        labels.append('')
-        train_new.append(True)
+            # elif review != '':
+            #     context_tokens = f"""I will give you information of movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nCan you write a review for the movie {title}:\n{review}"""
+            # elif plot != '':
+            #     context_tokens = f"""Movie {title}.\nGenres, directors, writers, and actors of {title}:\n{meta}\nPlot of the movie {title}:\n{plot}"""
+            instructions.append(review)
+            labels.append('')
+            train_new.append(True)
 
     return instructions, labels, train_new
 
