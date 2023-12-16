@@ -111,9 +111,9 @@ def llama_finetune(
     per_device_train_batch_size = batch_size // args.num_device
     resume_from_checkpoint = args.lora_weights
     cutoff_len = args.cutoff
-    if args.TH is True:
+    if args.warmup != 0:
         max_train_steps = num_epochs * math.ceil(len(instructions) / gradient_accumulation_steps)
-        warmup_steps = int(0.1 * max_train_steps)
+        warmup_steps = int(args.warmup * max_train_steps)
 
     if int(os.environ.get("LOCAL_RANK", 0)) == 0:
         print(
