@@ -55,12 +55,20 @@ def createLogFile(args):
 def cutoffInstruction(instructions, length, reverse=False):
     new_instructions = []
     for data in tqdm(instructions):
-        token_sequnece = tokenizer(data).input_ids[1:][:length]
         if reverse:
-            new_instructions.append(tokenizer.decode(token_sequnece[-length:]))
+            new_instructions.append(tokenizer.decode(tokenizer(data).input_ids[1:][-length:]))
         else:
-            if args.TH is True and len(token_sequnece) < 1000:
-                new_instructions.append(tokenizer.decode(token_sequnece[:length]))
+            new_instructions.append(tokenizer.decode(tokenizer(data).input_ids[1:][:length]))
+    logger.info('[Finish Cutting-off the instructions]')
+    return new_instructions
+
+
+def truncInstruction(instructions, length):
+    new_instructions = []
+    for data in tqdm(instructions):
+        token_seq = tokenizer(data).input_ids[1:]
+        if len(token_seq) < length:
+            new_instructions.append(tokenizer.decode(token_seq))
     logger.info('[Finish Cutting-off the instructions]')
     return new_instructions
 
@@ -128,7 +136,7 @@ if __name__ == '__main__':
         if args.TH:
             pretrain_train_instructions, pretrain_train_labels, pretrain_train_new = meta_plot_review_read_data(
                 args, 'train')
-            pretrain_train_instructions = cutoffInstruction(pretrain_train_instructions, args.cutoff)
+            pretrain_train_instructions = truncInstruction(pretrain_train_instructions, args.cutoff)
 
             pretrain_test_instructions, pretrain_test_labels, pretrain_test_new = meta_plot_review_read_data(
                 args, 'test')
