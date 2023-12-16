@@ -55,10 +55,12 @@ def createLogFile(args):
 def cutoffInstruction(instructions, length, reverse=False):
     new_instructions = []
     for data in tqdm(instructions):
+        token_sequnece = tokenizer(data).input_ids[1:][:length]
         if reverse:
-            new_instructions.append(tokenizer.decode(tokenizer(data).input_ids[1:][-length:]))
+            new_instructions.append(tokenizer.decode(token_sequnece[-length:]))
         else:
-            new_instructions.append(tokenizer.decode(tokenizer(data).input_ids[1:][:length]))
+            if args.TH is True and len(token_sequnece) < 1000:
+                new_instructions.append(tokenizer.decode(token_sequnece[:length]))
     logger.info('[Finish Cutting-off the instructions]')
     return new_instructions
 
