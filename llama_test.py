@@ -152,6 +152,9 @@ class LLaMaEvaluator:
             log_file = open(os.path.join(self.args.result_path, f'{self.args.log_name}_E{int(epoch)}.json'), 'a',
                             buffering=1, encoding='UTF-8')
             self.args.log_file = log_file
+        elif epoch is None:
+            self.args.log_file = open(os.path.join(self.args.result_path, f'{self.args.log_name}.json'), 'a',
+                                      buffering=1, encoding='UTF-8')
 
         model.eval()
         if torch.__version__ >= "2" and sys.platform != "win32":
