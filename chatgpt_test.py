@@ -155,7 +155,7 @@ def execute(args,
                 model=MODEL,
                 messages=[
                     {"role": "user",
-                     "content": review_summary_template % (label, instruction.split('\n')[3], label)}
+                     "content": review_summary_template % (label, instruction, label)}
                 ],
                 temperature=0,
             )
