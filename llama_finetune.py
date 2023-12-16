@@ -112,7 +112,7 @@ def llama_finetune(
     resume_from_checkpoint = args.lora_weights
     cutoff_len = args.cutoff
     if args.warmup != 0:
-        max_train_steps = num_epochs * math.ceil(len(instructions) / gradient_accumulation_steps)
+        max_train_steps = num_epochs * math.ceil(len(instructions) / batch_size)
         warmup_steps = int(args.warmup * max_train_steps)
 
     if int(os.environ.get("LOCAL_RANK", 0)) == 0:
