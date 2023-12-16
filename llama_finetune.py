@@ -1,3 +1,4 @@
+import math
 import os
 import sys
 from typing import List
@@ -80,6 +81,7 @@ def llama_finetune(
         num_epochs: int = 3,
         learning_rate: float = 3e-4,
         cutoff_len: int = 256,
+        warmup_steps=100,
         val_set_size: int = 0,
         # lora hyperparams
         lora_r: int = 8,
@@ -109,6 +111,9 @@ def llama_finetune(
     per_device_train_batch_size = batch_size // args.num_device
     resume_from_checkpoint = args.lora_weights
     cutoff_len = args.cutoff
+    if args.TH is True:
+        max_train_steps = num_epochs * math.ceil(len(instructions) / gradient_accumulation_steps)
+        warmup_steps = int(0.1 * max_train_steps)
 
     if int(os.environ.get("LOCAL_RANK", 0)) == 0:
         print(
@@ -213,7 +218,6 @@ def llama_finetune(
         if writeFlag:
             args.score_file.write("==========First Training sample==========\n")
             args.score_file.write(f"{full_prompt}\n")
-
 
         tokenized_full_prompt = tokenize(full_prompt)
         if not train_on_inputs:
@@ -333,7 +337,7 @@ def llama_finetune(
         args=transformers.TrainingArguments(
             per_device_train_batch_size=per_device_train_batch_size,
             gradient_accumulation_steps=gradient_accumulation_steps,
-            warmup_steps=100,
+            warmup_steps=warmup_steps,
             num_train_epochs=num_epochs,
             learning_rate=learning_rate,
             fp16=True,
