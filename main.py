@@ -226,7 +226,7 @@ if __name__ == '__main__':
         #     for data in tqdm(crs_test_instructions):
         #         crs_test_instructions_addprompt.append(
         #             f"Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system).\n\nHere is the dialogue:\n{data}\n\nGuess which movie should be recommended to the user.")
-        if args.JW is False:
+        if args.JW is False and args.TH is False:
             for data in tqdm(crs_train_instructions):
                 crs_train_instructions_addprompt.append(
                     f"{data}\n\nGuess which movie should be recommended to the user.")  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
@@ -242,7 +242,7 @@ if __name__ == '__main__':
             crs_test_instructions = crs_test_instructions_addprompt
 
         if args.TH is True:
-            template = "Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system). \n\n Here is the dialogue: \n %s \n\n ### Response:"
+            template = "Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system). \n\n Here is the dialogue: \n %s \n\nGuess which movie should be recommended to the user. \n\n ### Response:"
             crs_train_instructions = [template % data for data in crs_train_instructions]
             crs_test_instructions = [template % data for data in crs_test_instructions]
 
