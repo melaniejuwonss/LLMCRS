@@ -317,7 +317,7 @@ def evaluate():
     new_idx = json.load(open('../data/redial/test_new_idx.json', 'r'))
     # for i in range(5):
     llamadatas = jsonlines.open(
-        f'../result/meta-llama-Llama-2-7b-chat-hf/imp/D2I.json')
+        f'../result/meta-llama-Llama-2-7b-chat-hf/imp/1211161057_meta-llama-Llama-2-7b-chat-hf_DIN2I_E2.json')
     gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/rq1_5choice_0920111906.json', 'r', encoding='utf-8'))
     test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r'))
     hit, cnt, mentioned_cnt, not_mentioned_cnt, mentioned_hit, not_mentioned_hit = 0, 0, 0, 0, 0, 0
@@ -344,26 +344,26 @@ def evaluate():
         cnt += 1
     print(f"{round(hit/ cnt * 100,2)}\t{round(mentioned_hit / mentioned_cnt * 100,2)}\t{round(not_mentioned_hit / not_mentioned_cnt * 100, 2)}")  # 55
     ############################################
-    # test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r'))
-    # # for i in range(5):
-    # hit, cnt, mentioned_cnt, mentioned_hit, not_mentioned_cnt, not_mentioned_hit = 0, 0, 0, 0, 0, 0,
-    # gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/lastUtt.json', 'r',encoding='utf-8'))
-    # with jsonlines.open(
-    #         f'../result/meta-llama-Llama-2-7b-chat-hf/imp/D2I.json') as llamadata:  # 1028225629_rqwithoutCoT_title_epoch5 # 1113202228_rqfineTuneCRS_CoT_p2i_E3
-    #     for idx, (data, test_data) in enumerate(zip(llamadata, test_datas)):
-    #         gen = data['GEN'].split('|')[0].lower()
-    #         gen_title = gen.split('(')[0].strip()
-    #         gen_year = gen.split('(')[-1].replace(')', '').replace('</s>', '').replace('<unk>', '').strip()
-    #         # gen = gen.replace("in this context, the system should recommend the following new item:", "").strip()
-    #         # gen = gen.replace("in this context, the system should chat about the following mentioned item:",
-    #         #                   "").strip()
-    #         # gen = gen.replace("in this context, the system should mention the following item:", "").strip()
-    #         context = test_data['context_tokens'].lower()
-    #         if gen_title in context and gen_year in context:
-    #             mentioned_cnt += 1
-    #         else:
-    #             not_mentioned_cnt += 1
-    # print(mentioned_cnt, mentioned_cnt/4003 * 100, not_mentioned_cnt, not_mentioned_cnt/4003 * 100)
+    test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r'))
+    # for i in range(5):
+    hit, cnt, mentioned_cnt, mentioned_hit, not_mentioned_cnt, not_mentioned_hit = 0, 0, 0, 0, 0, 0,
+    gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/lastUtt.json', 'r',encoding='utf-8'))
+    with jsonlines.open(
+            f'../result/meta-llama-Llama-2-7b-chat-hf/imp/1211161057_meta-llama-Llama-2-7b-chat-hf_DIN2I_E2.json') as llamadata:  # 1028225629_rqwithoutCoT_title_epoch5 # 1113202228_rqfineTuneCRS_CoT_p2i_E3
+        for idx, (data, test_data) in enumerate(zip(llamadata, test_datas)):
+            gen = data['GEN'].split('|')[0].lower()
+            gen_title = gen.split('(')[0].strip()
+            gen_year = gen.split('(')[-1].replace(')', '').replace('</s>', '').replace('<unk>', '').strip()
+            # gen = gen.replace("in this context, the system should recommend the following new item:", "").strip()
+            # gen = gen.replace("in this context, the system should chat about the following mentioned item:",
+            #                   "").strip()
+            # gen = gen.replace("in this context, the system should mention the following item:", "").strip()
+            context = test_data['context_tokens'].lower()
+            if gen_title in context and gen_year in context:
+                mentioned_cnt += 1
+            else:
+                not_mentioned_cnt += 1
+    print(mentioned_cnt, mentioned_cnt/4003 * 100, not_mentioned_cnt, not_mentioned_cnt/4003 * 100)
     ############################################
     # new_idx = json.load(open('../data/redial/test_new_idx.json', 'r', encoding='utf-8'))
     # test_datas = json.load(open('../data/redial/cot/test_data_cot_intention.json', 'r', encoding='utf-8'))
@@ -398,9 +398,9 @@ def evaluate():
     # with open('train_data_cot_d2ti.json', 'w', encoding='utf-8') as f:
     #     f.write(json.dumps(revise_list, indent=1))
     #########################################################
-    # for i in range(5):
+    # for i in range(5): # type 정확도
     #     llamadatas = jsonlines.open(
-    #         f'../result/meta-llama-Llama-2-7b-chat-hf/imp/D2I3.json')
+    #         f'../result/meta-llama-Llama-2-7b-chat-hf/imp/1211161057_meta-llama-Llama-2-7b-chat-hf_DIN2I_E2.json')
     #     gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/lastUtt.json', 'r', encoding='utf-8'))
     #     new_idx = json.load(open('../data/redial/test_new_idx.json', 'r'))
     #     test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r', encoding='utf-8'))
