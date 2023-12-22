@@ -170,7 +170,7 @@ def review_read_data(args, mode):
 def context_review_read_data(args, mode):
     review_data_path = os.path.join(args.dataset_path, 'review')
     if mode == "train":
-        with open(os.path.join(review_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
+        with open(os.path.join(review_data_path, f'contextreview2item.json'), 'r', encoding='utf-8') as f:
             review_data = json.load(f)
     elif mode == "test":
         with open(os.path.join(review_data_path, f'contextreview2item.json'), 'r', encoding='utf-8') as f:
