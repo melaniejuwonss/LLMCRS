@@ -20,7 +20,8 @@ from t5_finetune import t5_finetune
 from t5_test import T5Evaluator
 from utils.data import quiz_read_data, plot_read_data, meta_plot_review_read_data, review_read_data, crs_read_data, \
     synthetic_dialog_read_pretrain_data, review_read_pretrain_data, review_passage_read_pretrain_data, \
-    synthetic_dialog_read_pretrain_data, meta_read_pretrain_data, refined_review_read_pretrain_data
+    synthetic_dialog_read_pretrain_data, meta_read_pretrain_data, refined_review_read_pretrain_data, \
+    context_review_read_data
 from utils.parser import parse_args, dir_init
 from os.path import dirname, realpath
 
@@ -175,6 +176,15 @@ if __name__ == '__main__':
                 template = "I will give you a review of a movie.\nIn the review, the movie title is masked with [title].\nHere is the review:\n%s\nBased on the review, guess the movie [title] that the above review is discussing\n\n### Response:"
                 review_train_instructions = [template % data for data in review_train_instructions]
                 review_test_instructions = [template % data for data in review_test_instructions]
+
+    if args.stage.lower() == "context_review" or args.review_merge is True:
+        review_train_instructions, review_train_labels, review_train_new = context_review_read_data(args, 'train')
+        review_test_instructions, review_test_labels, _ = review_read_data(args, 'test')
+
+        review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff)
+        review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff)
+
+
     if args.stage.lower() == "crs" or args.crs_merge is True:
         crs_dataset = CRSDatasetRec(args)
         train_data = crs_dataset.train_data

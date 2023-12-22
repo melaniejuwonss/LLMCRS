@@ -167,6 +167,21 @@ def review_read_data(args, mode):
 
     return instructions, labels, train_new
 
+def context_review_read_data(args, mode):
+    review_data_path = os.path.join(args.dataset_path, 'review')
+    if mode == "train":
+        with open(os.path.join(review_data_path, f'{args.data_type}.json'), 'r', encoding='utf-8') as f:
+            review_data = json.load(f)
+    elif mode == "test":
+        with open(os.path.join(review_data_path, f'contextreview2item.json'), 'r', encoding='utf-8') as f:
+            review_data = json.load(f)
+            review_data = review_data[:300]
+
+    instructions = [data['context_tokens'] for data in review_data]
+    labels = [data['item'] for data in review_data]
+    train_new = [True for data in review_data]
+
+    return instructions, labels, train_new
 
 def crs_read_data(datas, mode, args):
     instructions, labels, train_new = [], [], []
