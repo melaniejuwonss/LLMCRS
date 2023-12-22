@@ -1,0 +1,6 @@
+{
+  "description": "CRS recommendation template.",
+  "prompt_input": "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\n{instruction}\n\n### Input:\n{input}",
+  "prompt_no_input": "Pretend you are a movie recommender system. I will give you a conversation between a user and you (a recommender system). \n Based on the conversation, guess which movie should be recommended to the user. \n\n Here is the conversation: \n User: Hello, I would like to watch action-packed movies. \n\n ### Response:Avengers (2012) \n\nPretend you are a movie recommender system. I will give you a conversation between a user and you (a recommender system). \n Based on the conversation, guess which movie should be recommended to the user. \n\n Here is the conversation: \n {instruction} \n\n ### Response:",
+  "response_split": "### Response:"
+}
