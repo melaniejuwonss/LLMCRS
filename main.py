@@ -183,6 +183,10 @@ if __name__ == '__main__':
 
         context_review_train_instructions = cutoffInstruction(context_review_train_instructions, args.cutoff)
         context_review_test_instructions = cutoffInstruction(context_review_test_instructions, args.cutoff)
+        if args.TH is True:
+            template = "Pretend you are a movie recommender system. I will give you a review of a movie written by a user.\nHere is the review:\n%s\nGuess which movie should be recommended to the user who wrote the review above.\n\n### Response:"
+            context_review_train_instructions = [template % data for data in context_review_train_instructions]
+            context_review_test_instructions = [template % data for data in context_review_test_instructions]
 
 
     if args.stage.lower() == "crs" or args.crs_merge is True:
