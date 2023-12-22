@@ -178,11 +178,11 @@ if __name__ == '__main__':
                 review_test_instructions = [template % data for data in review_test_instructions]
 
     if args.stage.lower() == "context_review" or args.context_review_merge is True:
-        review_train_instructions, review_train_labels, review_train_new = context_review_read_data(args, 'train')
-        review_test_instructions, review_test_labels, _ = review_read_data(args, 'test')
+        context_review_train_instructions, context_review_train_labels, context_review_train_new = context_review_read_data(args, 'train')
+        context_review_test_instructions, context_review_test_labels, _ = context_review_read_data(args, 'test')
 
-        review_train_instructions = cutoffInstruction(review_train_instructions, args.cutoff)
-        review_test_instructions = cutoffInstruction(review_test_instructions, args.cutoff)
+        context_review_train_instructions = cutoffInstruction(context_review_train_instructions, args.cutoff)
+        context_review_test_instructions = cutoffInstruction(context_review_test_instructions, args.cutoff)
 
 
     if args.stage.lower() == "crs" or args.crs_merge is True:
