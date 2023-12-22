@@ -45,6 +45,7 @@ def parse_args():
     parser.add_argument('--all_merge', type=bool, default=False)
     parser.add_argument('--plot_merge', type=bool, default=False)
     parser.add_argument('--review_merge', type=bool, default=False)
+    parser.add_argument('--context_review_merge', type=bool, default=False)
     parser.add_argument('--pretrain_merge', type=bool, default=False)
     parser.add_argument('--warmup', type=float, default=0)
 

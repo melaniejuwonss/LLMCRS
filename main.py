@@ -177,7 +177,7 @@ if __name__ == '__main__':
                 review_train_instructions = [template % data for data in review_train_instructions]
                 review_test_instructions = [template % data for data in review_test_instructions]
 
-    if args.stage.lower() == "context_review" or args.review_merge is True:
+    if args.stage.lower() == "context_review" or args.context_review_merge is True:
         review_train_instructions, review_train_labels, review_train_new = context_review_read_data(args, 'train')
         review_test_instructions, review_test_labels, _ = review_read_data(args, 'test')
 
