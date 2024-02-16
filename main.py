@@ -224,9 +224,10 @@ if __name__ == '__main__':
             crs_valid_instructions, crs_valid_labels, _ = crs_read_data(valid_data, "valid", args)
             crs_test_instructions, crs_test_labels, _ = crs_read_data(test_data, "test", args)
 
-            crs_train_instructions = cutoffInstruction(crs_train_instructions, args.cutoff, True)
-            crs_valid_instructions = cutoffInstruction(crs_valid_instructions, args.cutoff, True)
-            crs_test_instructions = cutoffInstruction(crs_test_instructions, args.cutoff, True)
+            if 'gpt' not in args.base_model:
+                crs_train_instructions = cutoffInstruction(crs_train_instructions, args.cutoff, True)
+                crs_valid_instructions = cutoffInstruction(crs_valid_instructions, args.cutoff, True)
+                crs_test_instructions = cutoffInstruction(crs_test_instructions, args.cutoff, True)
 
         crs_train_instructions_addprompt, crs_test_instructions_addprompt, crs_valid_instructions_addprompt = [], [], []
         # if args.JW:

@@ -137,6 +137,14 @@ Please describe the features of the movie %s within 256 tokens.
 
 """
 
+user_preference_template = """I will give you a dialog between a user and a recommender systems.
+
+%s
+
+Based on the context of the dialog, analyze the preference of the user reflected in the dialog within 256 tokens
+
+"""
+
 
 # - Therefore, Blair Witch (2016) should be recommended.
 # - Therefore, Major League (1989) should be recommended.
@@ -155,7 +163,8 @@ def execute(args,
                 model=MODEL,
                 messages=[
                     {"role": "user",
-                     "content": review_summary_template % (label, instruction, label)}
+                     # "content": review_summary_template % (label, instruction, label)}
+                     "content": user_preference_template % instruction}
                 ],
                 temperature=0,
             )

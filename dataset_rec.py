@@ -32,7 +32,7 @@ class CRSDatasetRec:
             open(os.path.join(self.data_path, 'movie2name.json'), 'r', encoding='utf-8'))
         self.item_ids = json.load(
             open(os.path.join(self.data_path, 'movie_ids.json'), 'r', encoding='utf-8'))
-        self.all_movies = json.load((open('data/content_data.json', 'r', encoding='utf-8')))[0]
+        self.all_movies = json.load((open(os.path.join(self.data_path, 'data/content_data.json'), 'r', encoding='utf-8')))[0]
         self.entityid2crsid = dict()
         for key, value in self.movie2name.items():
             if value[0] != -1:
