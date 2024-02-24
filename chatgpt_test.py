@@ -145,10 +145,29 @@ Based on the context of the dialog, analyze the preference of the user reflected
 
 """
 
+explanation_template = """I will give you a dialog between a user and a recommender systems.
+
+%s
+
+In this context, the system recommends the movie %s.
+Please provide an explanation for this recommendation within 200 tokens.
+
+"""
 
 # - Therefore, Blair Witch (2016) should be recommended.
 # - Therefore, Major League (1989) should be recommended.
 # - Therefore, The Lord of the Rings: The Fellowship of the Ring (2001) should be recommended.
+
+movie2name = json.load(open('data/redial/movie2name.json', 'r', encoding='utf-8'))
+id2name = {i[1][0]: i[1][1] for i in movie2name.items()}
+
+original_train_data = json.load((open('data/redial/augmented/train_data_augment.json', 'r', encoding='utf-8')))
+original_test_data = json.load((open('data/redial/augmented/test_data_augment.json', 'r', encoding='utf-8')))
+
+refinedReview = json.load(open('data/redial/review/refinedReview_1.json', 'r', encoding='utf-8'))
+name2review = {i['item']: i['context_tokens'] for i in refinedReview}
+
+
 def execute(args,
             instructions: list = None,
             labels: list = None):
@@ -157,14 +176,34 @@ def execute(args,
     cnt = args.chatgpt_cnt
     for instruction, label in tqdm(zip(instructions[cnt:], labels[cnt:]),
                                    bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
+        mentioned_reviews = []
+        for idx in original_train_data[cnt]['context_items']:
+            name = id2name[idx]
+            if name in name2review:
+                review = name2review[name]
+                mentioned_reviews.append(review)
 
+        if label in name2review:
+            target_review = name2review[label]
+            mentioned_reviews.append(target_review)
+
+        if len(mentioned_reviews) > 0:
+            mentioned_reviews = '\n'.join(mentioned_reviews)
+            mentioned_reviews_concat = f"""I will give reviews of some movies:
+            {mentioned_reviews}\n
+            """
+        else:
+            mentioned_reviews_concat = ''
+        # user_preference_template = mentioned_reviews_concat + user_preference_template
+
+        content = mentioned_reviews_concat + explanation_template % (instruction, label)
         try:
             response = openai.ChatCompletion.create(
                 model=MODEL,
                 messages=[
                     {"role": "user",
                      # "content": review_summary_template % (label, instruction, label)}
-                     "content": user_preference_template % instruction}
+                     "content": content}
                 ],
                 temperature=0,
             )
@@ -178,7 +217,7 @@ def execute(args,
                 movie_name = label.lower()
             if movie_name in check_response:
                 hit += 1.0
-            cnt += 1.0
+            cnt += 1
 
             args.log_file.write(
                 json.dumps({'INPUT': instruction, 'OUTPUT': response, 'LABEL': label, 'AVG_HIT': hit / cnt * 100},
@@ -187,7 +226,7 @@ def execute(args,
 
             # if cnt % 100 == 0 and cnt != 0:
             #     print("%.2f" % (hit / cnt))
-        except:
+        except Exception as error:
             # print("ERROR hit: %d, cnt: %d" % (hit, cnt))
             print("ERROR cnt: %d" % (cnt))
             print(args.log_file)
