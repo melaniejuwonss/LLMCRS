@@ -37,8 +37,8 @@ def createLogFile(args):
     if not os.path.exists(result_path): os.mkdir(result_path)
     if not os.path.exists(score_path): os.mkdir(score_path)
 
-    if args.log_name == '':
-        args.log_name = mdhm + '_' + args.base_model.replace('/', '-') + '_' + args.log_name
+    # if args.log_name == '':
+    args.log_name = mdhm + '_' + args.base_model.replace('/', '-') + '_' + args.log_name
     if 'gpt' in args.base_model.lower() or (args.lora_weights[-1].isdigit() is True and args.mode == "test"):
         log_file = open(os.path.join(args.home, result_path, f'{args.log_name}.json'), 'a', buffering=1,
                         encoding='UTF-8')
