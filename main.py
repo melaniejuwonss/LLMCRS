@@ -190,7 +190,6 @@ if __name__ == '__main__':
             context_review_train_instructions = [template % data for data in context_review_train_instructions]
             context_review_test_instructions = [template % data for data in context_review_test_instructions]
 
-
     if args.stage.lower() == "crs" or args.crs_merge is True:
         crs_dataset = CRSDatasetRec(args)
         train_data = crs_dataset.train_data

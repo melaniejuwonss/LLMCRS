@@ -154,18 +154,10 @@ Please provide an explanation for this recommendation within 200 tokens.
 
 """
 
+
 # - Therefore, Blair Witch (2016) should be recommended.
 # - Therefore, Major League (1989) should be recommended.
 # - Therefore, The Lord of the Rings: The Fellowship of the Ring (2001) should be recommended.
-
-movie2name = json.load(open('data/redial/movie2name.json', 'r', encoding='utf-8'))
-id2name = {i[1][0]: i[1][1] for i in movie2name.items()}
-
-original_train_data = json.load((open('data/redial/augmented/train_data_augment.json', 'r', encoding='utf-8')))
-original_test_data = json.load((open('data/redial/augmented/test_data_augment.json', 'r', encoding='utf-8')))
-
-refinedReview = json.load(open('data/redial/review/refinedReview_1.json', 'r', encoding='utf-8'))
-name2review = {i['item']: i['context_tokens'] for i in refinedReview}
 
 
 def execute(args,
@@ -253,4 +245,12 @@ def chatgpt_test(args,
 if __name__ == "__main__":
     # fire.Fire(main)
     args = parse_args()
+    movie2name = json.load(open('data/redial/movie2name.json', 'r', encoding='utf-8'))
+    id2name = {i[1][0]: i[1][1] for i in movie2name.items()}
+
+    original_train_data = json.load((open('data/redial/augmented/train_data_augment.json', 'r', encoding='utf-8')))
+    original_test_data = json.load((open('data/redial/augmented/test_data_augment.json', 'r', encoding='utf-8')))
+
+    refinedReview = json.load(open('data/redial/review/refinedReview_1.json', 'r', encoding='utf-8'))
+    name2review = {i['item']: i['context_tokens'] for i in refinedReview}
     chatgpt_test(args)
