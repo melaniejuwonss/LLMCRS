@@ -142,8 +142,9 @@ class LLaMaEvaluator:
                 max_new_tokens=max_new_tokens,
             )
         s = generation_output.sequences
+        scores = generation_output.sequences_scores
         output = self.tokenizer.batch_decode(s, skip_special_tokens=True)
-        return [self.prompter.get_response(i) for i in output]
+        return [self.prompter.get_response(i) for i in output], scores
 
     def test(self, model=None, epoch=None):
         if model is None:
@@ -169,9 +170,11 @@ class LLaMaEvaluator:
             input_ids = batched_inputs["input_ids"].to(self.args.device_id)
             attention_mask = batched_inputs["attention_mask"].to(self.args.device_id)
 
-            responses = self.evaluate(input_ids, attention_mask, model, max_new_tokens=self.args.max_new_tokens,
-                                      num_beams=self.args.num_beams)
+            responses, scores = self.evaluate(input_ids, attention_mask, model, max_new_tokens=self.args.max_new_tokens,
+                                              num_beams=self.args.num_beams)
             responses = np.reshape(responses, (-1, self.args.num_beams)).tolist()
+            scores = np.reshape(scores, (-1, self.args.num_beams)).tolist()  # [B, beam]
+
             labels = batch[1]
             # print("Instruction:", instruction)
             # print("Response:", response)
