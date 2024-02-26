@@ -144,7 +144,7 @@ class LLaMaEvaluator:
         s = generation_output.sequences
         scores = generation_output.sequences_scores
         output = self.tokenizer.batch_decode(s, skip_special_tokens=True)
-        return [self.prompter.get_response(i) for i in output], scores
+        return [self.prompter.get_response(i) for i in output], scores.to('cpu').numpy()
 
     def test(self, model=None, epoch=None):
         if model is None:
@@ -180,7 +180,8 @@ class LLaMaEvaluator:
             # print("Response:", response)
             # print("#################################################")
             # generated_results.extend(responses)
-            for dialog, response, label in zip(batch[0], responses, labels):
+            for dialog, response, label, score in zip(batch[0], responses, labels, scores):
+                score_result = '| '.join(score)
                 # if 'quiz' in self.args.stage:
                 #     movie_name = label.replace('(', ')').split(')')[1].strip().lower()
                 # elif 'crs' in self.args.stage:
@@ -222,7 +223,7 @@ class LLaMaEvaluator:
 
                 generated_results.append(
                     {'CONTEXT': dialog, 'GEN': output, 'ANSWER': label, 'HIT': label.lower() in output.lower(),
-                     'AVG_HIT': ', '.join(topk_results), 'NEW_ITEM': idx in self.new_idx})
+                     'AVG_HIT': ', '.join(topk_results), 'NEW_ITEM': idx in self.new_idx, "score": score_result})
                 idx += 1
 
             # mentioned_hit_ratio = mentioned_hit / mentioned_cnt
