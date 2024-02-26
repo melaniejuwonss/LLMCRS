@@ -181,7 +181,7 @@ class LLaMaEvaluator:
             # print("#################################################")
             # generated_results.extend(responses)
             for dialog, response, label, score in zip(batch[0], responses, labels, scores):
-                score_result = '| '.join(score)
+                score_result = '| '.join(['{:.2f}'.format(x) for x in score])
                 # if 'quiz' in self.args.stage:
                 #     movie_name = label.replace('(', ')').split(')')[1].strip().lower()
                 # elif 'crs' in self.args.stage:
