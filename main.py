@@ -247,8 +247,7 @@ if __name__ == '__main__':
     if 'llama' in args.base_model.lower():
         tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
 
-        evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=test_instructions, labels=test_labels,
-                                   prompt_template_name=args.prompt, explanations=crs_test_explanation)
+        evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, dataset=test_data, prompt_template_name=args.prompt)
         if 'train' in args.mode:
             llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=train_instructions,
                            labels=train_labels, isNews=train_new, num_epochs=args.epoch,

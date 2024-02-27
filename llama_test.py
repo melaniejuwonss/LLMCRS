@@ -37,14 +37,15 @@ class Textdataset(Dataset):
 
 
 class LLaMaEvaluator:
-    def __init__(self, args, tokenizer, instructions: list = None, labels: list = None, negItems: list = None,
-                 prompt_template_name: str = "", explanations=[]):
+    def __init__(self, args, tokenizer, dataset, prompt_template_name: str = ""):
         self.args = args
-        self.instructions = instructions
-        self.labels = labels
-        self.negItems = negItems
+        self.dataset = dataset
+        self.instructions = [i['context_tokens'] for i in dataset]
+        self.labels = [i['item'] for i in dataset]
+        # self.negItems = dataset['negItems']
+        self.explanations = [i['explanation'] for i in dataset]
         self.tokenizer = tokenizer  # , LlamaTokenizer.from_pretrained(self.args.base_model)
-        self.explanations = explanations
+
         # self.candidate_scores = candidate_scores
         self.prompter = Prompter(args, prompt_template_name)
         self.new_idx = json.load(open(os.path.join(self.args.dataset_path, 'test_new_idx.json'), 'r', encoding='utf-8'))
@@ -107,12 +108,18 @@ class LLaMaEvaluator:
 
     def prepare_dataloader(self):
         self.tokenizer.padding_side = 'left'
-
+        instructions = []
+        labels = []
         if self.args.prompt == 'DI2E':
-            instructions = [self.prompter.generate_prompt(instruction=instruction, input=label) for instruction, label in zip(self.instructions, self.labels)]
+            for idx, data in enumerate(self.dataset):
+                instruction = data['context_tokens']
+                for candidate in data['candidate_items']:
+                    instructions.append(self.prompter.generate_prompt(instruction=instruction, input=candidate))
+                    labels.append(data['item'])
         else:
             instructions = [self.prompter.generate_prompt(instruction=instruction) for instruction in self.instructions]
-        instruction_dataset = Textdataset(self.args, instructions, self.labels, self.tokenizer)
+            labels = self.labels
+        instruction_dataset = Textdataset(self.args, instructions, labels, self.tokenizer)
         dataloader = DataLoader(instruction_dataset, batch_size=self.args.eval_batch_size, shuffle=False)
 
         return dataloader
@@ -177,7 +184,7 @@ class LLaMaEvaluator:
 
             responses, scores = self.evaluate(input_ids, attention_mask, model, max_new_tokens=self.args.max_new_tokens,
                                               num_beams=self.args.num_beams)
-            responses = np.reshape(responses, (-1, self.args.num_beams)).tolist()
+            responses = np.reshape(responses, (-1, self.args.num_beams)).tolist() # [B, beam]
             scores = np.reshape(scores, (-1, self.args.num_beams)).tolist()  # [B, beam]
 
             labels = batch[1]
@@ -187,22 +194,7 @@ class LLaMaEvaluator:
             # generated_results.extend(responses)
             for dialog, response, label, score in zip(batch[0], responses, labels, scores):
                 score_result = ', '.join(['{:.4f}'.format(x) for x in score])
-                # if 'quiz' in self.args.stage:
-                #     movie_name = label.replace('(', ')').split(')')[1].strip().lower()
-                # elif 'crs' in self.args.stage:
-                # movie_name = label.split('(')[0].strip().lower()
-                # title = label.split('(')[0].strip().lower()
-                # year = label.split('(')[-1].replace(')', '').strip()
-                # # check_response = output[output.rfind('\n') + 1:].lower()
-                # gen_title = output.split('(')[0].strip().lower()
-                # gen_year = output.split('(')[-1].replace(')', '').strip()
-                #
-                # if year.isdigit() is False:
-                #     year = ''
-                #     gen_year = ''
 
-                # if 'example' in self.args.rq_num or 'explain' in self.args.lora_weights:
-                #     check_response = output[output.lower().find("answer:"):].lower()
                 topk_results = []
                 for j, k in enumerate([1, 3, 5]):
                     output = '| '.join(response[:k])
@@ -220,11 +212,6 @@ class LLaMaEvaluator:
                         not_mentioned_cnt += 1.0
                     elif idx not in self.new_idx:
                         mentioned_cnt += 1.0
-
-                # if gen_title in dialog.lower() and gen_year in dialog.lower():
-                #     gen_mentioned_cnt += 1
-                # elif gen_title not in dialog.lower() or gen_year not in dialog.lower():
-                #     gen_not_mentioned_cnt += 1
 
                 generated_results.append(
                     {'CONTEXT': dialog, 'GEN': output, 'ANSWER': label, 'HIT': label.lower() in output.lower(),
