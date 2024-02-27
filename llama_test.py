@@ -184,7 +184,7 @@ class LLaMaEvaluator:
 
             responses, scores = self.evaluate(input_ids, attention_mask, model, max_new_tokens=self.args.max_new_tokens,
                                               num_beams=self.args.num_beams)
-            responses = np.reshape(responses, (-1, self.args.num_beams)).tolist() # [B, beam]
+            responses = np.reshape(responses, (-1, self.args.num_beams)).tolist()  # [B, beam]
             scores = np.reshape(scores, (-1, self.args.num_beams)).tolist()  # [B, beam]
 
             labels = batch[1]
@@ -193,30 +193,37 @@ class LLaMaEvaluator:
             # print("#################################################")
             # generated_results.extend(responses)
             for dialog, response, label, score in zip(batch[0], responses, labels, scores):
-                score_result = ', '.join(['{:.4f}'.format(x) for x in score])
+                if self.args.prompt == 'DI2E' or self.args.data_type == 'explanation':
+                    score = score[0]
+                    response = response[0]
 
-                topk_results = []
-                for j, k in enumerate([1, 3, 5]):
-                    output = '| '.join(response[:k])
-                    if label.lower() in output.lower():
-                        # if title == gen_title and year == gen_year:
-                        hits[j] += 1.0
+                    generated_results.append(
+                        {'CONTEXT': dialog, 'GEN': response, 'ANSWER': label, "score": score})
+
+                else:
+                    score_result = ', '.join(['{:.4f}'.format(x) for x in score])
+                    topk_results = []
+                    for j, k in enumerate([1, 3, 5]):
+                        output = '| '.join(response[:k])
+                        if label.lower() in output.lower():
+                            # if title == gen_title and year == gen_year:
+                            hits[j] += 1.0
+                            if idx in self.new_idx:
+                                not_mentioned_hit += 1.0
+                            elif idx not in self.new_idx:
+                                mentioned_hit += 1.0
+                        cnts[j] += 1.0
+                        hit_ratio = (hits[j] / cnts[j]) * 100
+                        topk_results.append('%.2f' % hit_ratio)
                         if idx in self.new_idx:
-                            not_mentioned_hit += 1.0
+                            not_mentioned_cnt += 1.0
                         elif idx not in self.new_idx:
-                            mentioned_hit += 1.0
-                    cnts[j] += 1.0
-                    hit_ratio = (hits[j] / cnts[j]) * 100
-                    topk_results.append('%.2f' % hit_ratio)
-                    if idx in self.new_idx:
-                        not_mentioned_cnt += 1.0
-                    elif idx not in self.new_idx:
-                        mentioned_cnt += 1.0
+                            mentioned_cnt += 1.0
 
-                generated_results.append(
-                    {'CONTEXT': dialog, 'GEN': output, 'ANSWER': label, 'HIT': label.lower() in output.lower(),
-                     'AVG_HIT': ', '.join(topk_results), 'NEW_ITEM': idx in self.new_idx, "score": score_result})
-                idx += 1
+                    generated_results.append(
+                        {'CONTEXT': dialog, 'GEN': output, 'ANSWER': label, 'HIT': label.lower() in output.lower(),
+                         'AVG_HIT': ', '.join(topk_results), 'NEW_ITEM': idx in self.new_idx, "score": score_result})
+                    idx += 1
 
             # mentioned_hit_ratio = mentioned_hit / mentioned_cnt
             # not_mentioned_hit_ratio = not_mentioned_hit / not_mentioned_cnt
