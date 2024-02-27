@@ -167,6 +167,7 @@ def review_read_data(args, mode):
 
     return instructions, labels, train_new
 
+
 def context_review_read_data(args, mode):
     review_data_path = os.path.join(args.dataset_path, 'review')
     if mode == "train":
@@ -183,8 +184,29 @@ def context_review_read_data(args, mode):
 
     return instructions, labels, train_new
 
+
+def process_crs_data(datas, mode, args):
+    instructions, labels, train_new = [], [], []
+    explanations = []
+    candidate_items, candidate_scores = [], []
+    if mode == "train":
+        new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
+    else:
+        new_idx = [i for i in range(len(datas))]
+    for idx, data in enumerate(datas):
+        instructions.append(data['context_tokens'])
+        labels.append(data['item'])
+        train_new.append(idx in new_idx)
+        if args.data_type == 'explanation':
+            explanations.append(data['explanation'])
+            # candidate_items.append(data['candidate_items'])
+            # candidate_scores.append(data['candidate_scores'])
+    return instructions, labels, train_new, explanations
+
+
 def crs_read_data(datas, mode, args):
     instructions, labels, train_new = [], [], []
+    candidate_items, candidate_scores = [], []
     target = "item"
     if "cot" in args.data_type and mode != "valid":
         cot_data_path = os.path.join(args.dataset_path, 'cot')
@@ -202,8 +224,11 @@ def crs_read_data(datas, mode, args):
         instructions.append(data['context_tokens'])
         labels.append(data[target])
         train_new.append(idx in new_idx)
+        if args.data_type == 'rerank' and mode == 'test':
+            candidate_items.append(data['candidate_items'])
+            candidate_scores.append(data['candidate_scores'])
 
-    return instructions, labels, train_new
+    return instructions, labels, train_new, candidate_items, candidate_scores
 
 
 def review_read_pretrain_data(args):

@@ -32,7 +32,7 @@ def parse_args():
     parser.add_argument("--lora_weights", type=str, default='lora-alpaca')
     parser.add_argument('--mode', type=str, default='test', choices=['train', 'test', 'valid', 'train_test'])
     parser.add_argument('--log_name', type=str, default='')
-    parser.add_argument('--prompt', type=str, default='withoutCoT')
+    parser.add_argument('--prompt', type=str, default='D2I')
     parser.add_argument('--data_type', type=str, default='default')
     parser.add_argument('--isNew', type=bool, default=False)
     parser.add_argument('--oversample_ratio', type=int, default=1)

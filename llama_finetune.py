@@ -72,6 +72,7 @@ def llama_finetune(
         instructions: list = None,
         labels: list = None,
         isNews: list = None,
+        explanations: list = [],
         # model/data params
         base_model: str = "",  # the only required argument
         data_path: str = "yahma/alpaca-cleaned",
@@ -246,8 +247,12 @@ def llama_finetune(
     #     data = load_dataset(data_path)
 
     data = []
-    for inst, lab, isNew in zip(instructions, labels, isNews):
-        data.append({"instruction": inst, "input": "", "output": lab, "isNew": isNew})
+    if args.prompt == 'DI2E':
+        for inst, lab, explanation, isNew in zip(instructions, labels, explanations, isNews):
+            data.append({"instruction": inst, "input": lab, "output": explanation, "isNew": isNew})
+    else:
+        for inst, lab, isNew in zip(instructions, labels, isNews):
+            data.append({"instruction": inst, "input": "", "output": lab, "isNew": isNew})
 
     first_sample = Dataset.from_pandas(pd.DataFrame([data[0]]))
     data = Dataset.from_pandas(pd.DataFrame(data))

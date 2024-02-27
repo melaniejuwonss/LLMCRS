@@ -38,12 +38,14 @@ class Textdataset(Dataset):
 
 class LLaMaEvaluator:
     def __init__(self, args, tokenizer, instructions: list = None, labels: list = None, negItems: list = None,
-                 prompt_template_name: str = ""):
+                 prompt_template_name: str = "", explanations=[]):
         self.args = args
         self.instructions = instructions
         self.labels = labels
         self.negItems = negItems
         self.tokenizer = tokenizer  # , LlamaTokenizer.from_pretrained(self.args.base_model)
+        self.explanations = explanations
+        # self.candidate_scores = candidate_scores
         self.prompter = Prompter(args, prompt_template_name)
         self.new_idx = json.load(open(os.path.join(self.args.dataset_path, 'test_new_idx.json'), 'r', encoding='utf-8'))
 
@@ -106,7 +108,10 @@ class LLaMaEvaluator:
     def prepare_dataloader(self):
         self.tokenizer.padding_side = 'left'
 
-        instructions = [self.prompter.generate_prompt(instruction=instruction) for instruction in self.instructions]
+        if self.args.prompt == 'DI2E':
+            instructions = [self.prompter.generate_prompt(instruction=instruction, input=label) for instruction, label in zip(self.instructions, self.labels)]
+        else:
+            instructions = [self.prompter.generate_prompt(instruction=instruction) for instruction in self.instructions]
         instruction_dataset = Textdataset(self.args, instructions, self.labels, self.tokenizer)
         dataloader = DataLoader(instruction_dataset, batch_size=self.args.eval_batch_size, shuffle=False)
 
@@ -181,7 +186,7 @@ class LLaMaEvaluator:
             # print("#################################################")
             # generated_results.extend(responses)
             for dialog, response, label, score in zip(batch[0], responses, labels, scores):
-                score_result = '| '.join(['{:.4f}'.format(x) for x in score])
+                score_result = ', '.join(['{:.4f}'.format(x) for x in score])
                 # if 'quiz' in self.args.stage:
                 #     movie_name = label.replace('(', ')').split(')')[1].strip().lower()
                 # elif 'crs' in self.args.stage:

@@ -21,7 +21,7 @@ from t5_test import T5Evaluator
 from utils.data import quiz_read_data, plot_read_data, meta_plot_review_read_data, review_read_data, crs_read_data, \
     synthetic_dialog_read_pretrain_data, review_read_pretrain_data, review_passage_read_pretrain_data, \
     synthetic_dialog_read_pretrain_data, meta_read_pretrain_data, refined_review_read_pretrain_data, \
-    context_review_read_data
+    context_review_read_data, process_crs_data
 from utils.parser import parse_args, dir_init
 from os.path import dirname, realpath
 
@@ -196,71 +196,14 @@ if __name__ == '__main__':
         valid_data = crs_dataset.valid_data
         test_data = crs_dataset.test_data
 
-        if "cot" in args.data_type:
-            # if args.JW is False:
-            #     temp = args.data_type
-            #     args.data_type = "default"
-            #     crs_train_instructions, crs_train_labels, crs_train_new = crs_read_data(train_data, "train", args)
-            #     crs_valid_instructions, crs_valid_labels, _ = crs_read_data(valid_data, "valid", args)
-            #     crs_test_instructions, crs_test_labels, _ = crs_read_data(test_data, "test", args)
-            #
-            #     crs_train_instructions = cutoffInstruction(crs_train_instructions, args.cutoff, True)
-            #     crs_valid_instructions = cutoffInstruction(crs_valid_instructions, args.cutoff, True)
-            #     crs_test_instructions = cutoffInstruction(crs_test_instructions, args.cutoff, True)
-            #
-            #     args.data_type = temp
-            #     cot_train_instructions, _, _ = crs_read_data(train_data, "train", args)
-            #     cot_test_instructions, _, _ = crs_read_data(test_data, "test", args)
-            #
-            #     crs_train_instructions = [crs + cot for crs, cot in zip(crs_train_instructions, cot_train_instructions)]
-            #     crs_test_instructions = [crs + cot for crs, cot in zip(crs_test_instructions, cot_test_instructions)]
-            # else:
-            crs_train_instructions, crs_train_labels, crs_train_new = crs_read_data(train_data, "train", args)
-            crs_test_instructions, crs_test_labels, _ = crs_read_data(test_data, "test", args)
+        crs_train_instructions, crs_train_labels, crs_train_new, crs_train_explanation = process_crs_data(train_data, "train", args)
+        # crs_valid_instructions, crs_valid_labels, _, _ = process_crs_data(valid_data, "valid", args)
+        crs_test_instructions, crs_test_labels, _, crs_test_explanation = process_crs_data(test_data, "test", args)
 
+        if 'gpt' not in args.base_model:
             crs_train_instructions = cutoffInstruction(crs_train_instructions, args.cutoff, True)
+            # crs_valid_instructions = cutoffInstruction(crs_valid_instructions, args.cutoff, True)
             crs_test_instructions = cutoffInstruction(crs_test_instructions, args.cutoff, True)
-        else:
-            crs_train_instructions, crs_train_labels, crs_train_new = crs_read_data(train_data, "train", args)
-            crs_valid_instructions, crs_valid_labels, _ = crs_read_data(valid_data, "valid", args)
-            crs_test_instructions, crs_test_labels, _ = crs_read_data(test_data, "test", args)
-
-            if 'gpt' not in args.base_model:
-                crs_train_instructions = cutoffInstruction(crs_train_instructions, args.cutoff, True)
-                crs_valid_instructions = cutoffInstruction(crs_valid_instructions, args.cutoff, True)
-                crs_test_instructions = cutoffInstruction(crs_test_instructions, args.cutoff, True)
-
-        # crs_train_instructions_addprompt, crs_test_instructions_addprompt, crs_valid_instructions_addprompt = [], [], []
-        # if args.JW:
-        #     args.template = "onlyinstruction"
-        #     for data in tqdm(crs_train_instructions):
-        #         crs_train_instructions_addprompt.append(
-        #             f"Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system).\n\nHere is the dialogue:\n{data}\n\nGuess which movie should be recommended to the user.")  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
-        #     for data in crs_valid_instructions:
-        #         crs_valid_instructions_addprompt.append(
-        #             f"Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system).\n\nHere is the dialogue:\n{data}\n\nGuess which movie should be recommended to the user.")  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
-        #     for data in tqdm(crs_test_instructions):
-        #         crs_test_instructions_addprompt.append(
-        #             f"Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system).\n\nHere is the dialogue:\n{data}\n\nGuess which movie should be recommended to the user.")
-        # if args.JW is False and args.TH is False:
-        #     for data in tqdm(crs_train_instructions):
-        #         crs_train_instructions_addprompt.append(
-        #             f"{data}\n\nGuess which movie should be recommended to the user.")  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
-        #     for data in crs_valid_instructions:
-        #         crs_valid_instructions_addprompt.append(
-        #             f"{data}\n\nGuess which movie should be recommended to the user.")  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
-        #     for data in tqdm(crs_test_instructions):
-        #         crs_test_instructions_addprompt.append(
-        #             f"{data}\n\nGuess which movie should be recommended to the user.")  # \nSystem: You should watch [BLANK]. Based on the conversation, guess the item for [BLANK]."
-        #
-        #     crs_train_instructions = crs_train_instructions_addprompt
-        #     crs_valid_instructions = crs_valid_instructions_addprompt
-        #     crs_test_instructions = crs_test_instructions_addprompt
-        #
-        # if args.TH is True:
-        #     template = "Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system). \n\n Here is the dialogue: \n %s \n\nGuess which movie should be recommended to the user. \n\n ### Response:"
-        #     crs_train_instructions = [template % data for data in crs_train_instructions]
-        #     crs_test_instructions = [template % data for data in crs_test_instructions]
 
     # Stage 에 따른 train, test 데이터셋 설정
     train_instructions = eval(f"{args.stage}_train_instructions")
@@ -305,11 +248,11 @@ if __name__ == '__main__':
         tokenizer = LlamaTokenizer.from_pretrained(args.base_model)
 
         evaluator = LLaMaEvaluator(args=args, tokenizer=tokenizer, instructions=test_instructions, labels=test_labels,
-                                   prompt_template_name=args.prompt)
+                                   prompt_template_name=args.prompt, explanations=crs_test_explanation)
         if 'train' in args.mode:
             llama_finetune(args=args, evaluator=evaluator, tokenizer=tokenizer, instructions=train_instructions,
                            labels=train_labels, isNews=train_new, num_epochs=args.epoch,
-                           prompt_template_name=args.prompt)
+                           prompt_template_name=args.prompt, explanations=crs_train_explanation)
         if 'test' in args.mode:
             # 특정 weight 지정 없이, 모든 epoch 에 해당하는 weights test
             if args.lora_weights[args.lora_weights.rfind('/') + 1:] != "lora-alpaca" \

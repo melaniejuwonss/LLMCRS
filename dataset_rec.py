@@ -72,14 +72,29 @@ class CRSDatasetRec:
                 self.valid_data = json.load(f)
             with open(os.path.join(augmented_data_path, 'test_data_augment.json'), 'r', encoding='utf-8') as f:
                 self.test_data = json.load(f)
+        elif self.args.data_type == 'explanation':
+            explanation_data_path = os.path.join(self.data_path, 'explanation')
+            with open(os.path.join(explanation_data_path, 'train_data_explanation.json'), 'r', encoding='utf-8') as f:
+                self.train_data = json.load(f)
+            with open(os.path.join(explanation_data_path, 'valid_data_explanation.json'), 'r', encoding='utf-8') as f:
+                self.valid_data = json.load(f)
+            with open(os.path.join(explanation_data_path, 'test_data_explanation.json'), 'r', encoding='utf-8') as f:
+                self.test_data = json.load(f)
+        elif self.args.data_type == 'cot':
+            cot_data_path = os.path.join(self.data_path, 'cot')
+            with open(os.path.join(cot_data_path, 'train_data_cot.json'), 'r', encoding='utf-8') as f:
+                self.train_data = json.load(f)
+            with open(os.path.join(cot_data_path, 'valid_data_cot.json'), 'r', encoding='utf-8') as f:
+                self.valid_data = json.load(f)
+            with open(os.path.join(cot_data_path, 'test_data_cot.json'), 'r', encoding='utf-8') as f:
+                self.test_data = json.load(f)
         else:
             train_data_raw, valid_data_raw, test_data_raw = self._load_raw_data()  # load raw train, valid, test data
-
             train_data = self._raw_data_process(train_data_raw)  # training sample 생성
             self.train_data = self.rec_process_fn(train_data)
             # self.mergeWithNegatives(self.test_data)
-            # with open('train_data_augment.json', 'w', encoding='utf-8') as f:
-            #     f.write(json.dumps(self.train_data, indent=4))
+            with open('data/redial/augmented/train_data_augment.json', 'w', encoding='utf-8') as f:
+                f.write(json.dumps(self.train_data, indent=4))
             # if self.args.isNew == True:
             #     self.train_data = [data for data in self.train_data if data['exist'] == False]
             if self.args.data_type == "lastutt":
@@ -93,8 +108,8 @@ class CRSDatasetRec:
             test_data = self._raw_data_process(test_data_raw)
             self.test_data = self.rec_process_fn(test_data)
             # self.mergeWithNegatives(self.train_data)
-            # with open('test_data_augment.json', 'w', encoding='utf-8') as f:
-            #     f.write(json.dumps(self.test_data, indent=4))
+            with open('data/redial/augmented/test_data_augment.json', 'w', encoding='utf-8') as f:
+                f.write(json.dumps(self.test_data, indent=4))
             if self.args.data_type == "lastutt":
                 self.test_data = [
                     {'role': data['role'],
@@ -106,8 +121,8 @@ class CRSDatasetRec:
             valid_data = self._raw_data_process(valid_data_raw)
             self.valid_data = self.rec_process_fn(valid_data)
             # self.mergeWithNegatives(self.valid_data)
-            # with open('valid_data_augment.json', 'w', encoding='utf-8') as f:
-            #     f.write(json.dumps(self.valid_data, indent=4))
+            with open('data/redial/augmented/valid_data_augment.json', 'w', encoding='utf-8') as f:
+                f.write(json.dumps(self.valid_data, indent=4))
 
     def mergeWithNegatives(self, dataset):
         for data in tqdm(dataset, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
