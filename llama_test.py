@@ -43,7 +43,8 @@ class LLaMaEvaluator:
         self.instructions = [i['context_tokens'] for i in dataset]
         self.labels = [i['item'] for i in dataset]
         # self.negItems = dataset['negItems']
-        self.explanations = [i['explanation'] for i in dataset]
+        if args.data_type == 'explanation':
+            self.explanations = [i['explanation'] for i in dataset]
         self.tokenizer = tokenizer  # , LlamaTokenizer.from_pretrained(self.args.base_model)
 
         # self.candidate_scores = candidate_scores
