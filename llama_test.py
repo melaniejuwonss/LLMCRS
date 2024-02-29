@@ -114,7 +114,9 @@ class LLaMaEvaluator:
             for idx, data in enumerate(self.dataset):
                 instruction = data['context_tokens']
                 for candidate in data['candidate_items']:
-                    instructions.append(self.prompter.generate_prompt(instruction=instruction, input=candidate))
+                    instruction = self.prompter.generate_prompt(instruction=instruction, input=candidate)
+                    instruction = instruction + f"The system recommends {candidate} because "
+                    instructions.append(instruction)
                     labels.append(data['item'])
         else:
             instructions = [self.prompter.generate_prompt(instruction=instruction) for instruction in self.instructions]
@@ -196,7 +198,6 @@ class LLaMaEvaluator:
                 if self.args.prompt == 'DI2E' or self.args.data_type == 'explanation':
                     score = score[0]
                     response = response[0]
-
                     generated_results.append(
                         {'CONTEXT': dialog, 'GEN': response, 'ANSWER': label, "score": score})
 
