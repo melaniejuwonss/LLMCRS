@@ -55,15 +55,15 @@ def createLogFile(args):
     return args
 
 
-def cutoffInstruction(instructions, length, reverse=False):
-    new_instructions = []
-    for data in tqdm(instructions):
+def cutoffInstruction(dataset, length, reverse=False):
+    # new_instructions = []
+    for data in tqdm(dataset):
         if reverse:
-            new_instructions.append(tokenizer.decode(tokenizer(data).input_ids[1:][-length:]))
+            data['context_tokens'] = tokenizer.decode(tokenizer(data['context_tokens']).input_ids[1:][-length:])
         else:
-            new_instructions.append(tokenizer.decode(tokenizer(data).input_ids[1:][:length]))
+            data['context_tokens'] = tokenizer.decode(tokenizer(data['context_tokens']).input_ids[1:][:length])
     logger.info('[Finish Cutting-off the instructions]')
-    return new_instructions
+    return [i['context_tokens'] for i in dataset]
 
 
 def truncInstruction(instructions, length):
@@ -201,9 +201,9 @@ if __name__ == '__main__':
         crs_test_instructions, crs_test_labels, _, crs_test_explanation = process_crs_data(test_data, "test", args)
 
         if 'gpt' not in args.base_model:
-            crs_train_instructions = cutoffInstruction(crs_train_instructions, args.cutoff, True)
+            crs_train_instructions = cutoffInstruction(train_data, args.cutoff, True)
             # crs_valid_instructions = cutoffInstruction(crs_valid_instructions, args.cutoff, True)
-            crs_test_instructions = cutoffInstruction(crs_test_instructions, args.cutoff, True)
+            crs_test_instructions = cutoffInstruction(test_data, args.cutoff, True)
 
     # Stage 에 따른 train, test 데이터셋 설정
     train_instructions = eval(f"{args.stage}_train_instructions")
