@@ -115,7 +115,6 @@ class LLaMaEvaluator:
                 instruction = data['context_tokens']
                 for candidate in data['candidate_items']:
                     instruction = self.prompter.generate_prompt(instruction=instruction, input=candidate)
-                    instruction = instruction + f"The system recommends {candidate} because "
                     instructions.append(instruction)
                     labels.append(data['item'])
         else:

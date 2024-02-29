@@ -1,6 +1,6 @@
 {
   "description": "CRS explanation template.",
-  "prompt_input": "I will give you a dialog between a user and a recommender systems.\n{instruction}\nIn this context, the system recommends the movie {input}.\nPlease provide an explanation for this recommendation within 200 tokens.\n### Explanation:",
+  "prompt_input": "Pretend you are a movie recommender system. I will give you a dialogue between a user and you (a recommender system).\n\n Here is the dialogue:\n{instruction}\n\nGuess which movie should be recommended to the user.\n\n### Response:{input}\n\n### Explanation:",
   "prompt_no_input": "",
   "response_split": "### Explanation:"
 }
