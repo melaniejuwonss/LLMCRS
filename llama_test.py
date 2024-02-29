@@ -114,8 +114,7 @@ class LLaMaEvaluator:
             for idx, data in enumerate(self.dataset):
                 instruction = data['context_tokens']
                 for candidate in data['candidate_items']:
-                    instruction = self.prompter.generate_prompt(instruction=instruction, input=candidate)
-                    instructions.append(instruction)
+                    instructions.append(self.prompter.generate_prompt(instruction=instruction, input=candidate))
                     labels.append(data['item'])
         else:
             instructions = [self.prompter.generate_prompt(instruction=instruction) for instruction in self.instructions]
