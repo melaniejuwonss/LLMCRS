@@ -154,10 +154,34 @@ Please provide an explanation for this recommendation within 200 tokens.
 
 """
 
+# "I will give you a dialog between a user and a recommender systems.\n%s\nPlease supplement each utterance in the dialog with more detailed explanation about mentioned items.\ndo not exceed 512 tokens. do not add new utterances"
+refinement_template = """I will give you a dialog between a user and a recommender systems.
+
+Please supplement each utterance in the dialog with more detailed explanation about mentioned items.do not exceed 512 tokens. do not add new utterances"
+
+Dialog.
+User: Hi I am looking for a movie like Super Troopers (2001) System: You should watch Police Academy (1984) User: Is that a great one ? I have never seen it . I have seen American Pie (1980) I mean American Pie (1999)
+
+Supplemented dialog.
+User: Hi, I am looking for a movie like \"Super Troopers\" (2001), a comedy film about a group of misfit Vermont state troopers who engage in ridiculous antics and pranks. \nSystem: You should watch \"Police Academy\" (1984), a comedy film about a group of misfit police recruits who go through training at the Police Academy. It has a similar humor and ensemble cast dynamic to \"Super Troopers.\" \nUser: Is that a great one? I have never seen it. I have seen \"American Pie\" (1999), a comedy film about a group of high school friends who make a pact to lose their virginity before graduation. It was a popular and successful film that spawned several sequels.
+
+Dialog.
+%s
+
+Supplemented dialog.
+"""
 
 # - Therefore, Blair Witch (2016) should be recommended.
 # - Therefore, Major League (1989) should be recommended.
 # - Therefore, The Lord of the Rings: The Fellowship of the Ring (2001) should be recommended.
+movie2name = json.load(open('data/redial/movie2name.json', 'r', encoding='utf-8'))
+id2name = {i[1][0]: i[1][1] for i in movie2name.items()}
+
+original_train_data = json.load((open('data/redial/augment/train_data_augment.json', 'r', encoding='utf-8')))
+original_test_data = json.load((open('data/redial/augment/test_data_augment.json', 'r', encoding='utf-8')))
+
+refinedReview = json.load(open('data/redial/review/refinedReview_1.json', 'r', encoding='utf-8'))
+name2review = {i['item']: i['context_tokens'] for i in refinedReview}
 
 
 def execute(args,
@@ -168,27 +192,27 @@ def execute(args,
     cnt = args.chatgpt_cnt
     for instruction, label in tqdm(zip(instructions[cnt:], labels[cnt:]),
                                    bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
-        mentioned_reviews = []
-        for idx in original_train_data[cnt]['context_items']:
-            name = id2name[idx]
-            if name in name2review:
-                review = name2review[name]
-                mentioned_reviews.append(review)
-
-        if label in name2review:
-            target_review = name2review[label]
-            mentioned_reviews.append(target_review)
-
-        if len(mentioned_reviews) > 0:
-            mentioned_reviews = '\n'.join(mentioned_reviews)
-            mentioned_reviews_concat = f"""I will give reviews of some movies:
-            {mentioned_reviews}\n
-            """
-        else:
-            mentioned_reviews_concat = ''
+        # mentioned_reviews = []
+        # for idx in original_train_data[cnt]['context_items']:
+        #     name = id2name[idx]
+        #     if name in name2review:
+        #         review = name2review[name]
+        #         mentioned_reviews.append(review)
+        #
+        # if label in name2review:
+        #     target_review = name2review[label]
+        #     mentioned_reviews.append(target_review)
+        #
+        # if len(mentioned_reviews) > 0:
+        #     mentioned_reviews = '\n'.join(mentioned_reviews)
+        #     mentioned_reviews_concat = f"""I will give reviews of some movies:\n{mentioned_reviews}\n"""
+        # else:
+        #     mentioned_reviews_concat = ''
         # user_preference_template = mentioned_reviews_concat + user_preference_template
 
-        content = mentioned_reviews_concat + explanation_template % (instruction, label)
+        content = refinement_template % instruction
+        # content = mentioned_reviews_concat + refinement_template % instruction
+
         try:
             response = openai.ChatCompletion.create(
                 model=MODEL,
@@ -245,12 +269,4 @@ def chatgpt_test(args,
 if __name__ == "__main__":
     # fire.Fire(main)
     args = parse_args()
-    movie2name = json.load(open('data/redial/movie2name.json', 'r', encoding='utf-8'))
-    id2name = {i[1][0]: i[1][1] for i in movie2name.items()}
-
-    original_train_data = json.load((open('data/redial/augmented/train_data_augment.json', 'r', encoding='utf-8')))
-    original_test_data = json.load((open('data/redial/augmented/test_data_augment.json', 'r', encoding='utf-8')))
-
-    refinedReview = json.load(open('data/redial/review/refinedReview_1.json', 'r', encoding='utf-8'))
-    name2review = {i['item']: i['context_tokens'] for i in refinedReview}
     chatgpt_test(args)

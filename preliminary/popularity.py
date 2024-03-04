@@ -319,7 +319,7 @@ def evaluate():
     llamadatas = jsonlines.open(
         f'../result/meta-llama-Llama-2-7b-chat-hf/imp/1211161057_meta-llama-Llama-2-7b-chat-hf_DIN2I_E2.json')
     gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/rq1_5choice_0920111906.json', 'r', encoding='utf-8'))
-    test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r'))
+    test_datas = json.load(open('../data/redial/augment/test_data_augment.json', 'r'))
     hit, cnt, mentioned_cnt, not_mentioned_cnt, mentioned_hit, not_mentioned_hit = 0, 0, 0, 0, 0, 0
 
     for idx, data in enumerate(llamadatas):
@@ -344,7 +344,7 @@ def evaluate():
         cnt += 1
     print(f"{round(hit/ cnt * 100,2)}\t{round(mentioned_hit / mentioned_cnt * 100,2)}\t{round(not_mentioned_hit / not_mentioned_cnt * 100, 2)}")  # 55
     ############################################
-    test_datas = json.load(open('../data/redial/augmented/test_data_augment.json', 'r'))
+    test_datas = json.load(open('../data/redial/augment/test_data_augment.json', 'r'))
     # for i in range(5):
     hit, cnt, mentioned_cnt, mentioned_hit, not_mentioned_cnt, not_mentioned_hit = 0, 0, 0, 0, 0, 0,
     gpt_datas = json.load(open('../result/gpt-3.5-turbo/imp/lastUtt.json', 'r',encoding='utf-8'))
