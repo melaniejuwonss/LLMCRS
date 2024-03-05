@@ -189,12 +189,12 @@ def process_crs_data(datas, mode, args):
     instructions, labels, train_new = [], [], []
     explanations = []
     candidate_items, candidate_scores = [], []
-    if "train" in mode:
+    if "train" == mode:
         new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
     else:
         new_idx = [i for i in range(len(datas))]
     for idx, data in enumerate(datas):
-        if 'train' in mode and idx not in new_idx and args.only_new is True:
+        if 'train' == mode and idx not in new_idx and args.only_new is True:
             continue
         instructions.append(data['context_tokens'])
         labels.append(data['item'])
