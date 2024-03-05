@@ -77,8 +77,8 @@ class CRSDatasetRec:
         if data_path != '':
             with open(os.path.join(data_path, f'train_data_{self.args.data_type}.json'), 'r', encoding='utf-8') as f:
                 self.train_data = json.load(f)
-            with open(os.path.join(data_path, f'valid_data_{self.args.data_type}.json'), 'r', encoding='utf-8') as f:
-                self.valid_data = json.load(f)
+            # with open(os.path.join(data_path, f'valid_data_{self.args.data_type}.json'), 'r', encoding='utf-8') as f:
+            #     self.valid_data = json.load(f)
             with open(os.path.join(data_path, f'test_data_{self.args.data_type}.json'), 'r', encoding='utf-8') as f:
                 self.test_data = json.load(f)
         else:

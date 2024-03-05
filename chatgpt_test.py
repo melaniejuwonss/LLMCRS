@@ -157,7 +157,7 @@ Please provide an explanation for this recommendation within 200 tokens.
 # "I will give you a dialog between a user and a recommender systems.\n%s\nPlease supplement each utterance in the dialog with more detailed explanation about mentioned items.\ndo not exceed 512 tokens. do not add new utterances"
 refinement_template = """I will give you a dialog between a user and a recommender systems.
 
-Please supplement each utterance in the dialog with more detailed explanation about mentioned items.do not exceed 512 tokens. do not add new utterances"
+Please provide additional detailed information about each item mentioned in the dialogue without adding any new utterances. Ensure that the total text length does not exceed 512 tokens.
 
 Dialog.
 User: Hi I am looking for a movie like Super Troopers (2001) System: You should watch Police Academy (1984) User: Is that a great one ? I have never seen it . I have seen American Pie (1980) I mean American Pie (1999)
