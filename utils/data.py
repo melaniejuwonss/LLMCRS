@@ -194,7 +194,7 @@ def process_crs_data(datas, mode, args):
     else:
         new_idx = [i for i in range(len(datas))]
     for idx, data in enumerate(datas):
-        if mode == 'train' and idx not in new_idx and args.only_new is True:
+        if 'train' in mode and idx not in new_idx and args.only_new is True:
             continue
         instructions.append(data['context_tokens'])
         labels.append(data['item'])
