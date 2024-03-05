@@ -193,7 +193,7 @@ if __name__ == '__main__':
 
     if args.stage.lower() == "crs" or args.crs_merge is True:
         crs_dataset = CRSDatasetRec(args)
-        train_data = crs_dataset.train_data
+        train_data = crs_dataset.test_data
         # valid_data = crs_dataset.valid_data
         test_data = crs_dataset.test_data
 
