@@ -194,7 +194,7 @@ if __name__ == '__main__':
         crs_dataset = CRSDatasetRec(args)
         train_data = crs_dataset.train_data
         # valid_data = crs_dataset.valid_data
-        test_data = crs_dataset.train_data
+        test_data = crs_dataset.test_data
 
         crs_train_instructions, crs_train_labels, crs_train_new, crs_train_explanation = process_crs_data(train_data, "train", args)
         # crs_valid_instructions, crs_valid_labels, _, _ = process_crs_data(valid_data, "valid", args)
