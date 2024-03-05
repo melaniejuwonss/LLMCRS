@@ -189,7 +189,7 @@ def process_crs_data(datas, mode, args):
     instructions, labels, train_new = [], [], []
     explanations = []
     candidate_items, candidate_scores = [], []
-    if mode == "train":
+    if "train" in mode:
         new_idx = json.load(open(os.path.join(args.dataset_path, 'train_new_idx.json'), 'r', encoding='utf-8'))
     else:
         new_idx = [i for i in range(len(datas))]
