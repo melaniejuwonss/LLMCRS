@@ -162,8 +162,10 @@ Please provide additional detailed information about each item mentioned in the 
 Dialog.
 User: Hi I am looking for a movie like Super Troopers (2001) System: You should watch Police Academy (1984) User: Is that a great one ? I have never seen it . I have seen American Pie (1980) I mean American Pie (1999)
 
-Supplemented dialog.
-User: Hi, I am looking for a movie like \"Super Troopers\" (2001), a comedy film about a group of misfit Vermont state troopers who engage in ridiculous antics and pranks. \nSystem: You should watch \"Police Academy\" (1984), a comedy film about a group of misfit police recruits who go through training at the Police Academy. It has a similar humor and ensemble cast dynamic to \"Super Troopers.\" \nUser: Is that a great one? I have never seen it. I have seen \"American Pie\" (1999), a comedy film about a group of high school friends who make a pact to lose their virginity before graduation. It was a popular and successful film that spawned several sequels.
+Supplemented dialog. 
+User: Hi, I am looking for a movie like Super Troopers (2001), a comedy film about a group of misfit Vermont state troopers who engage in ridiculous antics and pranks. \nSystem: You should watch \"Police Academy\" (1984), a comedy film about a group of misfit police recruits 
+who go through training at the Police Academy. It has a similar humor and ensemble cast dynamic to Super Troopers. \nUser: Is that a great one? I have never seen it. I have seen American Pie (1999), a comedy film about a group of high school friends who make a pact to lose their virginity before 
+graduation. It was a popular and successful film that spawned several sequels. 
 
 Dialog.
 %s
