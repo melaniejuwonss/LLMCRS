@@ -37,14 +37,13 @@ class Textdataset(Dataset):
 
 
 class LLaMaEvaluator:
-    def __init__(self, args, tokenizer, dataset, prompt_template_name: str = ""):
+    def __init__(self, args, tokenizer, insturctions, labels, explanation=[], prompt_template_name: str = ""):
         self.args = args
-        self.dataset = dataset
-        self.instructions = [i['context_tokens'] for i in dataset]
-        self.labels = [i['item'] for i in dataset]
+        # self.dataset = dataset
+        self.instructions = insturctions  # [i['context_tokens'] for i in dataset]
+        self.labels = labels  # [i['item'] for i in dataset]
         # self.negItems = dataset['negItems']
-        if args.data_type == 'explanation':
-            self.explanations = [i['explanation'] for i in dataset]
+        self.explanations = explanation  # [i['explanation'] for i in dataset]
         self.tokenizer = tokenizer  # , LlamaTokenizer.from_pretrained(self.args.base_model)
 
         # self.candidate_scores = candidate_scores
@@ -111,15 +110,15 @@ class LLaMaEvaluator:
         self.tokenizer.padding_side = 'left'
         instructions = []
         labels = []
-        if self.args.prompt == 'DI2E':
-            for idx, data in enumerate(self.dataset):
-                instruction = data['context_tokens']
-                for candidate in data['candidate_items']:
-                    instructions.append(self.prompter.generate_prompt(instruction=instruction, input=candidate))
-                    labels.append(data['item'])
-        else:
-            instructions = [self.prompter.generate_prompt(instruction=instruction) for instruction in self.instructions]
-            labels = self.labels
+        # if self.args.prompt == 'DI2E':
+        #     for idx, instruction in enumerate(self.instructions):
+        #         # instruction = data['context_tokens']
+        #         for candidate in data['candidate_items']:
+        #             instructions.append(self.prompter.generate_prompt(instruction=instruction, input=candidate))
+        #             labels.append(data['item'])
+        # else:
+        instructions = [self.prompter.generate_prompt(instruction=instruction) for instruction in self.instructions]
+        labels = self.labels
         instruction_dataset = Textdataset(self.args, instructions, labels, self.tokenizer)
         dataloader = DataLoader(instruction_dataset, batch_size=self.args.eval_batch_size, shuffle=False)
 
