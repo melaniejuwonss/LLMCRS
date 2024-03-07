@@ -21,9 +21,8 @@ def parse_args():
     parser.add_argument('--max_dialog_len', type=int, default=128)
     parser.add_argument('--rq_num', type=str, default='1_5choice')
     parser.add_argument('--base_model', type=str, default='meta-llama/Llama-2-7b-chat-hf',
-                        choices=['meta-llama/Llama-2-7b-hf', 'meta-llama/Llama-2-13b-hf',
-                                 'meta-llama/Llama-2-7b-chat-hf', 'gpt-3.5-turbo', 'google/flan-t5-large', 't5-small',
-                                 't5-large'])
+                        choices=['meta-llama/Llama-2-7b-hf', 'meta-llama/Llama-2-13b-hf', 'meta-llama/Llama-2-7b-chat-hf',
+                                 'meta-llama/Llama-2-7b-chat-hf', 'gpt-3.5-turbo', 'google/flan-t5-large', 't5-small', 't5-large'])
     parser.add_argument('--dataset_path', type=str, default='data/redial')
     parser.add_argument('--stage', type=str, default='quiz')  # crs or quiz
     parser.add_argument('--model_name', type=str, default='llama')

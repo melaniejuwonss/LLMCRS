@@ -200,7 +200,11 @@ if __name__ == '__main__':
         crs_train_instructions, crs_train_labels, crs_train_new, crs_train_explanation = process_crs_data(train_data, "train", args)
         # crs_valid_instructions, crs_valid_labels, _, _ = process_crs_data(valid_data, "valid", args)
         crs_test_instructions, crs_test_labels, _, crs_test_explanation = process_crs_data(test_data, "test", args)
-
+        # with open('data/redial/augment/train_data_augment.json', 'w', encoding='utf-8') as f:
+        #     f.write(json.dumps([{'context_tokens': i, 'item': j} for (i, j) in zip(crs_train_instructions, crs_train_labels)], indent=4))
+        #
+        # with open('data/redial/augment/test_data_augment.json', 'w', encoding='utf-8') as f:
+        #     f.write(json.dumps([{'context_tokens': i, 'item': j} for (i, j) in zip(crs_test_instructions, crs_test_labels)], indent=4))
         if 'gpt' not in args.base_model:
             crs_train_instructions = cutoffInstruction(crs_train_instructions, args.cutoff, True)
             # crs_valid_instructions = cutoffInstruction(crs_valid_instructions, args.cutoff, True)
