@@ -240,7 +240,7 @@ def llama_finetune(
                                                                     ]  # could be sped up, probably
         return tokenized_full_prompt
 
-    # quantization_config = BitsAndBytesConfig(llm_int8_enable_fp32_cpu_offload=True)
+    quantization_config = BitsAndBytesConfig(llm_int8_enable_fp32_cpu_offload=True)
     # if data_path.endswith(".json") or data_path.endswith(".jsonl"):
     #     data = load_dataset("json", data_files=data_path)
     # else:
@@ -278,7 +278,7 @@ def llama_finetune(
         # llm_int8_enable_fp32_cpu_offload=True,
         torch_dtype=torch.float16,
         device_map=device_map,
-        # quantization_config=quantization_config,
+        quantization_config=quantization_config,
     )
 
     tokenizer.pad_token_id = (
