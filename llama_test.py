@@ -179,8 +179,10 @@ class LLaMaEvaluator:
         for batch in tqdm(self.dataloader, bar_format=' {percentage:3.0f} % | {bar:23} {r_bar}'):
             generated_results = []
             batched_inputs = self.tokenizer(batch[0], padding=True, return_tensors="pt")
-            input_ids = batched_inputs["input_ids"].to(self.args.device_id)
-            attention_mask = batched_inputs["attention_mask"].to(self.args.device_id)
+            # input_ids = batched_inputs["input_ids"].to(self.args.device_id)
+            # attention_mask = batched_inputs["attention_mask"].to(self.args.device_id)
+            input_ids = batched_inputs["input_ids"].to("cuda")
+            attention_mask = batched_inputs["attention_mask"].to("cuda")
 
             responses, scores = self.evaluate(input_ids, attention_mask, model, max_new_tokens=self.args.max_new_tokens,
                                               num_beams=self.args.num_beams)
