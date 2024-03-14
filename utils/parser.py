@@ -48,6 +48,7 @@ def parse_args():
     parser.add_argument('--context_review_merge', type=bool, default=False)
     parser.add_argument('--pretrain_merge', type=bool, default=False)
     parser.add_argument('--debug', type=bool, default=False)
+    parser.add_argument('--peft', type=str, default='lora')
 
     parser.add_argument('--warmup', type=float, default=0)
 

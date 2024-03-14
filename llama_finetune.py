@@ -290,20 +290,22 @@ def llama_finetune(
 
     model = prepare_model_for_int8_training(model)
 
-    # config = LoraConfig(
-    #     r=lora_r,
-    #     lora_alpha=lora_alpha,
-    #     target_modules=lora_target_modules,
-    #     lora_dropout=lora_dropout,
-    #     bias="none",
-    #     task_type="CAUSAL_LM",
-    # )
-    config = IA3Config(
-        peft_type="IA3",
-        task_type="CAUSAL_LM",
-        target_modules=['q_proj', 'k_proj', 'down_proj'],
-        feedforward_modules=["down_proj"],
-    )
+    if args.peft.lower() == 'lora':
+        config = LoraConfig(
+            r=lora_r,
+            lora_alpha=lora_alpha,
+            target_modules=lora_target_modules,
+            lora_dropout=lora_dropout,
+            bias="none",
+            task_type="CAUSAL_LM",
+        )
+    elif args.peft.lower() == 'ia3':
+        config = IA3Config(
+            peft_type="IA3",
+            task_type="CAUSAL_LM",
+            target_modules=['q_proj', 'k_proj', 'down_proj'],
+            feedforward_modules=["down_proj"],
+        )
     # if args.lora_weights[args.lora_weights.rfind('/') + 1:] != "lora-alpaca":
     #     model = PeftModel.from_pretrained(
     #         model,
