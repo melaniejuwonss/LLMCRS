@@ -244,7 +244,7 @@ def llama_finetune(
                                                                     ]  # could be sped up, probably
         return tokenized_full_prompt
 
-    quantization_config = BitsAndBytesConfig(load_in_8bit=True) #, llm_int8_enable_fp32_cpu_offload=True)
+    quantization_config = BitsAndBytesConfig(load_in_8bit=True)  # , llm_int8_enable_fp32_cpu_offload=True)
     # if data_path.endswith(".json") or data_path.endswith(".jsonl"):
     #     data = load_dataset("json", data_files=data_path)
     # else:
@@ -292,22 +292,15 @@ def llama_finetune(
 
     model = prepare_model_for_int8_training(model)
 
-    if args.peft.lower() == 'lora':
-        config = LoraConfig(
-            r=lora_r,
-            lora_alpha=lora_alpha,
-            target_modules=lora_target_modules,
-            lora_dropout=lora_dropout,
-            bias="none",
-            task_type="CAUSAL_LM",
-        )
-    elif args.peft.lower() == 'ia3':
-        config = IA3Config(
-            peft_type="IA3",
-            task_type="CAUSAL_LM",
-            target_modules=['q_proj', 'k_proj', 'down_proj'],
-            feedforward_modules=["down_proj"],
-        )
+    config = LoraConfig(
+        r=lora_r,
+        lora_alpha=lora_alpha,
+        target_modules=lora_target_modules,
+        lora_dropout=lora_dropout,
+        bias="none",
+        task_type="CAUSAL_LM",
+    )
+
     # if args.lora_weights[args.lora_weights.rfind('/') + 1:] != "lora-alpaca":
     #     model = PeftModel.from_pretrained(
     #         model,
@@ -345,9 +338,6 @@ def llama_finetune(
         # keeps Trainer from trying its own DataParallelism when more than 1 gpu is available
         model.is_parallelizable = True
         model.model_parallel = True
-
-    # if torch.__version__ >= "2" and sys.platform != "win32":
-    #     model = torch.compile(model)
 
     trainer = Trainer(
         model=model,
