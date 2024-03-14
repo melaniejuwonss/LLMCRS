@@ -32,8 +32,13 @@ def convertIds2Names(id_list, id2name):
 
 def createLogFile(args):
     mdhm = str(datetime.now(timezone('Asia/Seoul')).strftime('%m%d%H%M%S'))
-    result_path = os.path.join(args.home, args.output_dir, args.base_model.replace('/', '-'), mdhm[:4])
-    score_path = os.path.join(args.home, args.score_dir, args.base_model.replace('/', '-'), mdhm[:4])
+    result_path = os.path.join(args.home, args.output_dir, args.base_model.replace('/', '-'))
+    score_path = os.path.join(args.home, args.score_dir, args.base_model.replace('/', '-'))
+    if not os.path.exists(result_path): os.mkdir(result_path)
+    if not os.path.exists(score_path): os.mkdir(score_path)
+
+    result_path = os.path.join(result_path, mdhm[:4])
+    score_path = os.path.join(score_path, mdhm[:4])
     if not os.path.exists(result_path): os.mkdir(result_path)
     if not os.path.exists(score_path): os.mkdir(score_path)
 
