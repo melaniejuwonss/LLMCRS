@@ -205,6 +205,12 @@ if __name__ == '__main__':
         #
         # with open('data/redial/augment/test_data_augment.json', 'w', encoding='utf-8') as f:
         #     f.write(json.dumps([{'context_tokens': i, 'item': j} for (i, j) in zip(crs_test_instructions, crs_test_labels)], indent=4))
+
+        if args.debug:
+            crs_train_instructions = crs_train_instructions[:100]
+            crs_train_labels = crs_train_labels[:100]
+            crs_train_new = crs_train_new[:100]
+
         if 'gpt' not in args.base_model:
             crs_train_instructions = cutoffInstruction(crs_train_instructions, args.cutoff, True)
             # crs_valid_instructions = cutoffInstruction(crs_valid_instructions, args.cutoff, True)
