@@ -346,8 +346,8 @@ def llama_finetune(
         model.is_parallelizable = True
         model.model_parallel = True
 
-    if torch.__version__ >= "2" and sys.platform != "win32":
-        model = torch.compile(model)
+    # if torch.__version__ >= "2" and sys.platform != "win32":
+    #     model = torch.compile(model)
 
     trainer = Trainer(
         model=model,
@@ -393,7 +393,7 @@ def llama_finetune(
 
     trainer.train(resume_from_checkpoint=resume_from_checkpoint)
 
-    # model.save_pretrained(output_dir)
+    model.save_pretrained(output_dir)
 
     print(
         "\n If there's a warning about missing keys above, please disregard :)"
