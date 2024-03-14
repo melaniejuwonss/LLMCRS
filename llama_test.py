@@ -141,7 +141,6 @@ class LLaMaEvaluator:
             top_p=top_p,
             top_k=top_k,
             num_beams=num_beams,
-            do_sample=True,
             num_return_sequences=num_beams,
             **kwargs,
         )
