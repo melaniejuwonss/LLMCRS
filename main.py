@@ -215,6 +215,8 @@ if __name__ == '__main__':
             crs_train_instructions = crs_train_instructions[:100]
             crs_train_labels = crs_train_labels[:100]
             crs_train_new = crs_train_new[:100]
+            crs_test_instructions = crs_test_instructions[:100]
+            crs_test_labels = crs_test_labels[:100]
 
         if 'gpt' not in args.base_model:
             crs_train_instructions = cutoffInstruction(crs_train_instructions, args.cutoff, True)
