@@ -183,8 +183,8 @@ class LLaMaEvaluator:
             batched_inputs = self.tokenizer(batch[0], padding=True, return_tensors="pt")
             # input_ids = batched_inputs["input_ids"].to(self.args.device_id)
             # attention_mask = batched_inputs["attention_mask"].to(self.args.device_id)
-            input_ids = batched_inputs["input_ids"].to("cuda")
-            attention_mask = batched_inputs["attention_mask"].to("cuda")
+            input_ids = batched_inputs["input_ids"].to("cuda:0")
+            attention_mask = batched_inputs["attention_mask"].to("cuda:0")
 
             responses, scores = self.evaluate(input_ids, attention_mask, model, max_new_tokens=self.args.max_new_tokens,
                                               num_beams=self.args.num_beams)
