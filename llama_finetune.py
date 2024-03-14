@@ -346,6 +346,9 @@ def llama_finetune(
         model.is_parallelizable = True
         model.model_parallel = True
 
+    if torch.__version__ >= "2" and sys.platform != "win32":
+        model = torch.compile(model)
+
     trainer = Trainer(
         model=model,
         train_dataset=train_data,
