@@ -9,7 +9,7 @@ from datasets import load_dataset, Dataset
 from transformers import Trainer, TrainingArguments, TrainerState, TrainerControl
 import wandb
 from peft import PeftModel
-from peft import IA3Config
+# from peft import IA3Config
 
 from utils.parser import parse_args
 
