@@ -152,13 +152,13 @@ class LLaMaEvaluator:
                 attention_mask=attention_mask,
                 generation_config=generation_config,
                 return_dict_in_generate=True,
-                output_scores=True,
+                # output_scores=True,
                 max_new_tokens=max_new_tokens,
             )
         s = generation_output.sequences
-        scores = generation_output.sequences_scores
+        # scores = generation_output.sequences_scores
         output = self.tokenizer.batch_decode(s, skip_special_tokens=True)
-        return [self.prompter.get_response(i) for i in output], scores.to('cpu').numpy()
+        return [self.prompter.get_response(i) for i in output] #, scores.to('cpu').numpy()
 
     def test(self, model=None, epoch=None):
         if model is None:
@@ -186,25 +186,25 @@ class LLaMaEvaluator:
             input_ids = batched_inputs["input_ids"].to("cuda:0")
             attention_mask = batched_inputs["attention_mask"].to("cuda:0")
 
-            responses, scores = self.evaluate(input_ids, attention_mask, model, max_new_tokens=self.args.max_new_tokens,
+            responses = self.evaluate(input_ids, attention_mask, model, max_new_tokens=self.args.max_new_tokens,
                                               num_beams=self.args.num_beams)
             responses = np.reshape(responses, (-1, self.args.num_beams)).tolist()  # [B, beam]
-            scores = np.reshape(scores, (-1, self.args.num_beams)).tolist()  # [B, beam]
+            # scores = np.reshape(scores, (-1, self.args.num_beams)).tolist()  # [B, beam]
 
             labels = batch[1]
             # print("Instruction:", instruction)
             # print("Response:", response)
             # print("#################################################")
             # generated_results.extend(responses)
-            for dialog, response, label, score in zip(batch[0], responses, labels, scores):
+            for dialog, response, label in zip(batch[0], responses, labels):
                 if self.args.prompt == 'DI2E' or self.args.data_type == 'explanation':
-                    score = score[0]
+                    # score = score[0]
                     response = response[0]
                     generated_results.append(
-                        {'CONTEXT': dialog, 'GEN': response, 'ANSWER': label, "score": score})
+                        {'CONTEXT': dialog, 'GEN': response, 'ANSWER': label})
 
                 else:
-                    score_result = ', '.join(['{:.4f}'.format(x) for x in score])
+                    # score_result = ', '.join(['{:.4f}'.format(x) for x in score])
                     topk_results = []
                     for j, k in enumerate([1, 3, 5]):
                         output = '| '.join(response[:k])
@@ -225,7 +225,7 @@ class LLaMaEvaluator:
 
                     generated_results.append(
                         {'CONTEXT': dialog, 'GEN': output, 'ANSWER': label, 'HIT': label.lower() in output.lower(),
-                         'AVG_HIT': ', '.join(topk_results), 'NEW_ITEM': idx in self.new_idx, "score": score_result})
+                         'AVG_HIT': ', '.join(topk_results), 'NEW_ITEM': idx in self.new_idx})
                     idx += 1
 
             # mentioned_hit_ratio = mentioned_hit / mentioned_cnt
