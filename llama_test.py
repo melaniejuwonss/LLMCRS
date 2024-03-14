@@ -152,6 +152,7 @@ class LLaMaEvaluator:
                 generation_config=generation_config,
                 return_dict_in_generate=True,
                 output_scores=True,
+                do_sample=True,
                 max_new_tokens=max_new_tokens,
             )
         s = generation_output.sequences
