@@ -78,7 +78,8 @@ class LLaMaEvaluator:
                 torch_dtype=torch.float16,
                 device_map='auto' # 이거 auto로 하니가 왜 인지 모르는데, 가끔식 GPU 할당이 이상하게 됌. 특정 GPU로 고정 할당하니까 문제 해결된 듯?
             ) # .to(self.args.device_id)
-
+            if torch.__version__ >= "2" and sys.platform != "win32":
+                model = torch.compile(model)
             # todo: For evaluating the PEFT model
             if self.args.lora_weights != "lora-alpaca":
                 model = PeftModel.from_pretrained(
