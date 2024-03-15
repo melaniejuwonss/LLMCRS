@@ -109,7 +109,7 @@ def llama_finetune(
         resume_from_checkpoint: str = None,  # either training checkpoint or final adapter
         prompt_template_name: str = "alpaca_legacy",  # The prompt template to use, will default to alpaca.
 ):
-    dataset = load_dataset("imdb", split="train")
+    # dataset = load_dataset("imdb", split="train")
 
     base_model = args.base_model
     batch_size = args.batch_size
