@@ -193,6 +193,16 @@ def llama_finetune(
     #     # device_map='auto'
     # ).to(args.device_id)
     # tokenizer = LlamaTokenizer.from_pretrained(base_model)
+    def formatting_prompts_func(data_point):
+        prompter = Prompter(args, prompt_template_name)
+
+        full_prompt = prompter.generate_prompt(
+            data_point["text"],
+            data_point["input"],
+            data_point["label"],
+            data_point['isNew']
+        )
+        return full_prompt
 
     def tokenize(prompt, add_eos_token=True):
         # there's probably a way to do this with the tokenizer settings
@@ -442,6 +452,7 @@ def llama_finetune(
         tokenizer=tokenizer,
         args=training_arguments,
         packing=packing,
+        formatting_func=formatting_prompts_func,
         callbacks=[QueryEvalCallback(args, evaluator)]
     )
 
