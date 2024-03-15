@@ -443,7 +443,7 @@ def llama_finetune(
             print(f"Checkpoint {checkpoint_name} not found")
     else:
         resume_from_checkpoint = None
-    model.print_trainable_parameters()  # Be more transparent about the % of trainable params.
+    # model.print_trainable_parameters()  # Be more transparent about the % of trainable params.
 
     if not ddp and torch.cuda.device_count() > 1:
         # keeps Trainer from trying its own DataParallelism when more than 1 gpu is available
