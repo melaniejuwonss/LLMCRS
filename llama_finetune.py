@@ -218,9 +218,9 @@ def llama_finetune(
 
     def generate_and_tokenize_prompt(data_point, writeFlag=None):
         full_prompt = prompter.generate_prompt(
-            data_point["instruction"],
+            data_point["text"],
             data_point["input"],
-            data_point["output"],
+            data_point["label"],
             data_point['isNew']
         )
         if writeFlag:
@@ -230,7 +230,7 @@ def llama_finetune(
         tokenized_full_prompt = tokenize(full_prompt)
         if not train_on_inputs:
             user_prompt = prompter.generate_prompt(
-                data_point["instruction"], data_point["input"]
+                data_point["text"], data_point["input"]
             )
             tokenized_user_prompt = tokenize(
                 user_prompt, add_eos_token=add_eos_token
