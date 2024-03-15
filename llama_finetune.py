@@ -58,7 +58,7 @@ class QueryEvalCallback(TrainerCallback):
             os.makedirs(path)
         # if torch.__version__ >= "2" and sys.platform != "win32":
         #     model = torch.compile(model)
-        loguru.info("SAVE THE MODEL!!!!!!")
+        print("SAVE THE MODEL!!!!!!")
 
         model.save_pretrained(path, safe_serialization=False)
         # trainer = kwargs['trainer']
@@ -451,12 +451,15 @@ def llama_finetune(
         model=model,
         train_dataset=train_data,
         peft_config=peft_config,
-        dataset_text_field="text",
+        # dataset_text_field="text",
         max_seq_length=max_seq_length,
         tokenizer=tokenizer,
         args=training_arguments,
         packing=packing,
         formatting_func=formatting_prompts_func,
+        data_collator=transformers.DataCollatorForSeq2Seq(
+            tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
+        ),
         callbacks=[QueryEvalCallback(args, evaluator)]
     )
 
