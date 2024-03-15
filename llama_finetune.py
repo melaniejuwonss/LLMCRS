@@ -2,17 +2,13 @@ import math
 import os
 import sys
 from typing import List
-
-import loguru
 import pandas as pd
 import torch
 import transformers
 from datasets import load_dataset, Dataset
-from transformers import TrainingArguments, TrainerState, TrainerControl
+from transformers import Trainer, TrainingArguments, TrainerState, TrainerControl
 import wandb
 from peft import PeftModel
-
-from trl import SFTTrainer
 
 from utils.parser import parse_args
 
@@ -56,12 +52,7 @@ class QueryEvalCallback(TrainerCallback):
         path = os.path.join(args.output_dir, self.log_name + '_E' + str(int(epoch)))
         if not os.path.isdir(path):
             os.makedirs(path)
-
-        # if torch.__version__ >= "2" and sys.platform != "win32":
-        #     model = torch.compile(model)
-        print(f"SAVE THE MODEL!!!!!!{path}")
-
-        model.save_pretrained(path, safe_serialization=False)
+        model.save_pretrained(path)
         # trainer = kwargs['trainer']
         # logs = kwargs['logs']
         # model = kwargs['model']
@@ -114,8 +105,6 @@ def llama_finetune(
         resume_from_checkpoint: str = None,  # either training checkpoint or final adapter
         prompt_template_name: str = "alpaca_legacy",  # The prompt template to use, will default to alpaca.
 ):
-    # dataset = load_dataset("imdb", split="train")
-
     base_model = args.base_model
     batch_size = args.batch_size
     train_on_inputs = args.train_on_inputs
@@ -199,18 +188,6 @@ def llama_finetune(
     # ).to(args.device_id)
     # tokenizer = LlamaTokenizer.from_pretrained(base_model)
 
-    def formatting_func(example):
-        output_data = []
-        for idx in range(len(example['text'])):
-            full_prompt = prompter.generate_prompt(
-                example["text"][idx],
-                example["input"][idx],
-                example["label"][idx],
-                example["isNew"][idx],
-            )
-            output_data.append(full_prompt)
-        return output_data
-
     def tokenize(prompt, add_eos_token=True):
         # there's probably a way to do this with the tokenizer settings
         # but again, gotta move fast
@@ -235,9 +212,9 @@ def llama_finetune(
 
     def generate_and_tokenize_prompt(data_point, writeFlag=None):
         full_prompt = prompter.generate_prompt(
-            data_point["text"],
+            data_point["instruction"],
             data_point["input"],
-            data_point["label"],
+            data_point["output"],
             data_point['isNew']
         )
         if writeFlag:
@@ -247,7 +224,7 @@ def llama_finetune(
         tokenized_full_prompt = tokenize(full_prompt)
         if not train_on_inputs:
             user_prompt = prompter.generate_prompt(
-                data_point["text"], data_point["input"]
+                data_point["instruction"], data_point["input"]
             )
             tokenized_user_prompt = tokenize(
                 user_prompt, add_eos_token=add_eos_token
@@ -264,86 +241,19 @@ def llama_finetune(
                                                                     ]  # could be sped up, probably
         return tokenized_full_prompt
 
-    ################################################################################
-    # QLoRA parameters
-    ################################################################################
-
-    # LoRA attention dimension
-    lora_r = 8
-
-    # Alpha parameter for LoRA scaling
-    lora_alpha = 16
-
-    # Dropout probability for LoRA layers
-    lora_dropout = 0.1
-
-    ################################################################################
-    # bitsandbytes parameters
-    ################################################################################
-
-    # Activate 4-bit precision base model loading
-    use_4bit = True
-
-    # Compute dtype for 4-bit base models
-    bnb_4bit_compute_dtype = "float16"
-
-    # Quantization type (fp4 or nf4)
-    bnb_4bit_quant_type = "nf4"
-
-    # Activate nested quantization for 4-bit base models (double quantization)
-    use_nested_quant = False
-
-    ################################################################################
-    # TrainingArguments parameters
-    ################################################################################
-
-    # Output directory where the model predictions and checkpoints will be stored
-    output_dir = "./lora-alpaca"
-
-    # Number of training epochs
-    num_train_epochs = 1
-
-    # Enable fp16/bf16 training (set bf16 to True with an A100)
-    fp16 = False
-    bf16 = False
-
-    ################################################################################
-    # SFT parameters
-    ################################################################################
-
-    # Maximum sequence length to use
-    max_seq_length = None
-
-    # Pack multiple short examples in the same input sequence to increase efficiency
-    packing = False
-
-    # Load the entire model on the GPU 0
-    device_map = {"": 0}
-
-    compute_dtype = getattr(torch, bnb_4bit_compute_dtype)
-
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=use_4bit,
-        bnb_4bit_quant_type=bnb_4bit_quant_type,
-        bnb_4bit_compute_dtype=compute_dtype,
-        bnb_4bit_use_double_quant=use_nested_quant,
-    )
-
-    # Check GPU compatibility with bfloat16
-    if compute_dtype == torch.float16 and use_4bit:
-        major, _ = torch.cuda.get_device_capability()
-        if major >= 8:
-            print("=" * 80)
-            print("Your GPU supports bfloat16: accelerate training with bf16=True")
-            print("=" * 80)
+    # quantization_config = BitsAndBytesConfig(llm_int8_enable_fp32_cpu_offload=True)
+    # if data_path.endswith(".json") or data_path.endswith(".jsonl"):
+    #     data = load_dataset("json", data_files=data_path)
+    # else:
+    #     data = load_dataset(data_path)
 
     data = []
     if args.prompt == 'DI2E':
         for inst, lab, explanation, isNew in zip(instructions, labels, explanations, isNews):
-            data.append({"text": inst, "input": lab, "label": explanation, "isNew": isNew})
+            data.append({"instruction": inst, "input": lab, "output": explanation, "isNew": isNew})
     else:
         for inst, lab, isNew in zip(instructions, labels, isNews):
-            data.append({"text": inst, "input": "", "label": lab, "isNew": isNew})
+            data.append({"instruction": inst, "input": "", "output": lab, "isNew": isNew})
 
     first_sample = Dataset.from_pandas(pd.DataFrame([data[0]]))
     data = Dataset.from_pandas(pd.DataFrame(data))
@@ -363,31 +273,30 @@ def llama_finetune(
         train_data = data.shuffle().map(generate_and_tokenize_prompt)
         val_data = None
 
-    model = AutoModelForCausalLM.from_pretrained(
+    model = LlamaForCausalLM.from_pretrained(
         base_model,
+        load_in_8bit=True,
+        # llm_int8_enable_fp32_cpu_offload=True,
+        torch_dtype=torch.float16,
         device_map=device_map,
-        quantization_config=bnb_config,
+        # quantization_config=quantization_config,
     )
-
-    model.config.use_cache = False
-    model.config.pretraining_tp = 1
 
     tokenizer.pad_token_id = (
         0  # unk. we want this to be different from the eos token
     )
-    tokenizer.padding_side = "right"  # Allow batched inference
+    tokenizer.padding_side = "left"  # Allow batched inference
 
     model = prepare_model_for_int8_training(model)
 
-    # Load LoRA configuration
-    peft_config = LoraConfig(
-        lora_alpha=lora_alpha,
-        lora_dropout=lora_dropout,
+    config = LoraConfig(
         r=lora_r,
+        lora_alpha=lora_alpha,
+        target_modules=lora_target_modules,
+        lora_dropout=lora_dropout,
         bias="none",
         task_type="CAUSAL_LM",
     )
-
     # if args.lora_weights[args.lora_weights.rfind('/') + 1:] != "lora-alpaca":
     #     model = PeftModel.from_pretrained(
     #         model,
@@ -396,7 +305,7 @@ def llama_finetune(
     #     )
     # else:
     #     model = get_peft_model(model, config)
-    # model = get_peft_model(model, config)
+    model = get_peft_model(model, config)
 
     if resume_from_checkpoint[resume_from_checkpoint.rfind('/') + 1:] != "lora-alpaca":
         # Check the available weights and load them
@@ -419,98 +328,58 @@ def llama_finetune(
             print(f"Checkpoint {checkpoint_name} not found")
     else:
         resume_from_checkpoint = None
-    # model.print_trainable_parameters()  # Be more transparent about the % of trainable params.
+    model.print_trainable_parameters()  # Be more transparent about the % of trainable params.
 
     if not ddp and torch.cuda.device_count() > 1:
         # keeps Trainer from trying its own DataParallelism when more than 1 gpu is available
         model.is_parallelizable = True
         model.model_parallel = True
 
-    # Set training parameters
-    training_arguments = TrainingArguments(
-        per_device_train_batch_size=per_device_train_batch_size,
-        gradient_accumulation_steps=gradient_accumulation_steps,
-        warmup_steps=warmup_steps,
-        num_train_epochs=num_epochs,
-        learning_rate=learning_rate,
-        logging_steps=10,
-        optim="adamw_torch",
-        evaluation_strategy="steps" if val_set_size > 0 else "no",
-        save_strategy="steps",
-        eval_steps=5 if val_set_size > 0 else None,
-        save_steps=200,
-        output_dir=output_dir,
-        save_total_limit=3,
-        load_best_model_at_end=True if val_set_size > 0 else False,
-        ddp_find_unused_parameters=False if ddp else None,
-        group_by_length=group_by_length,
-        report_to="wandb" if use_wandb else None,
-        fp16=fp16,
-        bf16=bf16,
-    )
-
-    # Set supervised fine-tuning parameters
-    trainer = SFTTrainer(
+    trainer = Trainer(
         model=model,
         train_dataset=train_data,
-        peft_config=peft_config,
-        # dataset_text_field="text",
-        # max_seq_length=max_seq_length,
-        # tokenizer=tokenizer,
-        args=training_arguments,
-        # packing=packing,
-        formatting_func=formatting_func,
-        # data_collator=transformers.DataCollatorForSeq2Seq(
-        #     tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
-        # ),
+        eval_dataset=val_data,
+        args=transformers.TrainingArguments(
+            per_device_train_batch_size=per_device_train_batch_size,
+            gradient_accumulation_steps=gradient_accumulation_steps,
+            warmup_steps=warmup_steps,
+            num_train_epochs=num_epochs,
+            learning_rate=learning_rate,
+            fp16=True,
+            logging_steps=10,
+            optim="adamw_torch",
+            evaluation_strategy="steps" if val_set_size > 0 else "no",
+            save_strategy="steps",
+            eval_steps=5 if val_set_size > 0 else None,
+            save_steps=200,
+            output_dir=output_dir,
+            save_total_limit=3,
+            load_best_model_at_end=True if val_set_size > 0 else False,
+            ddp_find_unused_parameters=False if ddp else None,
+            group_by_length=group_by_length,
+            report_to="wandb" if use_wandb else None,
+            # run_name=args.wandb_run_name if use_wandb else None,
+        ),
+        data_collator=transformers.DataCollatorForSeq2Seq(
+            tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
+        ),
         callbacks=[QueryEvalCallback(args, evaluator)]
     )
+    model.config.use_cache = False
 
-    # trainer = Trainer(
-    #     model=model,
-    #     train_dataset=train_data,
-    #     eval_dataset=val_data,
-    #     args=transformers.TrainingArguments(
-    #         per_device_train_batch_size=per_device_train_batch_size,
-    #         gradient_accumulation_steps=gradient_accumulation_steps,
-    #         warmup_steps=warmup_steps,
-    #         num_train_epochs=num_epochs,
-    #         learning_rate=learning_rate,
-    #         fp16=True,
-    #         logging_steps=10,
-    #         optim="adamw_torch",
-    #         evaluation_strategy="steps" if val_set_size > 0 else "no",
-    #         save_strategy="steps",
-    #         eval_steps=5 if val_set_size > 0 else None,
-    #         save_steps=200,
-    #         output_dir=output_dir,
-    #         save_total_limit=3,
-    #         load_best_model_at_end=True if val_set_size > 0 else False,
-    #         ddp_find_unused_parameters=False if ddp else None,
-    #         group_by_length=group_by_length,
-    #         report_to="wandb" if use_wandb else None,
-    #         # run_name=args.wandb_run_name if use_wandb else None,
-    #     ),
-    #     data_collator=transformers.DataCollatorForSeq2Seq(
-    #         tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
-    #     ),
-    #     callbacks=[QueryEvalCallback(args, evaluator)]
-    # )
-    # model.config.use_cache = False
+    old_state_dict = model.state_dict
+    model.state_dict = (
+        lambda self, *_, **__: get_peft_model_state_dict(
+            self, old_state_dict()
+        )
+    ).__get__(model, type(model))
 
-    # old_state_dict = model.state_dict
-    # model.state_dict = (
-    #     lambda self, *_, **__: get_peft_model_state_dict(
-    #         self, old_state_dict()
-    #     )
-    # ).__get__(model, type(model))
-    #
-    # if torch.__version__ >= "2" and sys.platform != "win32":
-    #     model = torch.compile(model)
+    if torch.__version__ >= "2" and sys.platform != "win32":
+        model = torch.compile(model)
 
     trainer.train(resume_from_checkpoint=resume_from_checkpoint)
 
-    model.save_pretrained(output_dir)
+    # model.save_pretrained(output_dir)
 
     print(
         "\n If there's a warning about missing keys above, please disregard :)"
