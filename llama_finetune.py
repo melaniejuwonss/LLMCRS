@@ -197,14 +197,13 @@ def llama_finetune(
     #     # device_map='auto'
     # ).to(args.device_id)
     # tokenizer = LlamaTokenizer.from_pretrained(base_model)
-    def formatting_prompts_func(data_point):
-        prompter = Prompter(args, prompt_template_name)
 
+    def formatting_func(example):
         full_prompt = prompter.generate_prompt(
-            data_point["text"],
-            data_point["input"],
-            data_point["label"],
-            data_point['isNew']
+            example["text"],
+            example["input"],
+            example["label"],
+            example['isNew']
         )
         return full_prompt
 
@@ -452,14 +451,14 @@ def llama_finetune(
         train_dataset=train_data,
         peft_config=peft_config,
         # dataset_text_field="text",
-        max_seq_length=max_seq_length,
-        tokenizer=tokenizer,
+        # max_seq_length=max_seq_length,
+        # tokenizer=tokenizer,
         args=training_arguments,
-        packing=packing,
-        formatting_func=formatting_prompts_func,
-        data_collator=transformers.DataCollatorForSeq2Seq(
-            tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
-        ),
+        # packing=packing,
+        formatting_func=formatting_func,
+        # data_collator=transformers.DataCollatorForSeq2Seq(
+        #     tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
+        # ),
         callbacks=[QueryEvalCallback(args, evaluator)]
     )
 
