@@ -56,9 +56,10 @@ class QueryEvalCallback(TrainerCallback):
         path = os.path.join(args.output_dir, self.log_name + '_E' + str(int(epoch)))
         if not os.path.isdir(path):
             os.makedirs(path)
+
         # if torch.__version__ >= "2" and sys.platform != "win32":
         #     model = torch.compile(model)
-        print("SAVE THE MODEL!!!!!!")
+        print(f"SAVE THE MODEL!!!!!!{path}")
 
         model.save_pretrained(path, safe_serialization=False)
         # trainer = kwargs['trainer']
