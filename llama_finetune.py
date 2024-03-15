@@ -252,7 +252,7 @@ def llama_finetune(
     ################################################################################
 
     # LoRA attention dimension
-    lora_r = 64
+    lora_r = 8
 
     # Alpha parameter for LoRA scaling
     lora_alpha = 16
