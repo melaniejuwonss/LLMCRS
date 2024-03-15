@@ -366,10 +366,10 @@ def llama_finetune(
     data = []
     if args.prompt == 'DI2E':
         for inst, lab, explanation, isNew in zip(instructions, labels, explanations, isNews):
-            data.append({"text": inst, "input": lab, "output": explanation, "isNew": isNew})
+            data.append({"text": inst, "input": lab, "label": explanation, "isNew": isNew})
     else:
         for inst, lab, isNew in zip(instructions, labels, isNews):
-            data.append({"text": inst, "input": "", "output": lab, "isNew": isNew})
+            data.append({"text": inst, "input": "", "label": lab, "isNew": isNew})
 
     first_sample = Dataset.from_pandas(pd.DataFrame([data[0]]))
     data = Dataset.from_pandas(pd.DataFrame(data))
