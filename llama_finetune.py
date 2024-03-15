@@ -2,6 +2,8 @@ import math
 import os
 import sys
 from typing import List
+
+import loguru
 import pandas as pd
 import torch
 import transformers
@@ -56,6 +58,8 @@ class QueryEvalCallback(TrainerCallback):
             os.makedirs(path)
         # if torch.__version__ >= "2" and sys.platform != "win32":
         #     model = torch.compile(model)
+        loguru.info("SAVE THE MODEL!!!!!!")
+
         model.save_pretrained(path, safe_serialization=False)
         # trainer = kwargs['trainer']
         # logs = kwargs['logs']
