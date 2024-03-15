@@ -109,6 +109,8 @@ def llama_finetune(
         resume_from_checkpoint: str = None,  # either training checkpoint or final adapter
         prompt_template_name: str = "alpaca_legacy",  # The prompt template to use, will default to alpaca.
 ):
+    dataset = load_dataset("imdb", split="train")
+
     base_model = args.base_model
     batch_size = args.batch_size
     train_on_inputs = args.train_on_inputs
@@ -364,10 +366,10 @@ def llama_finetune(
     data = []
     if args.prompt == 'DI2E':
         for inst, lab, explanation, isNew in zip(instructions, labels, explanations, isNews):
-            data.append({"instruction": inst, "input": lab, "output": explanation, "isNew": isNew})
+            data.append({"text": inst, "input": lab, "output": explanation, "isNew": isNew})
     else:
         for inst, lab, isNew in zip(instructions, labels, isNews):
-            data.append({"instruction": inst, "input": "", "output": lab, "isNew": isNew})
+            data.append({"text": inst, "input": "", "output": lab, "isNew": isNew})
 
     first_sample = Dataset.from_pandas(pd.DataFrame([data[0]]))
     data = Dataset.from_pandas(pd.DataFrame(data))
