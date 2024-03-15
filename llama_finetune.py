@@ -290,49 +290,6 @@ def llama_finetune(
     fp16 = False
     bf16 = False
 
-    # # Batch size per GPU for training
-    # per_device_train_batch_size = 4
-    #
-    # # Batch size per GPU for evaluation
-    # per_device_eval_batch_size = 4
-
-    # Number of update steps to accumulate the gradients for
-    gradient_accumulation_steps = 1
-
-    # Enable gradient checkpointing
-    gradient_checkpointing = True
-
-    # Maximum gradient normal (gradient clipping)
-    max_grad_norm = 0.3
-
-    # Initial learning rate (AdamW optimizer)
-    learning_rate = 2e-4
-
-    # Weight decay to apply to all layers except bias/LayerNorm weights
-    weight_decay = 0.001
-
-    # Optimizer to use
-    optim = "paged_adamw_32bit"
-
-    # Learning rate schedule
-    lr_scheduler_type = "cosine"
-
-    # Number of training steps (overrides num_train_epochs)
-    max_steps = -1
-
-    # Ratio of steps for a linear warmup (from 0 to learning rate)
-    warmup_ratio = 0.03
-
-    # Group sequences into batches with same length
-    # Saves memory and speeds up training considerably
-    group_by_length = True
-
-    # Save checkpoint every X updates steps
-    save_steps = 0
-
-    # Log every X updates steps
-    logging_steps = 25
-
     ################################################################################
     # SFT parameters
     ################################################################################
@@ -454,23 +411,25 @@ def llama_finetune(
 
     # Set training parameters
     training_arguments = TrainingArguments(
-        output_dir=output_dir,
-        num_train_epochs=num_train_epochs,
         per_device_train_batch_size=per_device_train_batch_size,
         gradient_accumulation_steps=gradient_accumulation_steps,
-        optim=optim,
-        save_steps=save_steps,
-        logging_steps=logging_steps,
+        warmup_steps=warmup_steps,
+        num_train_epochs=num_epochs,
         learning_rate=learning_rate,
-        weight_decay=weight_decay,
+        logging_steps=10,
+        optim="adamw_torch",
+        evaluation_strategy="steps" if val_set_size > 0 else "no",
+        save_strategy="steps",
+        eval_steps=5 if val_set_size > 0 else None,
+        save_steps=200,
+        output_dir=output_dir,
+        save_total_limit=3,
+        load_best_model_at_end=True if val_set_size > 0 else False,
+        ddp_find_unused_parameters=False if ddp else None,
+        group_by_length=group_by_length,
+        report_to="wandb" if use_wandb else None,
         fp16=fp16,
         bf16=bf16,
-        max_grad_norm=max_grad_norm,
-        max_steps=max_steps,
-        warmup_ratio=warmup_ratio,
-        group_by_length=group_by_length,
-        lr_scheduler_type=lr_scheduler_type,
-        report_to="wandb" if use_wandb else None,
     )
 
     # Set supervised fine-tuning parameters
