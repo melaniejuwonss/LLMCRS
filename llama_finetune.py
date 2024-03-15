@@ -200,14 +200,14 @@ def llama_finetune(
 
     def formatting_func(example):
         output_data = []
-        for data_point in example:
+        for idx in range(len(example['text'])):
             full_prompt = prompter.generate_prompt(
-                data_point["text"],
-                data_point["input"],
-                data_point["label"],
-                data_point['isNew']
+                example["text"]['idx'],
+                example["input"]['idx'],
+                example["label"]['idx'],
+                example["isNew"]['idx'],
             )
-            output_data.append(output_data)
+            output_data.append(full_prompt)
         return output_data
 
     def tokenize(prompt, add_eos_token=True):
