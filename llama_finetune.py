@@ -199,13 +199,16 @@ def llama_finetune(
     # tokenizer = LlamaTokenizer.from_pretrained(base_model)
 
     def formatting_func(example):
-        full_prompt = prompter.generate_prompt(
-            example["text"],
-            example["input"],
-            example["label"],
-            example['isNew']
-        )
-        return full_prompt
+        output_data = []
+        for data_point in example:
+            full_prompt = prompter.generate_prompt(
+                data_point["text"],
+                data_point["input"],
+                data_point["label"],
+                data_point['isNew']
+            )
+            output_data.append(output_data)
+        return output_data
 
     def tokenize(prompt, add_eos_token=True):
         # there's probably a way to do this with the tokenizer settings
