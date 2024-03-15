@@ -202,10 +202,10 @@ def llama_finetune(
         output_data = []
         for idx in range(len(example['text'])):
             full_prompt = prompter.generate_prompt(
-                example["text"]['idx'],
-                example["input"]['idx'],
-                example["label"]['idx'],
-                example["isNew"]['idx'],
+                example["text"][idx],
+                example["input"][idx],
+                example["label"][idx],
+                example["isNew"][idx],
             )
             output_data.append(full_prompt)
         return output_data
