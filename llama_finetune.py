@@ -8,7 +8,7 @@ import pandas as pd
 import torch
 import transformers
 from datasets import load_dataset, Dataset
-from transformers import Trainer, TrainingArguments, TrainerState, TrainerControl
+from transformers import TrainingArguments, TrainerState, TrainerControl
 import wandb
 from peft import PeftModel
 
